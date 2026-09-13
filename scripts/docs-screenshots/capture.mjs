@@ -629,6 +629,339 @@ Object.assign(scenes, {
   },
 });
 
+/** PUTs a JSON body to an API path as the signed-in user; throws on an error response. */
+async function apiPut(page, apiPath, body) {
+  const token = await page.evaluate(() => localStorage.getItem('accessToken_Internal'));
+  const response = await page.request.put(`${BASE}/api/v1${apiPath}`, {headers: {Authorization: `Bearer ${token}`}, data: body});
+  if (!response.ok()) throw new Error(`PUT ${apiPath} failed: HTTP ${response.status()}`);
+  return response.status() === 204 ? null : response.json().catch(() => null);
+}
+
+// Sample tags, some deliberately untidy ("Sci-Fi", "SciFi", "Science-Fiction"; "Mystery & Detective")
+// so the Metadata Manager has something to merge and split.
+const SAMPLE_TAGS = {
+  'The Time Machine': ['Sci-Fi', 'Victorian'],
+  'The War of the Worlds': ['Science-Fiction', 'Victorian', 'Aliens'],
+  'Twenty Thousand Leagues Under the Sea': ['SciFi', 'Ocean'],
+  'Frankenstein': ['Sci-Fi', 'Monsters'],
+  'Dracula': ['Monsters', 'Vampires', 'Epistolary'],
+  'The Hound of the Baskervilles': ['Victorian', 'Mystery & Detective'],
+  'A Study in Scarlet': ['Victorian', 'Mystery & Detective'],
+  'The Sign of the Four': ['Victorian', 'Mystery & Detective'],
+  'Treasure Island': ['Pirates', 'Ocean'],
+  'Moby-Dick': ['Ocean', 'Whaling'],
+  'Around the World in Eighty Days': ['Travel', 'Victorian'],
+  'Pride and Prejudice': ['Regency'],
+  'Emma': ['Regency'],
+  'The Picture of Dorian Gray': ['Victorian'],
+};
+
+/** Puts the sample tags back on their books (and removes any others). */
+async function resetSampleTags(page) {
+  // withDescription: the metadata is sent back whole, and a list without descriptions would erase them.
+  for (const book of await apiGet(page, '/books?withDescription=true')) {
+    const tags = SAMPLE_TAGS[book.metadata?.title] || [];
+    if (JSON.stringify([...(book.metadata.tags || [])].sort()) === JSON.stringify([...tags].sort())) continue;
+    await apiPut(page, `/books/${book.id}/metadata`, {metadata: {...book.metadata, tags}, clearFlags: {}});
+  }
+}
+
+Object.assign(scenes, {
+  // The Metadata Manager: merging tag variants into one, splitting a combined tag, deleting a tag.
+  async metadataManager(page) {
+    await resetSampleTags(page);
+    await open(page, '/dashboard');
+    await page.locator('.topbar-item:has(.pi-sparkles)').first().hover();
+    await page.waitForTimeout(900);
+    await shot(page, 'metadata/metadata-manager', 'access-settings', {hover: true});
+
+    await open(page, '/metadata-manager');
+    await shot(page, 'metadata/metadata-manager', 'overview');
+    await page.locator('p-tab', {hasText: 'Tags'}).click();
+    await page.waitForTimeout(800);
+    const panel = page.locator('p-tabpanel:visible, .p-tabpanel:visible').first();
+    const row = value => panel.locator('tr', {has: page.locator('.clickable-cell', {hasText: new RegExp(`^\\s*${value.replace(/[&-]/g, '\\$&')}\\s*$`)})});
+    const dialog = () => page.locator('.p-dialog:visible').last();
+
+    // Searching narrows the table to the entries in question (it scrolls inside a short panel otherwise).
+    const search = async text => {
+      await panel.locator('.search-input input').fill(text);
+      await page.waitForTimeout(700);
+    };
+    await search('sci');
+    for (const value of ['Sci-Fi', 'SciFi', 'Science-Fiction']) await row(value).locator('p-checkbox').click();
+    await page.waitForTimeout(500);
+    await shot(page, 'metadata/metadata-manager', 'select-items');
+    await panel.locator('p-button', {hasText: 'Merge'}).click();
+    await page.waitForTimeout(800);
+    await dialog().locator('input').first().fill('Science Fiction');
+    await shot(page, 'metadata/metadata-manager', 'merge-target');
+    await dialog().locator('p-button', {hasText: 'Confirm'}).click();
+    await page.waitForTimeout(2500);
+
+    await search('mystery');
+    const mystery = row('Mystery & Detective');
+    await mystery.locator('p-button:has(.pi-pencil)').hover();
+    await page.waitForTimeout(900);
+    await shot(page, 'metadata/metadata-manager', 'rename-button', {hover: true});
+    await mystery.locator('p-button:has(.pi-pencil)').click();
+    await page.waitForTimeout(800);
+    await dialog().locator('#renameTarget, input').first().fill('Mystery, Detective');
+    await shot(page, 'metadata/metadata-manager', 'rename-input');
+    await dialog().locator('p-button', {hasText: 'Confirm'}).click();
+    await page.waitForTimeout(2500);
+    await search('');
+    await shot(page, 'metadata/metadata-manager', 'rename-confirm', {keepToasts: true});
+
+    await search('');
+    await row('Whaling').locator('p-button:has(.pi-trash)').click();
+    await page.waitForTimeout(800);
+    await shot(page, 'metadata/metadata-manager', 'delete-option');
+    await dialog().locator('p-button', {hasText: 'Cancel'}).click();
+
+    await resetSampleTags(page); // leave the untidy tags for the next run
+  },
+});
+
+// Public-domain EPUBs dropped into the Bookdrop folder (from Project Gutenberg, under the file names a
+// reader might have), and the titles they import as, so a run can remove what the last one imported.
+const BOOKDROP_SOURCE = process.env.TROVE_DOCS_BOOKDROP_SOURCE || '/srv/trove/docs-staging';
+const BOOKDROP_FOLDER = process.env.TROVE_DOCS_BOOKDROP || '/srv/trove-docs/bookdrop';
+const BOOKDROP_FILES = {
+  'pg113.epub': 'Frances Hodgson Burnett - The Secret Garden.epub',
+  'pg289.epub': 'Kenneth Grahame - The Wind in the Willows.epub',
+  'pg219.epub': 'Joseph Conrad - Heart of Darkness.epub',
+};
+const BOOKDROP_TITLES = [/Secret Garden/i, /Wind in the Willows/i, /Heart of Darkness/i];
+
+async function apiSend(page, method, apiPath, body) {
+  const token = await page.evaluate(() => localStorage.getItem('accessToken_Internal'));
+  const response = await page.request.fetch(`${BASE}/api/v1${apiPath}`, {method, headers: {Authorization: `Bearer ${token}`}, data: body});
+  if (!response.ok()) throw new Error(`${method} ${apiPath} failed: HTTP ${response.status()}`);
+}
+
+/**
+ * Blurs what the metadata providers returned on the Bookdrop review screen - fetched covers and long
+ * fetched text such as descriptions - leaving the books' own embedded covers and metadata sharp.
+ */
+async function blurBookdropFetched(page) {
+  await page.evaluate(() => {
+    document.querySelectorAll('img[alt="Fetched Cover"]').forEach(img => { img.style.filter = 'blur(10px)'; });
+    document.querySelectorAll('.thumbnail-row').forEach(row => {
+      const fetched = row.querySelectorAll('.thumbnail-column')[1];
+      fetched?.querySelectorAll('img').forEach(img => { img.style.filter = 'blur(10px)'; });
+    });
+    document.querySelectorAll('.src').forEach(el => {
+      const text = el.value ?? el.textContent ?? '';
+      if (text.trim().length > 90) el.style.filter = 'blur(4px)';
+    });
+  });
+}
+
+/** Clears the Bookdrop queue and deletes books (and their authors) an earlier run imported from it. */
+async function resetBookdrop(page) {
+  await apiSend(page, 'POST', '/bookdrop/files/discard', {selectAll: true, excludedIds: [], selectedIds: []});
+  const imported = (await apiGet(page, '/books?stripForListView=true'))
+    .filter(b => BOOKDROP_TITLES.some(t => t.test(b.metadata?.title || '')));
+  if (imported.length) await apiSend(page, 'DELETE', `/books?ids=${imported.map(b => b.id).join(',')}`);
+  // Deleting a book leaves its author behind; remove authors with no books left.
+  const orphans = (await apiGet(page, '/authors')).filter(a => a.bookCount === 0).map(a => a.id);
+  if (orphans.length) await apiSend(page, 'DELETE', '/authors', orphans);
+}
+
+Object.assign(scenes, {
+  // Bookdrop: files dropped into the folder, the progress in the activity panel, the review screen with
+  // a book's metadata comparison (provider results blurred), and the import summary. The imported books
+  // are deleted again afterwards, leaving the sample library as it was.
+  async bookdrop(page) {
+    const {copyFileSync} = await import('node:fs');
+    await resetBookdrop(page);
+    const booksBefore = await bookCount(page);
+    await open(page, '/dashboard');
+    for (const [source, name] of Object.entries(BOOKDROP_FILES)) {
+      copyFileSync(path.join(BOOKDROP_SOURCE, source), path.join(BOOKDROP_FOLDER, name));
+    }
+    const activity = page.locator('button.topbar-item:has(i[aria-label])').first();
+    await page.waitForTimeout(2500);
+    await activity.click();
+    await page.waitForTimeout(600);
+    await shot(page, 'bookdrop', 'processing-status');
+    await page.keyboard.press('Escape');
+
+    // Wait for the files to be processed (metadata is fetched from the providers for each).
+    for (let i = 0; i < 60; i++) {
+      const summary = await apiGet(page, '/bookdrop/notification');
+      if (summary.pendingCount >= Object.keys(BOOKDROP_FILES).length) break;
+      await page.waitForTimeout(2000);
+    }
+    await open(page, '/dashboard');
+    await activity.click();
+    await page.waitForTimeout(800);
+    await shot(page, 'bookdrop', 'bookdrop-progress');
+    await page.getByRole('button', {name: 'Review'}).first().click();
+    await page.waitForTimeout(2500);
+    await page.mouse.click(700, 600); // close the activity panel, which stays open across the navigation
+    await page.waitForTimeout(500);
+    // Every book goes to the Classics library, in its only folder (the defaults apply to selected books).
+    await page.locator('.footer p-button', {hasText: /Select\s+All/}).click();
+    const defaults = page.locator('.default-controls');
+    for (const [index, option] of [[0, 'Classics'], [1, /books/]]) {
+      await defaults.locator('p-select').nth(index).click();
+      await page.locator('.p-select-overlay li, .p-select-option', {hasText: option}).first().click();
+      await page.waitForTimeout(400);
+    }
+    await defaults.locator('p-button').click();
+    await page.waitForTimeout(800);
+    await blurBookdropFetched(page);
+    await shot(page, 'bookdrop', 'bookdrop-pre');
+
+    // Open the comparison for a book the providers found (lookups can fail, so check which did).
+    const files = (await apiGet(page, '/bookdrop/files?status=PENDING_REVIEW&size=50')).content;
+    const matched = files.find(f => f.fetchedMetadata?.title) || files[0];
+    const compared = page.locator('.file-item', {hasText: matched.fileName}).first();
+    await compared.locator('.file-row p-button').last().click();
+    await page.waitForTimeout(1500);
+    await blurBookdropFetched(page);
+    await shot(page, 'bookdrop', 'bookdrop-dropdown');
+    await compared.locator('.file-row p-button').last().click();
+    await page.waitForTimeout(600);
+
+    await page.locator('.footer p-button', {hasText: 'Finalize'}).click();
+    await page.waitForTimeout(1000);
+    await page.getByRole('alertdialog').or(page.getByRole('dialog')).last().getByRole('button', {name: 'Finalize'}).click();
+    await page.waitForSelector('text=Import Summary', {timeout: 60000});
+    await page.waitForTimeout(1000);
+    await shot(page, 'bookdrop', 'bookdrop-summary');
+
+    await resetBookdrop(page);
+    if (await bookCount(page) !== booksBefore) throw new Error('The Bookdrop scene left the library with a different number of books');
+  },
+});
+
+Object.assign(scenes, {
+  // Searching the metadata providers for a book, and comparing a result with the book's own metadata.
+  // Everything the providers return is blurred; nothing is saved.
+  async metadataSearch(page) {
+    const id = await bookId(page, 'The Time Machine');
+    await open(page, `/book/${id}`);
+    await page.locator('p-tab[value=match]').click();
+    await page.waitForTimeout(1000);
+    const searchButton = page.locator('.search-button-field button').first();
+    if (await searchButton.isEnabled()) await searchButton.click();
+    // Providers answer in their own time; wait until none is still searching.
+    await page.waitForSelector('.metadata-card', {timeout: 60000});
+    for (let i = 0; i < 30 && await page.locator('.fetching-badge').count(); i++) await page.waitForTimeout(1000);
+    await page.waitForTimeout(1500);
+    await blurProviderContent(page, '.results-section');
+    await shot(page, 'metadata/metadata-center', 'search-metadata');
+
+    await page.locator('.metadata-card').first().click();
+    // The picker opens with the search result, then loads the provider's full record.
+    await page.waitForTimeout(1000);
+    await page.locator('.detail-loading-banner').waitFor({state: 'detached', timeout: 60000}).catch(() => {});
+    await page.waitForTimeout(1500);
+    await page.evaluate(() => {
+      document.querySelectorAll('.field-side.fetched img').forEach(img => { img.style.filter = 'blur(10px)'; });
+      document.querySelectorAll('.field-side.fetched').forEach(side => {
+        side.querySelectorAll('input, textarea, p, div, span').forEach(el => {
+          const text = el.value ?? [...el.childNodes].filter(n => n.nodeType === Node.TEXT_NODE).map(n => n.textContent).join('');
+          if ((text || '').trim().length > 90) el.style.filter = 'blur(4px)';
+        });
+      });
+    });
+    await shot(page, 'metadata/metadata-center', 'search-metadata-compare');
+  },
+
+  // The Files and Notes tabs on a book's page.
+  async bookTabs(page) {
+    const id = await bookId(page, 'Pride and Prejudice');
+    await open(page, `/book/${id}`);
+    for (const [tab, name] of [['Files', 'files-tab'], ['Notes', 'notes-tab']]) {
+      await page.getByText(tab, {exact: true}).first().click();
+      await page.waitForTimeout(1200);
+      await scrollToHeading(page, tab, '.p-tab-active, [role=tab][aria-selected=true]');
+      await shot(page, 'metadata/metadata-center', name);
+    }
+  },
+
+  // The Notebook: every highlight and note across the library.
+  async notebook(page) {
+    await open(page, '/notebook');
+    await page.waitForTimeout(1500);
+    await shot(page, 'notebook', 'notebook-overview');
+  },
+});
+
+Object.assign(scenes, {
+  // Email: adding an SMTP provider (example values only - it is never used to send anything), adding
+  // recipients, and the Custom Send dialog on a book.
+  async email(page) {
+    const token = await page.evaluate(() => localStorage.getItem('accessToken_Internal'));
+    const headers = {Authorization: `Bearer ${token}`};
+    for (const kind of ['providers', 'recipients']) {
+      for (const item of await apiGet(page, `/email/${kind}`)) {
+        await page.request.delete(`${BASE}/api/v1/email/${kind}/${item.id}`, {headers});
+      }
+    }
+    await open(page, '/settings?tab=email-v2');
+    await page.waitForTimeout(1000);
+    await shot(page, 'email-setup', 'email-1');
+
+    await page.getByRole('button', {name: 'Add Provider'}).click();
+    await page.waitForTimeout(800);
+    const provider = page.locator('.p-dialog:visible, .p-dynamicdialog:visible').last();
+    await provider.locator('#providerName').fill('Gmail');
+    await provider.locator('#host').fill('smtp.gmail.com');
+    await provider.locator('#port').fill('587');
+    await provider.locator('#username').fill('elinor@example.com');
+    await provider.locator('#password input, input#password').first().fill('example-app-password');
+    await provider.locator('#fromAddress').fill('elinor@example.com');
+    for (const id of ['auth', 'startTls']) {
+      if (!await provider.locator(`#${id}`).isChecked()) await provider.locator(`p-checkbox:has(#${id})`).click();
+    }
+    await shot(page, 'email-setup', 'email-2');
+    await provider.locator('p-button').last().click();
+    await page.waitForTimeout(1200);
+
+    const addRecipient = async (name, email) => {
+      await page.getByRole('button', {name: 'Add Recipient'}).click();
+      await page.waitForTimeout(800);
+      const dialog = page.locator('.p-dialog:visible, .p-dynamicdialog:visible').last();
+      await dialog.locator('#recipientName').fill(name);
+      await dialog.locator('#email').fill(email);
+      return dialog;
+    };
+    await addRecipient('Marianne', 'marianne@example.com').then(d => d.locator('p-button').last().click());
+    await page.waitForTimeout(1000);
+    const kindle = await addRecipient("Elinor's Kindle", 'elinor-kindle@example.com');
+    await shot(page, 'email-setup', 'email-3');
+    await kindle.locator('p-button').last().click();
+    await page.waitForTimeout(1200);
+    await scrollBy(page, 2000); // the providers and recipients both fit once scrolled down
+    await shot(page, 'email-setup', 'email-4');
+
+    await open(page, '/all-books');
+    const card = page.locator('app-book-card', {hasText: 'Emma'}).first();
+    await card.getByRole('button', {name: 'Book actions menu'}).click();
+    await page.waitForTimeout(600);
+    // The submenu doesn't show for a scripted hover, but the menu's keyboard navigation works.
+    await page.locator('[role=menuitem]', {hasText: 'Email Book'}).first().click();
+    await page.keyboard.press('ArrowRight'); // into the submenu: Quick Send
+    await page.keyboard.press('ArrowDown'); // Custom Send
+    await page.keyboard.press('Enter');
+    await page.waitForTimeout(1200);
+    const send = page.locator('.p-dialog:visible, .p-dynamicdialog:visible').last();
+    for (const [index, option] of [[0, 'Gmail'], [1, "Elinor's Kindle"]]) {
+      await send.locator('p-select').nth(index).click();
+      await page.locator('.p-select-option, .p-select-overlay li', {hasText: option}).first().click();
+      await page.waitForTimeout(400);
+    }
+    await send.locator('.p-radiobutton, p-radiobutton').first().click().catch(() => {});
+    await shot(page, 'email-setup', 'email-5');
+    await page.keyboard.press('Escape');
+  },
+});
+
 /** The id of the book with this title, from the API. */
 async function bookId(page, title) {
   const book = (await apiGet(page, '/books?stripForListView=true')).find(b => b.metadata?.title === title);
@@ -675,7 +1008,13 @@ try {
     const context = await browser.newContext({viewport: VIEWPORT, deviceScaleFactor: 1, colorScheme: 'dark'});
     const page = await context.newPage();
     if (name !== 'setup') await login(page);
-    await scenes[name](page);
+    try {
+      await scenes[name](page);
+    } catch (e) {
+      // What the page looked like when the scene failed, in the current (scratch) directory.
+      await page.screenshot({path: `failed-${name}.png`}).catch(() => {});
+      throw e;
+    }
     await context.close();
   }
 } finally {

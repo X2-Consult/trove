@@ -34,7 +34,7 @@
 </div>
 <header><h1>📥 Bookdrop</h1></header>
 <p>Add books to your library by dropping files into a folder. Bookdrop watches for new files, extracts metadata, optionally enriches it from online sources, and queues everything for review before importing.</p>
-<p><img decoding="async" loading="lazy" alt="Bookdrop Processing" src="https://web.archive.org/web/20260309184052im_/https://booklore.org/assets/images/processing-status-99c1eecdae7a489b7f88b352ebd42eb2.jpg" width="1200" height="692" class="img_ev3q"></p>
+<p><img decoding="async" loading="lazy" alt="Bookdrop Processing" src="images/bookdrop/processing-status.jpg" width="1200" height="692" class="img_ev3q"></p>
 <div class="theme-admonition theme-admonition-warning admonition_xJq3 alert alert--warning"><div class="admonitionHeading_Gvgb"><span class="admonitionIcon_Rf37"><svg viewbox="0 0 16 16"><path fill-rule="evenodd" d="M8.893 1.5c-.183-.31-.52-.5-.887-.5s-.703.19-.886.5L.138 13.499a.98.98 0 0 0 0 1.001c.193.31.53.501.886.501h13.964c.367 0 .704-.19.877-.5a1.03 1.03 0 0 0 .01-1.002L8.893 1.5zm.133 11.497H6.987v-2.003h2.039v2.003zm0-3.004H6.987V5.987h2.039v4.006z"></path></svg></span>Network Storage Limitation</div><div class="admonitionContent_BuS1"><p>Bookdrop may not reliably detect new files on network-mounted storage (e.g., NFS or SMB). Many network filesystems do not propagate real-time filesystem events to the host process, so Bookdrop may not notice newly added files.</p><p><strong>If Bookdrop doesn't react when you add files:</strong></p><ul>
 <li>Use a local folder instead</li>
 <li>Adjust mount options to enable notification support</li>
@@ -52,10 +52,10 @@
 <p><img decoding="async" loading="lazy" alt="Bookdrop Folder" src="https://web.archive.org/web/20260309184052im_/https://booklore.org/assets/images/bookdrop-folder-a202a82b20c31eb9b4e21541b60c3111.jpg" width="1200" height="715" class="img_ev3q"></p>
 <h3 class="anchor anchorWithStickyNavbar_LWe7" id="monitoring-progress">Monitoring Progress<a href="#monitoring-progress" class="hash-link" aria-label="Direct link to Monitoring Progress" title="Direct link to Monitoring Progress">​</a></h3>
 <p>Click the bell icon in the top bar to see processing status. When processing completes, click <strong>Review</strong> to open the Bookdrop UI.</p>
-<p><img decoding="async" loading="lazy" alt="Bookdrop Progress" src="https://web.archive.org/web/20260309184052im_/https://booklore.org/assets/images/bookdrop-progress-3f6c9e2d9f36d15eb3b1c7b03ac1c4b7.jpg" width="1200" height="715" class="img_ev3q"></p>
+<p><img decoding="async" loading="lazy" alt="Bookdrop Progress" src="images/bookdrop/bookdrop-progress.jpg" width="1200" height="715" class="img_ev3q"></p>
 <hr>
 <h2 class="anchor anchorWithStickyNavbar_LWe7" id="-the-bookdrop-ui">📖 The Bookdrop UI<a href="#-the-bookdrop-ui" class="hash-link" aria-label="Direct link to 📖 The Bookdrop UI" title="Direct link to 📖 The Bookdrop UI">​</a></h2>
-<p><img decoding="async" loading="lazy" alt="Bookdrop UI Overview" src="https://web.archive.org/web/20260309184052im_/https://booklore.org/assets/images/bookdrop-pre-478e92c10320f9749b371eb6054257b6.jpg" width="1200" height="715" class="img_ev3q"></p>
+<p><img decoding="async" loading="lazy" alt="Bookdrop UI Overview" src="images/bookdrop/bookdrop-pre.jpg" width="1200" height="715" class="img_ev3q"></p>
 <h3 class="anchor anchorWithStickyNavbar_LWe7" id="-global-settings-top">🎯 Global Settings (Top)<a href="#-global-settings-top" class="hash-link" aria-label="Direct link to 🎯 Global Settings (Top)" title="Direct link to 🎯 Global Settings (Top)">​</a></h3>
 <ol>
 <li><strong>Filename Pattern Preview</strong> showing how books will be renamed based on your <a href="./metadata/file-naming-patterns.html">configured pattern</a></li>
@@ -77,7 +77,7 @@
 <hr>
 <h2 class="anchor anchorWithStickyNavbar_LWe7" id="-per-book-metadata-comparison">🎨 Per-Book Metadata Comparison<a href="#-per-book-metadata-comparison" class="hash-link" aria-label="Direct link to 🎨 Per-Book Metadata Comparison" title="Direct link to 🎨 Per-Book Metadata Comparison">​</a></h2>
 <p>Click the dropdown icon next to any book to open the comparison panel:</p>
-<p><img decoding="async" loading="lazy" alt="Metadata Picker" src="https://web.archive.org/web/20260309184052im_/https://booklore.org/assets/images/bookdrop-dropdown-764b29c995e45d129ad0153655062cd7.jpg" width="1200" height="715" class="img_ev3q"></p>
+<p><img decoding="async" loading="lazy" alt="Metadata Picker" src="images/bookdrop/bookdrop-dropdown.jpg" width="1200" height="715" class="img_ev3q"></p>
 <p><strong>Single Arrow</strong> copies only missing fields from fetched metadata. Existing values are left untouched:</p>
 <div class="language-text codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#F8F8F2;--prism-background-color:#282A36"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-text codeBlock_bY9V thin-scrollbar" style="color:#F8F8F2;background-color:#282A36"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#F8F8F2"><span class="token plain">Current:  Title = "Book",     Author = ""</span><br></span><span class="token-line" style="color:#F8F8F2"><span class="token plain">Fetched:  Title = "The Book", Author = "John Doe"</span><br></span><span class="token-line" style="color:#F8F8F2"><span class="token plain">Result:   Title = "Book",     Author = "John Doe"  ← only author was empty, so only author copied</span><br></span></code></pre></div></div>
 <p><strong>Double Arrow</strong> overwrites all fields with fetched metadata:</p>
@@ -86,7 +86,7 @@
 <hr>
 <h2 class="anchor anchorWithStickyNavbar_LWe7" id="-finalizing-the-import">✅ Finalizing the Import<a href="#-finalizing-the-import" class="hash-link" aria-label="Direct link to ✅ Finalizing the Import" title="Direct link to ✅ Finalizing the Import">​</a></h2>
 <p>After clicking <strong>Finalize Import</strong>, a summary shows successfully imported books, their library placement, any skipped files, and processing statistics.</p>
-<p><img decoding="async" loading="lazy" alt="Import Summary" src="https://web.archive.org/web/20260309184052im_/https://booklore.org/assets/images/bookdrop-summary-15312a0e451d7aad8d317e1eba8e482e.jpg" width="1200" height="715" class="img_ev3q"></p>
+<p><img decoding="async" loading="lazy" alt="Import Summary" src="images/bookdrop/bookdrop-summary.jpg" width="1200" height="715" class="img_ev3q"></p>
 <p>After import, original files are automatically removed from the Bookdrop folder.</p>
 </body>
 </html>
