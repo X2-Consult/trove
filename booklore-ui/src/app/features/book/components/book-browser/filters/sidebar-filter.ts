@@ -2,7 +2,7 @@ import {combineLatest, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {BookFilter} from './BookFilter';
 import {BookState} from '../../../model/state/book-state.model';
-import {fileSizeRanges, matchScoreRanges, pageCountRanges, ratingRanges} from '../book-filter/book-filter.config';
+import {extractBookFormats, fileSizeRanges, matchScoreRanges, pageCountRanges, ratingRanges} from '../book-filter/book-filter.config';
 import {Book, ReadStatus} from '../../../model/book.model';
 import {BookFilterMode} from '../../../../settings/user-management/user.service';
 
@@ -75,8 +75,12 @@ export function doesBookMatchFilter(
       return effectiveMode === 'or'
         ? filterValues.some(val => book.metadata?.seriesName?.trim() === val)
         : filterValues.every(val => book.metadata?.seriesName?.trim() === val);
-    case 'bookType':
-      return book.isPhysical ? filterValues.includes('PHYSICAL') : filterValues.includes(book.primaryFile?.bookType);
+    case 'bookType': {
+      const formats = extractBookFormats(book).map(f => f.id);
+      return effectiveMode === 'or'
+        ? filterValues.some(val => formats.includes(val as string))
+        : filterValues.every(val => formats.includes(val as string));
+    }
     case 'readStatus':
       return doesBookMatchReadStatus(book, filterValues);
     case 'personalRating':

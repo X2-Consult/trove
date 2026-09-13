@@ -15,7 +15,7 @@
 
     <div class="top-left-overlay-stack">
       @if (showBookTypePill && getDisplayFormat(); as displayFormat) {
-        <div class="book-type-pill-overlay" [ngClass]="'book-type-' + displayFormat.toLowerCase()">
+        <div class="book-type-pill-overlay" [ngClass]="'book-type-' + displayFormat.toLowerCase().replace(' ', '-')">
           {{ displayFormat }}
         </div>
       }

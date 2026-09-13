@@ -200,12 +200,19 @@
     <p-tabpanel value="files">
       <ng-template #content>
         <div class="files-tab-content">
-          @if (isPhysicalBook()) {
+          @if (isPhysicalBook() && book.isPhysical) {
             <div class="empty-state">
               <i class="pi pi-book empty-state-icon"></i>
               <h4 class="empty-state-title">{{ t('physicalBookTitle') }}</h4>
               <p class="empty-state-message">{{ t('physicalBookMessage') }}</p>
               <p class="empty-state-hint">{{ t('physicalBookHint') }}</p>
+            </div>
+          } @else if (isPhysicalBook()) {
+            <div class="empty-state">
+              <i class="pi pi-exclamation-circle empty-state-icon"></i>
+              <h4 class="empty-state-title">{{ t('noFileTitle') }}</h4>
+              <p class="empty-state-message">{{ t('noFileMessage') }}</p>
+              <p class="empty-state-hint">{{ t('noFileHint') }}</p>
             </div>
           } @else {
             @if (hasMultipleFiles(book)) {

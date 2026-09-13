@@ -853,7 +853,9 @@ export class BookCardComponent implements OnInit, OnChanges, OnDestroy {
 
   getDisplayFormat(): string | null {
     if (!this.book?.primaryFile) {
-      return 'PHY';
+      // A book with no file is a physical copy only if it's marked as one; otherwise its file was
+      // deleted or lost, and saying so lets those leftovers be told apart and cleaned up.
+      return this.book?.isPhysical ? 'PHY' : 'NO FILE';
     }
     if (this.forceEbookMode && this.book.primaryFile?.bookType === 'AUDIOBOOK') {
       const ebookType = this.getEbookType(this.book);

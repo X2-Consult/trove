@@ -380,6 +380,11 @@
   color: #fff;
 }
 
+.book-type-no-file {
+  background: var(--book-type-missing-color);
+  color: #fff;
+}
+
 .read-status-indicator {
   display: flex;
   align-items: center;

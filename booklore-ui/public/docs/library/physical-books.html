@@ -20,7 +20,7 @@
 <p>Physical books live alongside your digital books in any library. They show up in search, can be assigned to shelves and Magic Shelves, and support full metadata editing.</p>
 
 <h2 id="key-differences-from-digital-books">Key Differences from Digital Books</h2>
-<div class="table-wrap"><table><thead><tr><th></th><th>Digital Books</th><th>Physical Books</th></tr></thead><tbody><tr><td><strong>File required</strong></td><td>Yes (EPUB, PDF, CBZ, etc.)</td><td>No</td></tr><tr><td><strong>Added via</strong></td><td>Library scan or Bookdrop</td><td>Manual form</td></tr><tr><td><strong>Reader</strong></td><td>Built-in reader</td><td>Not applicable</td></tr><tr><td><strong>Cover generation</strong></td><td>Extracted from file</td><td>Fetched via metadata or uploaded manually</td></tr><tr><td><strong>Metadata fetch</strong></td><td>Automatic or manual</td><td>Manual entry, then fetchable via metadata providers</td></tr><tr><td><strong>Badge</strong></td><td>Format badge (EPUB, PDF, etc.)</td><td>Purple <strong>PHYSICAL</strong> badge</td></tr><tr><td><strong>Shelves &amp; Magic Shelves</strong></td><td>Supported</td><td>Supported</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th></th><th>Digital Books</th><th>Physical Books</th></tr></thead><tbody><tr><td><strong>File required</strong></td><td>Yes (EPUB, PDF, CBZ, etc.)</td><td>No</td></tr><tr><td><strong>Added via</strong></td><td>Library scan or Bookdrop</td><td>Manual form</td></tr><tr><td><strong>Reader</strong></td><td>Built-in reader</td><td>Not applicable</td></tr><tr><td><strong>Cover generation</strong></td><td>Extracted from file</td><td>Fetched via metadata or uploaded manually</td></tr><tr><td><strong>Metadata fetch</strong></td><td>Automatic or manual</td><td>Manual entry, then fetchable via metadata providers</td></tr><tr><td><strong>Badge</strong></td><td>Format badge (EPUB, PDF, etc.)</td><td>Purple <strong>PHY</strong> badge</td></tr><tr><td><strong>Shelves &amp; Magic Shelves</strong></td><td>Supported</td><td>Supported</td></tr></tbody></table></div>
 
 <h2 id="adding-a-physical-book">Adding a Physical Book</h2>
 <h3 id="step-1-open-the-library-menu">Step 1: Open the Library Menu</h3>
@@ -36,7 +36,7 @@
 <aside class="note note-tip"><p class="note-title">Autocomplete</p><p>The Authors and Categories fields suggest values from books already in your collection, so you can keep naming consistent across your library.</p></aside>
 
 <h3 id="step-3-view-your-book">Step 3: View Your Book</h3>
-<p>Once created, the physical book appears in the library alongside your digital books. It will display a purple <strong>PHYSICAL</strong> badge on the book card so you can easily tell it apart.</p>
+<p>Once created, the physical book appears in the library alongside your digital books. It shows a purple <strong>PHY</strong> badge on its cover so you can tell it apart.</p>
 <p>You can edit its metadata, assign it to shelves, upload a cover image, or fetch metadata from online providers just like any other book.</p>
 
 <h2 id="adding-many-at-once">Adding many at once</h2>
@@ -55,6 +55,16 @@
 }</code></pre>
 <p>This makes it easy to see your entire physical collection at a glance, or combine it with other rules (e.g., all physical books by a specific author).</p>
 <p>See <a href="../magic-shelf.html">Magic shelves</a> for more on creating rule-based shelves.</p>
+
+<h2 id="books-with-no-file">Books with no file</h2>
+<p>A book can also lose its file without being a physical book: the file was deleted from the book's page, removed or moved outside Trove, or it belonged to a library folder that was taken away. Such a book keeps its details and reading history, but shows a grey <strong>NO FILE</strong> badge instead of a format, and its Files tab says so.</p>
+<p>To tidy them up, open All Books, choose <strong>No file</strong> under <strong>File Format</strong> in the filter sidebar, then either:</p>
+<ul>
+<li>select them and delete them, if you don't want them any more, or</li>
+<li>for ones you own in print, choose <strong>Mark as Physical</strong> from the book's menu so they count as physical books, or</li>
+<li>upload the file again from the book's page.</li>
+</ul>
+<p>If the file is still somewhere in a library's folders, <strong>Re-scan Library</strong> adds it again, then delete any record left without a file.</p>
 
 <h2 id="notes">Notes</h2>
 <ul>

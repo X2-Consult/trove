@@ -193,7 +193,29 @@ const extractStringsAsFilters = (values: string[] | undefined): FilterValue[] =>
 const extractSingleString = (value: string | undefined | null): FilterValue[] =>
   value ? [{id: value, name: value}] : [];
 
-const findExactAgeRating = (ageRating: number | null | undefined): FilterValue[] => {
+export const BOOK_FORMAT_LABELS: Readonly<Record<string, string>> = {
+  EPUB: 'EPUB', PDF: 'PDF', CBX: 'Comic', FB2: 'FB2', MOBI: 'MOBI', AZW3: 'AZW3', AUDIOBOOK: 'Audiobook',
+  PHYSICAL: 'Physical', NO_FILE: 'No file'
+};
+
+const bookFormat = (id: string): FilterValue => ({id, name: BOOK_FORMAT_LABELS[id] ?? id});
+
+/**
+ * Every format a book has, so one with an EPUB and a PDF turns up under both, plus Physical when
+ * it's marked as a physical copy. A book with no file that isn't marked physical (its file was
+ * deleted or lost) is "No file", so such leftovers can be found and removed.
+ */
+export const extractBookFormats = (book: Book): FilterValue[] => {
+  const types = new Set<string>();
+  [book.primaryFile, ...(book.alternativeFormats ?? [])].forEach(file => {
+    if (file?.bookType) types.add(file.bookType);
+  });
+  if (book.isPhysical) types.add('PHYSICAL');
+  else if (!book.primaryFile) types.add('NO_FILE');
+  return [...types].map(bookFormat);
+};
+
+const findExactAgeRating =(ageRating: number | null | undefined): FilterValue[] => {
   if (ageRating == null) return [];
   const match = AGE_RATING_OPTIONS.find(r => r.id === ageRating);
   return match ? [{id: match.id, name: match.label, sortIndex: match.sortIndex}] : [];
@@ -203,7 +225,7 @@ export const FILTER_EXTRACTORS: Readonly<Record<Exclude<FilterType, 'library'>, 
   author: (book) => extractStringsAsFilters(book.metadata?.authors),
   category: (book) => extractStringsAsFilters(book.metadata?.categories),
   series: (book) => extractSingleString(book.metadata?.seriesName?.trim()),
-  bookType: (book) => book.isPhysical ? [{id: 'PHYSICAL', name: 'PHYSICAL'}] : extractSingleString(book.primaryFile?.bookType),
+  bookType: extractBookFormats,
   readStatus: (book) => {
     const status = book.readStatus ?? ReadStatus.UNSET;
     const validStatus = status in READ_STATUS_LABELS ? status : ReadStatus.UNSET;

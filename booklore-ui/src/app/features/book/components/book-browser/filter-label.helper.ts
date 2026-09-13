@@ -1,4 +1,4 @@
-import {fileSizeRanges, matchScoreRanges, pageCountRanges, ratingOptions10, ratingRanges} from './book-filter/book-filter.config';
+import {BOOK_FORMAT_LABELS, fileSizeRanges, matchScoreRanges, pageCountRanges, ratingOptions10, ratingRanges} from './book-filter/book-filter.config';
 
 export class FilterLabelHelper {
   private static readonly FILTER_TYPE_MAP: Record<string, string> = {
@@ -11,7 +11,7 @@ export class FilterLabelHelper {
     publishedDate: 'Year Published',
     matchScore: 'Metadata Match Score',
     language: 'Language',
-    bookType: 'Book Type',
+    bookType: 'File Format',
     shelfStatus: 'Shelf Status',
     fileSize: 'File Size',
     pageCount: 'Page Count',
@@ -62,6 +62,9 @@ export class FilterLabelHelper {
         if (ratingRange) return ratingRange.label;
         return String(value);
       }
+
+      case 'booktype':
+        return BOOK_FORMAT_LABELS[String(value)] ?? String(value);
 
       default:
         return String(value);
