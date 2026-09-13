@@ -330,3 +330,10 @@ a:hover { text-decoration-thickness: 2px; }
 @media (prefers-reduced-motion: no-preference) {
   html { scroll-behavior: smooth; }
 }
+
+/* The index lists every topic itself, so it has no sidebar. */
+.home .layout { grid-template-columns: minmax(0, 1fr); }
+.home .sidebar { display: none; }
+.home .doc { max-width: 62rem; }
+.topic-grid a { text-decoration: none; }
+.topic-grid a:hover { text-decoration: underline; }

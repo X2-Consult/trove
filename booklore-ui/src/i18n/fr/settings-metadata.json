@@ -10,8 +10,6 @@
     "persistence": {
         "sectionTitle": "Persistance des métadonnées",
         "sectionDesc": "Configurez comment les métadonnées sont écrites dans les fichiers originaux et comment les fichiers sont déplacés ou renommés lorsque les métadonnées changent.",
-        "networkWarningTitle": "Avertissement stockage réseau :",
-        "networkWarning": "Ces fonctionnalités modifient et déplacent directement les fichiers de livres sur le disque (y compris la réécriture des métadonnées et le renommage des fichiers). Elles sont conçues uniquement pour les systèmes de fichiers locaux. Leur utilisation sur un NAS ou un stockage cloud n'est pas testée et peut entraîner une corruption de fichiers, des écritures incomplètes ou une perte de données permanente. Les tickets GitHub liés au stockage réseau ne seront pas pris en charge.",
         "unsupportedNote": "L'écriture des métadonnées n'est <b>pas prise en charge</b> pour les formats FB2, AZW3 et MOBI.",
         "writeEpub": "Écrire les métadonnées dans les EPUB",
         "writeEpubDesc": "Écrire les métadonnées directement dans les fichiers EPUB lors de la modification des informations du livre.",

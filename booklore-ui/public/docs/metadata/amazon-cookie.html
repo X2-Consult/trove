@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Amazon Cookie Setup · Trove Help</title>
+<title>Amazon cookie · Trove Help</title>
 <link rel="stylesheet" href="../docs.css">
 <script src="../docs.js" defer></script>
 </head>
@@ -15,10 +15,11 @@
 <div class="layout">
 <nav class="sidebar" id="docs-nav" aria-label="Help topics"></nav>
 <main class="doc">
-<h1>Amazon Cookie Setup</h1>
-<p>If you encounter 503 errors when fetching metadata from Amazon, you can configure browser cookies to bypass Amazon's automated traffic detection.</p>
+<h1>Amazon cookie</h1>
+<p class="lede">If you encounter 503 errors when fetching metadata from Amazon, you can configure browser cookies to bypass Amazon's automated traffic detection.</p>
 <aside class="note note-warning"><p class="note-title">Security Note</p><p>Use a secondary Amazon account when possible to protect your main account from potential restrictions.</p></aside>
 
+<aside class="note note-info"><p class="note-title">Do you need it?</p><p>On a native install, Trove fetches Amazon pages with a headless browser and paces its requests, which avoids most blocks without a cookie. The cookie still helps, especially on Docker installs or for large fetches.</p></aside>
 <h2 id="step-1-prepare-your-browser-session">Step 1: Prepare Your Browser Session</h2>
 <ol>
 <li>
@@ -65,20 +66,19 @@
 <h2 id="step-4-configure-trove">Step 4: Configure Trove</h2>
 <figure><img alt="Copying the cookie header value" loading="lazy" src="https://web.archive.org/web/20260228130856im_/https://booklore.org/assets/images/amazon-cookie-2-8c033f10a93d6dfbbc10f5d57fc77085.jpg"/></figure>
 <ol>
-<li><strong>Open Trove settings</strong></li>
-<li><strong>Navigate to the metadata section</strong></li>
-<li><strong>Find the "Amazon Cookies" field</strong></li>
-<li><strong>Paste the copied cookie value</strong> into this field</li>
-<li><strong>Save your settings</strong></li>
+<li>Open <strong>Settings › Metadata 1</strong></li>
+<li>Under <strong>Metadata Providers</strong>, find <strong>Amazon</strong> and choose your region</li>
+<li>Paste the cookie into <strong>Cookie (Optional, but highly recommended)</strong></li>
+<li>Click <strong>Save Configurations</strong></li>
 </ol>
 
 <h2 id="troubleshooting">Troubleshooting</h2>
 <p>If you're still experiencing issues after setting up cookies:</p>
 <ul>
-<li>✅ Ensure you copied the complete cookie string</li>
-<li>🌐 Try using a different browser</li>
-<li>🔐 Verify your Amazon account is properly logged in</li>
-<li>🗑️ Consider clearing your browser cache and repeating the process</li>
+<li>Ensure you copied the complete cookie string</li>
+<li>Try using a different browser</li>
+<li>Verify your Amazon account is properly logged in</li>
+<li>Consider clearing your browser cache and repeating the process</li>
 </ul>
 <aside class="note note-tip"><p class="note-title">Pro Tips</p><p>Cookies typically remain valid for several weeks. If you encounter issues again, simply repeat this process. Different Amazon regions may require separate cookies.</p></aside>
 <aside class="note note-info"><p class="note-title">Regional Considerations</p><p>If you're fetching metadata for books from different Amazon regions (US, UK, etc.), you may need to configure separate cookies for each region.</p></aside>

@@ -10,8 +10,6 @@
     "persistence": {
         "sectionTitle": "Trajnost metapodataka",
         "sectionDesc": "Konfigurirajte kako se metapodaci zapisuju u izvorne datoteke i kako se datoteke premještaju ili preimenuju kada se metapodaci promijene.",
-        "networkWarningTitle": "Upozorenje za mrežno skladište:",
-        "networkWarning": "Ove značajke izravno mijenjaju i premještaju datoteke knjiga na disku (uključujući prepisivanje metapodataka i preimenovanje datoteka). Dizajnirane su samo za lokalne datotečne sustave. Korištenje na NAS ili cloud skladištima nije testirano i može dovesti do oštećenja datoteka, nepotpunih zapisa ili trajnog gubitka podataka. GitHub problemi vezani za mrežno skladište neće biti podržani.",
         "unsupportedNote": "Zapisivanje metapodataka <b>nije podržano</b> za FB2, AZW3 i MOBI formate.",
         "writeEpub": "Zapiši metapodatke u EPUB",
         "writeEpubDesc": "Zapiši metapodatke izravno u EPUB datoteke prilikom uređivanja informacija o knjizi.",

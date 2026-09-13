@@ -10,8 +10,6 @@
     "persistence": {
         "sectionTitle": "Persistência de Metadados",
         "sectionDesc": "Configure como os metadados são gravados nos arquivos originais e como os arquivos são movidos ou renomeados quando os metadados mudam.",
-        "networkWarningTitle": "Aviso de Armazenamento em Rede:",
-        "networkWarning": "Estes recursos modificam e movem diretamente os arquivos de livros no disco (incluindo reescrita de metadados e renomeação de arquivos). Foram projetados apenas para sistemas de arquivos locais. Usá-los em NAS ou armazenamento em nuvem não foi testado e pode levar a corrupção de arquivos, gravações incompletas ou perda permanente de dados. Issues no Github relacionadas a armazenamento em rede não serão suportadas.",
         "unsupportedNote": "A gravação de metadados <b>não é suportada</b> para formatos FB2, AZW3 e MOBI.",
         "writeEpub": "Gravar Metadados no EPUB",
         "writeEpubDesc": "Gravar metadados diretamente nos arquivos EPUB ao editar informações do livro.",

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Metadata Settings · Trove Help</title>
+<title>Metadata settings · Trove Help</title>
 <link rel="stylesheet" href="../docs.css">
 <script src="../docs.js" defer></script>
 </head>
@@ -15,14 +15,14 @@
 <div class="layout">
 <nav class="sidebar" id="docs-nav" aria-label="Help topics"></nav>
 <main class="doc">
-<h1>Metadata Settings</h1>
-<p>Configure how metadata is retrieved, stored, and matched for your books, including provider settings, file persistence, sidecar backups, and field preferences.</p>
+<h1>Metadata settings</h1>
+<p class="lede">Configure how metadata is retrieved, stored, and matched for your books, including provider settings, file persistence, sidecar backups, and field preferences.</p>
 <p>Navigate to <strong>Settings &gt; Metadata 1</strong> to access this page. Requires the <strong>Manage Metadata Configuration</strong> permission.</p>
 
 <h2 id="metadata-persistence">Metadata Persistence</h2>
 <p>Configure how metadata is written back to original book files and how files are moved or renamed when metadata changes.</p>
 <figure><img alt="Metadata Persistence" loading="lazy" src="../images/metadata/metadata-settings/metadata-persistence.jpg"/></figure>
-<aside class="note note-danger"><p class="note-title">Network Storage Warning</p><p>These features directly modify and move book files on disk (including rewriting metadata and renaming files). They are designed for <strong>local file systems only</strong>. Using them on NAS or cloud-backed storage is untested and may lead to file corruption, incomplete writes, or permanent data loss.</p></aside>
+<aside class="note note-info"><p class="note-title">Books on a network share</p><p>These options rewrite and move book files. On an NFS or SMB share Trove never writes in place: it builds each file locally, checks it, copies it across and verifies the copy before replacing the original, so a dropped connection can't leave a damaged book. See <a href="../library/network-storage.html">Network storage</a>. If <code>DISK_TYPE=NETWORK</code> is set, these options are switched off and a notice says so.</p></aside>
 <aside class="note note-info"><p class="note-title">Format Limitations</p><p>Writing metadata is <strong>not supported</strong> for FB2, AZW3, and MOBI formats. Books in these formats will be skipped during metadata write operations.</p></aside>
 <h3 id="write-metadata-to-epub">Write Metadata to EPUB</h3>
 <p>When enabled, Trove writes metadata directly into EPUB files whenever you edit book information. All standard metadata fields are supported, including title, authors, description, publisher, series, ISBN, language, genres, and cover image.</p>
@@ -33,7 +33,7 @@
 <h3 id="write-metadata-to-audiobooks">Write Metadata to Audiobooks</h3>
 <p>When enabled, writes metadata directly into audiobook files (M4B, M4A, MP3, etc.) when editing book information. Supports title, authors, narrator, description, publisher, categories, series, language, and cover art. For folder-based audiobooks, the cover is saved as <code>cover.jpg</code> in the folder.</p>
 <h3 id="auto-move-files-on-metadata-update">Auto-Move Files on Metadata Update</h3>
-<p>When enabled, Trove automatically moves and renames files according to their library's <a href="../metadata/file-naming-patterns.html">file naming pattern</a> whenever metadata is updated. For example, if your naming pattern includes the author and title, renaming a book or correcting an author will cause the file to be relocated to match the new metadata.</p>
+<p>When enabled, Trove automatically moves and renames files according to their library's <a href="file-naming-patterns.html">file naming pattern</a> whenever metadata is updated. For example, if your naming pattern includes the author and title, renaming a book or correcting an author will cause the file to be relocated to match the new metadata.</p>
 <aside class="note note-tip"><p class="note-title">Best Practice</p><p>Enable this alongside a well-defined file naming pattern to keep your library organized automatically. Changes to author names, titles, or series information will keep your folder structure in sync.</p></aside>
 
 <h2 id="sidecar-json-files">Sidecar JSON Files</h2>
@@ -49,12 +49,12 @@
 <li><strong>Additional fields</strong>: Moods, tags, age rating, content rating, narrator, abridged status, comic-specific metadata</li>
 <li><strong>File metadata</strong>: Version number, generation timestamp, and source identifier</li>
 </ul>
-<aside class="note note-info"><p class="note-title">Sidecar Import &amp; Export</p><p>You can also bulk export and import sidecar files per library from the <a href="../metadata/metadata-fetch-configuration.html#-sidecar-export--import">Fetch Configuration</a> page.</p></aside>
+<aside class="note note-info"><p class="note-title">Sidecar Import &amp; Export</p><p>You can also bulk export and import sidecar files per library from the <a href="metadata-fetch-configuration.html#-sidecar-export--import">Fetch Configuration</a> page.</p></aside>
 
 <h2 id="automatic-metadata-download">Automatic Metadata Download</h2>
 <p>Configure whether metadata is automatically fetched from your configured providers when new books arrive through Bookdrop.</p>
 <figure><img alt="Automatic Metadata Download" loading="lazy" src="../images/metadata/metadata-settings/auto-metadata-download.jpg"/></figure>
-<p>When enabled, Trove will automatically retrieve metadata from your configured sources whenever new files are added to the Bookdrop folder. The metadata fetch uses the provider priority configuration set in the <a href="../metadata/metadata-fetch-configuration.html">Fetch Configuration</a> page.</p>
+<p>When enabled, Trove will automatically retrieve metadata from your configured sources whenever new files are added to the Bookdrop folder. The metadata fetch uses the provider priority configuration set in the <a href="metadata-fetch-configuration.html">Fetch Configuration</a> page.</p>
 <aside class="note note-warning"><p class="note-title">Performance Note</p><p>Processing a large number of files simultaneously may increase the time required for metadata fetching. If you regularly drop many files at once, consider leaving this disabled and running metadata fetches manually or on a schedule.</p></aside>
 
 <h2 id="metadata-providers">Metadata Providers</h2>
@@ -63,11 +63,12 @@
 <p>Providers are split into two groups:</p>
 <h3 id="providers-with-configuration">Providers with Configuration</h3>
 <p>These providers require additional setup (API keys, region selection, or cookies) before they can be used effectively.</p>
-<div class="table-wrap"><table><thead><tr><th>Provider</th><th>Configuration</th><th>Details</th></tr></thead><tbody><tr><td><strong>Amazon</strong></td><td>Region, Cookie</td><td>Select your Amazon region from 19 available domains (amazon.com, amazon.de, amazon.co.uk, etc.). Providing your Amazon session cookie is optional but <strong>highly recommended</strong> as it unlocks richer book metadata and bypasses rate limits. See the <a href="../metadata/amazon-cookie.html">Amazon Cookie</a> guide.</td></tr><tr><td><strong>Google Books</strong></td><td>Language Restriction, API Key</td><td>Optionally restrict results to a specific language (Dutch, English, French, German, Italian, Japanese, Polish, Portuguese, Spanish, Swedish). Providing a Google Books API key increases rate limits and improves reliability.</td></tr><tr><td><strong>Hardcover</strong></td><td>API Token</td><td>Requires an API token from <a href="https://web.archive.org/web/20260303063104/https://hardcover.app/account/api">hardcover.app/account/api</a>. See the <a href="../metadata/hardcover-token.html">Hardcover API</a> guide for setup instructions.</td></tr><tr><td><strong>Comic Vine</strong></td><td>API Key</td><td>Requires a Comic Vine API key for accessing comic book and graphic novel metadata.</td></tr><tr><td><strong>Audible</strong></td><td>Region</td><td>Select your Audible region from 10 available domains (audible.com, audible.co.uk, audible.de, etc.) for audiobook-specific metadata.</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th>Provider</th><th>Configuration</th><th>Details</th></tr></thead><tbody><tr><td><strong>Amazon</strong></td><td>Region, Cookie</td><td>Select your Amazon region from 19 available domains (amazon.com, amazon.de, amazon.co.uk, etc.). Providing your Amazon session cookie is optional but <strong>highly recommended</strong> as it unlocks richer book metadata and bypasses rate limits. See the <a href="amazon-cookie.html">Amazon Cookie</a> guide.</td></tr><tr><td><strong>Google Books</strong></td><td>Language Restriction, API Key</td><td>Optionally restrict results to a specific language (Dutch, English, French, German, Italian, Japanese, Polish, Portuguese, Spanish, Swedish). Providing a Google Books API key increases rate limits and improves reliability.</td></tr><tr><td><strong>Hardcover</strong></td><td>API Token</td><td>Requires an API token from <a href="https://web.archive.org/web/20260303063104/https://hardcover.app/account/api">hardcover.app/account/api</a>. See the <a href="hardcover-token.html">Hardcover API</a> guide for setup instructions.</td></tr><tr><td><strong>Bookshelf</strong></td><td>API Token</td><td>Book details from <a href="https://bookshelf.nz">bookshelf.nz</a>, using an API token from your account there.</td></tr><tr><td><strong>Comic Vine</strong></td><td>API Key</td><td>Requires a Comic Vine API key for accessing comic book and graphic novel metadata.</td></tr><tr><td><strong>Audible</strong></td><td>Region</td><td>Select your Audible region from 10 available domains (audible.com, audible.co.uk, audible.de, etc.) for audiobook-specific metadata.</td></tr></tbody></table></div>
+<aside class="note note-tip"><p class="note-title">Amazon and Goodreads</p><p>Both sites turn away automated requests. On a native install, Trove loads their pages in a headless browser, spaces its requests out and backs off when asked to, so lookups keep working during large fetches. Adding your Amazon cookie still helps.</p></aside>
 <h3 id="ready-to-use-providers">Ready-to-Use Providers</h3>
 <p>These providers work out of the box with no additional configuration. Simply toggle them on or off.</p>
-<div class="table-wrap"><table><thead><tr><th>Provider</th><th>Specialty</th></tr></thead><tbody><tr><td><strong>Goodreads</strong></td><td>Community ratings, series data, comprehensive genres</td></tr><tr><td><strong>Douban</strong></td><td>Asian literature (Chinese, Japanese, Korean titles)</td></tr><tr><td><strong>Lubimyczytac</strong></td><td>Polish literature and book ratings. See the <a href="../metadata/lubimyczytac.html">LubimyCzytac</a> guide.</td></tr><tr><td><strong>Ranobedb</strong></td><td>Light novels and web novel metadata. See the <a href="../metadata/ranobedb.html">RanobeDB</a> guide.</td></tr></tbody></table></div>
-<aside class="note note-tip"><p class="note-title">Provider Availability</p><p>Enabling a provider here makes it available in the priority dropdowns on the <a href="../metadata/metadata-fetch-configuration.html">Fetch Configuration</a> page. After enabling a new provider, go to Metadata 2 to assign it a priority for the fields you want it to supply.</p></aside>
+<div class="table-wrap"><table><thead><tr><th>Provider</th><th>Specialty</th></tr></thead><tbody><tr><td><strong>Goodreads</strong></td><td>Community ratings, series data, comprehensive genres</td></tr><tr><td><strong>Open Library</strong></td><td>The Internet Archive's open catalogue: good for older and out-of-print books, with covers</td></tr><tr><td><strong>Douban</strong></td><td>Asian literature (Chinese, Japanese, Korean titles)</td></tr><tr><td><strong>Lubimyczytac</strong></td><td>Polish literature and book ratings. See the <a href="lubimyczytac.html">LubimyCzytac</a> guide.</td></tr><tr><td><strong>Ranobedb</strong></td><td>Light novels and web novel metadata. See the <a href="ranobedb.html">RanobeDB</a> guide.</td></tr></tbody></table></div>
+<aside class="note note-tip"><p class="note-title">Provider Availability</p><p>Enabling a provider here makes it available in the priority dropdowns on the <a href="metadata-fetch-configuration.html">Fetch Configuration</a> page. After enabling a new provider, go to Metadata 2 to assign it a priority for the fields you want it to supply.</p></aside>
 
 <h2 id="enabled-fields-in-metadata-editor-picker">Enabled Fields in Metadata Editor &amp; Picker</h2>
 <p>Select which provider-specific metadata fields to display when editing book information or picking metadata from providers. Disabled fields are hidden from the interface entirely.</p>
@@ -93,9 +94,9 @@
 <h2 id="notes">Notes</h2>
 <ul>
 <li>All configuration changes are recorded in the <a href="../tools/audit-logs.html">Audit Log</a>.</li>
-<li>Provider settings on this page (Metadata 1) control <strong>which providers are available</strong>. The <a href="../metadata/metadata-fetch-configuration.html">Fetch Configuration</a> page (Metadata 2) controls <strong>which providers are used for each field</strong> and in what priority order.</li>
+<li>Provider settings on this page (Metadata 1) control <strong>which providers are available</strong>. The <a href="metadata-fetch-configuration.html">Fetch Configuration</a> page (Metadata 2) controls <strong>which providers are used for each field</strong> and in what priority order.</li>
 <li>Sidecar JSON files use version "1.0" format and are generated by Trove. They can be read back during sidecar import operations.</li>
-<li>Metadata persistence and auto-move features require the files to be on a local file system. Network storage is not supported.</li>
+<li>Writing metadata and moving files work on local disks and network shares alike; see <a href="../library/network-storage.html">Network storage</a>.</li>
 <li>Enabling a provider here does not automatically assign it to any metadata fields. You must configure provider priorities on the Fetch Configuration page separately.</li>
 <li>The Manage Metadata Configuration permission is required to access and modify all settings on this page.</li>
 </ul>

@@ -10,8 +10,6 @@
     "persistence": {
         "sectionTitle": "Persistenza metadati",
         "sectionDesc": "Configura come i metadati vengono scritti nei file originali e come i file vengono spostati o rinominati quando i metadati cambiano.",
-        "networkWarningTitle": "Avviso storage di rete:",
-        "networkWarning": "Queste funzionalità modificano direttamente e spostano i file dei libri su disco (inclusa la riscrittura dei metadati e la rinomina dei file). Sono progettate solo per file system locali. L'uso su NAS o storage basato su cloud non è testato e potrebbe portare a corruzione dei file, scritture incomplete o perdita permanente dei dati. Le segnalazioni GitHub relative allo storage di rete non saranno supportate.",
         "unsupportedNote": "La scrittura dei metadati <b>non è supportata</b> per i formati FB2, AZW3 e MOBI.",
         "writeEpub": "Scrivi metadati in EPUB",
         "writeEpubDesc": "Scrivi i metadati direttamente nei file EPUB durante la modifica delle informazioni del libro.",

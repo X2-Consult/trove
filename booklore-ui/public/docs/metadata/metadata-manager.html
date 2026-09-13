@@ -16,11 +16,11 @@
 <nav class="sidebar" id="docs-nav" aria-label="Help topics"></nav>
 <main class="doc">
 <h1>Metadata Manager</h1>
-<p>The Metadata Manager lets you clean up and standardize metadata across your entire library. Merge duplicates, rename entries, split combined values, and delete unwanted metadata in bulk.</p>
-<figure><img alt="Metadata Manager Overview" loading="lazy" src="../images/metadata/metadata-manager/overview.jpg"/></figure>
-<p>Access it from <strong>Settings &gt; Metadata Manager</strong>.</p>
-<figure><img alt="Access Settings" loading="lazy" src="../images/metadata/metadata-manager/access-settings.jpg"/></figure>
-<aside class="note note-info"><p class="note-title">File Management</p><p>If "Auto-Move Files on Metadata Update" and/or "Write to File" are enabled, those settings are honored when metadata changes are applied through the manager.</p></aside>
+<p class="lede">The Metadata Manager lets you clean up and standardize metadata across your entire library. Merge duplicates, rename entries, split combined values, and delete unwanted metadata in bulk.</p>
+<figure><img alt="The Metadata Manager on its Authors tab" loading="lazy" src="../images/metadata/metadata-manager/overview.jpg"/></figure>
+<p>Open it with the sparkles button in the top bar. You need the <strong>Edit Single Metadata</strong> permission, or to be an admin.</p>
+<figure><img alt="The Metadata Manager button in the top bar" loading="lazy" src="../images/metadata/metadata-manager/access-settings.jpg"/></figure>
+<aside class="note note-info"><p class="note-title">File Management</p><p>Changes are made to every affected book as if you had edited each one, so if Trove is set to <a href="metadata-settings.html">write metadata into files</a> or to move files when their details change, that happens here too. The warning triangle in the header is a reminder.</p></aside>
 
 <h2 id="metadata-categories">Metadata Categories</h2>
 <p>The manager has seven tabs, each showing all unique values and a count of how many books use each one:</p>
@@ -32,11 +32,11 @@
 <p>Combine duplicate or similar entries into a standardized value. Useful for cleaning up variations like "Sci-Fi", "Science Fiction", and "SciFi" into a single entry.</p>
 <ol>
 <li>Select at least two items using the checkboxes</li>
-<li>Click <strong>Merge Selected</strong></li>
-<li>Enter the target value</li>
+<li>Click <strong>Merge/Split Selected</strong></li>
+<li>Enter the value to keep, and click <strong>Confirm</strong></li>
 </ol>
-<figure><img alt="Select Items" loading="lazy" src="../images/metadata/metadata-manager/select-items.jpg"/></figure>
-<figure><img alt="Merge Target" loading="lazy" src="../images/metadata/metadata-manager/merge-target.jpg"/></figure>
+<figure><img alt="Three spellings of science fiction selected, found by searching for sci" loading="lazy" src="../images/metadata/metadata-manager/select-items.jpg"/></figure>
+<figure><img alt="Merging the three into Science Fiction" loading="lazy" src="../images/metadata/metadata-manager/merge-target.jpg"/></figure>
 <p><strong>For multi-value fields</strong> (Authors, Genres, Moods, Tags), you can enter comma-separated values to give all affected books multiple tags. For example, merging "Mystery &amp; Detective" into <code>Mystery, Detective</code> gives every affected book both tags.</p>
 <p><strong>For single-value fields</strong> (Series, Publisher, Language), only a single target value is allowed. All selected entries are standardized to that one value.</p>
 <h3 id="examples">Examples</h3>
@@ -44,15 +44,15 @@
 
 <h2 id="renaming-metadata">Renaming Metadata</h2>
 <p>Rename individual entries or split them into multiple values. Click the <strong>pencil icon</strong> next to any entry.</p>
-<figure><img alt="Rename Button" loading="lazy" src="../images/metadata/metadata-manager/rename-button.jpg"/></figure>
-<figure><img alt="Rename Input" loading="lazy" src="../images/metadata/metadata-manager/rename-input.jpg"/></figure>
-<figure><img alt="Rename Confirm" loading="lazy" src="../images/metadata/metadata-manager/rename-confirm.jpg"/></figure>
+<figure><img alt="The Rename/Split button on Mystery &amp; Detective" loading="lazy" src="../images/metadata/metadata-manager/rename-button.jpg"/></figure>
+<figure><img alt="Splitting Mystery &amp; Detective into Mystery, Detective" loading="lazy" src="../images/metadata/metadata-manager/rename-input.jpg"/></figure>
+<figure><img alt="The split done: Mystery and Detective are separate tags" loading="lazy" src="../images/metadata/metadata-manager/rename-confirm.jpg"/></figure>
 <p>For multi-value fields, entering comma-separated values splits the entry. For example, renaming "Mystery &amp; Detective" to <code>Mystery, Detective</code> gives affected books both tags.</p>
 <p>For single-value fields, only a single new name is allowed.</p>
 
 <h2 id="deleting-metadata">Deleting Metadata</h2>
 <p>Remove metadata values from all books that have them. Click the <strong>trash icon</strong> on a single entry, or select multiple items and click <strong>Delete Selected</strong>.</p>
-<figure><img alt="Delete Option" loading="lazy" src="../images/metadata/metadata-manager/delete-option.jpg"/></figure>
+<figure><img alt="Deleting the Whaling tag" loading="lazy" src="../images/metadata/metadata-manager/delete-option.jpg"/></figure>
 <p>Deletion removes the metadata from affected books. The books themselves remain in your library with all other metadata intact.</p>
 <aside class="note note-danger"><p class="note-title">Cannot Be Undone</p><p>Merge, rename, and delete operations cannot be undone. Review the affected book count in the confirmation dialog before proceeding. Consider backing up your database before major bulk changes.</p></aside>
 

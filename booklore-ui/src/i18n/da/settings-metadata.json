@@ -10,8 +10,6 @@
     "persistence": {
         "sectionTitle": "",
         "sectionDesc": "",
-        "networkWarningTitle": "",
-        "networkWarning": "",
         "networkModeTitle": "",
         "networkModeDesc": "",
         "unsupportedNote": "",

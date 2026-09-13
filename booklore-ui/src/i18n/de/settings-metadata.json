@@ -10,8 +10,6 @@
     "persistence": {
         "sectionTitle": "Metadaten-Persistenz",
         "sectionDesc": "Konfigurieren Sie, wie Metadaten in Originaldateien geschrieben werden und wie Dateien bei Metadatenänderungen verschoben oder umbenannt werden.",
-        "networkWarningTitle": "Warnung für Netzwerkspeicher:",
-        "networkWarning": "Diese Funktionen verändern und verschieben Buchdateien direkt auf der Festplatte (einschließlich Umschreiben von Metadaten und Umbenennen von Dateien). Sie sind nur für lokale Dateisysteme konzipiert. Die Verwendung auf NAS oder Cloud-Speicher ist nicht getestet und kann zu Dateibeschädigung, unvollständigen Schreibvorgängen oder dauerhaftem Datenverlust führen. GitHub-Issues bezüglich Netzwerkspeicher werden nicht unterstützt.",
         "unsupportedNote": "Das Schreiben von Metadaten wird für FB2-, AZW3- und MOBI-Formate <b>nicht unterstützt</b>.",
         "writeEpub": "Metadaten in EPUB schreiben",
         "writeEpubDesc": "Metadaten beim Bearbeiten von Buchinformationen direkt in EPUB-Dateien schreiben.",

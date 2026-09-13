@@ -1,149 +1,127 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Trove Documentation (archived)</title>
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<style>
-  :root { color-scheme: light dark; }
-  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-         max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem 4rem; line-height: 1.6; }
-  .archive-notice { background: #fef3c7; color: #78350f; border: 1px solid #f59e0b; border-radius: 6px;
-                     padding: 0.75rem 1rem; margin-bottom: 2rem; font-size: 0.9rem; }
-  @media (prefers-color-scheme: dark) {
-    body { background: #1a1a1a; color: #e5e5e5; }
-    a { color: #7dd3fc; }
-    .archive-notice { background: #422006; color: #fde68a; border-color: #92400e; }
-    section { border-color: #333 !important; }
-  }
-  h1 { margin-bottom: 0.25rem; }
-  section { border-top: 1px solid #e5e7eb; padding-top: 1rem; margin-top: 1.5rem; }
-  section h2 { margin-bottom: 0.5rem; }
-  ul { columns: 2; column-gap: 2rem; }
-  li { break-inside: avoid; margin-bottom: 0.3rem; }
-  @media (max-width: 600px) { ul { columns: 1; } }
-</style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trove Help · Trove Help</title>
+<link rel="stylesheet" href="docs.css">
+<script src="docs.js" defer></script>
 </head>
-<body>
-<h1>📚 Trove Documentation</h1>
-<div class="archive-notice">
-  📦 This is a local archived copy of the original BookLore documentation site (booklore.org/docs),
-  captured via the Wayback Machine after the original site went offline. Downloaded once; edit these
-  files directly going forward to keep them current.
+<body data-root="" class="home">
+<header class="topbar">
+  <a class="brand" href="index.html">Trove <span>Help</span></a>
+  <a class="back-to-app" href="/">Back to Trove</a>
+</header>
+<div class="layout">
+<nav class="sidebar" id="docs-nav" aria-label="Help topics"></nav>
+<main class="doc">
+<h1>Trove Help</h1>
+<p class="lede">How to set up Trove, organise your books, read them anywhere, and look after the server. New here? Start with <a href="getting-started.html">Getting started</a>.</p>
+<div class="topic-grid">
+<section>
+<h2 id="start-here">Start here</h2>
+<ul>
+<li><a href="getting-started.html">Getting started</a></li>
+<li><a href="installation.html">Installation</a></li>
+<li><a href="initial-setup.html">Admin account</a></li>
+<li><a href="dashboard.html">Dashboard</a></li>
+</ul>
+</section>
+<section>
+<h2 id="libraries">Libraries</h2>
+<ul>
+<li><a href="library/setup-first-library.html">Your first library</a></li>
+<li><a href="library/edit-library.html">Managing libraries</a></li>
+<li><a href="library/folder-structure.html">Folder structure</a></li>
+<li><a href="library/organization-modes.html">Organization modes</a></li>
+<li><a href="library/network-storage.html">Network storage</a></li>
+<li><a href="library/physical-books.html">Physical books</a></li>
+<li><a href="library/duplicate-detection.html">Duplicate detection</a></li>
+<li><a href="library-stats.html">Library statistics</a></li>
+</ul>
+</section>
+<section>
+<h2 id="adding-books">Adding books</h2>
+<ul>
+<li><a href="bookdrop.html">Bookdrop</a></li>
+<li><a href="bookdrop-advanced.html">Bookdrop tools</a></li>
+</ul>
+</section>
+<section>
+<h2 id="browsing">Browsing</h2>
+<ul>
+<li><a href="book-browser/grid.html">Grid view</a></li>
+<li><a href="book-browser/table.html">Table view</a></li>
+<li><a href="authors.html">Authors</a></li>
+<li><a href="series.html">Series</a></li>
+<li><a href="shelf.html">Shelves</a></li>
+<li><a href="magic-shelf.html">Magic shelves</a></li>
+<li><a href="notebook.html">Notebook</a></li>
+</ul>
+</section>
+<section>
+<h2 id="metadata">Metadata</h2>
+<ul>
+<li><a href="metadata/metadata-center.html">Book page</a></li>
+<li><a href="metadata/metadata-manager.html">Metadata Manager</a></li>
+<li><a href="metadata/metadata-settings.html">Metadata settings</a></li>
+<li><a href="metadata/metadata-fetch-configuration.html">Library metadata</a></li>
+<li><a href="metadata/file-naming-patterns.html">File naming patterns</a></li>
+<li><a href="metadata/sidecar-files.html">Sidecar files</a></li>
+<li><a href="metadata/amazon-cookie.html">Amazon cookie</a></li>
+<li><a href="metadata/hardcover-token.html">Hardcover token</a></li>
+<li><a href="metadata/lubimyczytac.html">Lubimyczytac</a></li>
+<li><a href="metadata/ranobedb.html">RanobeDB</a></li>
+</ul>
+</section>
+<section>
+<h2 id="reading">Reading</h2>
+<ul>
+<li><a href="readers/epub-reader.html">eBook reader</a></li>
+<li><a href="readers/pdf-reader.html">PDF reader</a></li>
+<li><a href="readers/cbx-reader.html">Comic reader</a></li>
+<li><a href="readers/audiobook-player.html">Audiobook player</a></li>
+<li><a href="reader-preferences.html">Reader preferences</a></li>
+<li><a href="view-preferences.html">View preferences</a></li>
+<li><a href="reading-stats.html">Reading statistics</a></li>
+</ul>
+</section>
+<section>
+<h2 id="devices-and-apps">Devices and apps</h2>
+<ul>
+<li><a href="integration/kobo.html">Kobo</a></li>
+<li><a href="integration/koreader.html">KOReader</a></li>
+<li><a href="integration/opds.html">OPDS</a></li>
+<li><a href="integration/komga-api.html">Komga API</a></li>
+<li><a href="email-setup.html">Sending by email</a></li>
+</ul>
+</section>
+<section>
+<h2 id="users-and-sign-in">Users and sign-in</h2>
+<ul>
+<li><a href="tools/user-management.html">Users and permissions</a></li>
+<li><a href="content-restrictions.html">Content restrictions</a></li>
+<li><a href="authentication/overview.html">Single sign-on (OIDC)</a></li>
+<li><a href="authentication/authentik.html">Authentik</a></li>
+<li><a href="authentication/authelia.html">Authelia</a></li>
+<li><a href="tools/api-tokens.html">API tokens</a></li>
+</ul>
+</section>
+<section>
+<h2 id="administration">Administration</h2>
+<ul>
+<li><a href="tools/global-preferences.html">Application settings</a></li>
+<li><a href="tools/cover-art-settings.html">Cover settings</a></li>
+<li><a href="tools/devices.html">Device settings</a></li>
+<li><a href="tools/task-manager.html">Tasks</a></li>
+<li><a href="tools/audit-logs.html">Audit logs</a></li>
+<li><a href="tools/custom-icons.html">Custom icons</a></li>
+<li><a href="tools/custom-fonts.html">Custom fonts</a></li>
+</ul>
+</section>
 </div>
-
-<section>
-<h2>🚀 Start Here</h2>
-<ul>
-  <li><a href="getting-started.html">Getting Started</a></li>
-  <li><a href="installation.html">Installation</a></li>
-  <li><a href="initial-setup.html">Setup Admin User</a></li>
-  <li><a href="dashboard.html">Dashboard</a></li>
-</ul>
-</section>
-
-<section>
-<h2>🏛️ Library</h2>
-<ul>
-  <li><a href="library/setup-first-library.html">Setup First Library</a></li>
-  <li><a href="library/edit-library.html">Library Management</a></li>
-  <li><a href="library/folder-structure.html">Folder Structure</a></li>
-  <li><a href="library/organization-modes.html">Organization Modes</a></li>
-  <li><a href="library/physical-books.html">Physical Books</a></li>
-  <li><a href="library/duplicate-detection.html">Duplicate Detection</a></li>
-  <li><a href="library-stats.html">Library Statistics</a></li>
-</ul>
-</section>
-
-<section>
-<h2>📥 Bookdrop</h2>
-<ul>
-  <li><a href="bookdrop.html">Bookdrop</a></li>
-  <li><a href="bookdrop-advanced.html">Bookdrop Advanced Features</a></li>
-</ul>
-</section>
-
-<section>
-<h2>📚 Books &amp; Collections</h2>
-<ul>
-  <li><a href="authors.html">Authors</a></li>
-  <li><a href="series.html">Series</a></li>
-  <li><a href="shelf.html">Shelves</a></li>
-  <li><a href="magic-shelf.html">Magic Shelves</a></li>
-  <li><a href="notebook.html">Notebook</a></li>
-</ul>
-</section>
-
-<section>
-<h2>🗂️ Metadata</h2>
-<ul>
-  <li><a href="metadata/metadata-center.html">Metadata Center</a></li>
-  <li><a href="metadata/metadata-manager.html">Metadata Manager</a></li>
-  <li><a href="metadata/metadata-fetch-configuration.html">Library Metadata Configuration</a></li>
-  <li><a href="metadata/metadata-settings.html">Metadata Settings</a></li>
-  <li><a href="metadata/file-naming-patterns.html">File Naming Patterns</a></li>
-  <li><a href="metadata/sidecar-files.html">Sidecar Files</a></li>
-  <li><a href="metadata/amazon-cookie.html">Amazon Cookie Setup</a></li>
-  <li><a href="metadata/hardcover-token.html">Hardcover API Token Setup</a></li>
-  <li><a href="metadata/lubimyczytac.html">LubimyCzytac</a></li>
-  <li><a href="metadata/ranobedb.html">RanobeDB</a></li>
-</ul>
-</section>
-
-<section>
-<h2>📖 Reader &amp; Display</h2>
-<ul>
-  <li><a href="readers/epub-reader.html">EPUB Reader</a></li>
-  <li><a href="readers/pdf-reader.html">PDF Reader</a></li>
-  <li><a href="readers/cbx-reader.html">Comic Reader</a></li>
-  <li><a href="reader-preferences.html">Reader Preferences</a></li>
-  <li><a href="view-preferences.html">View Preferences</a></li>
-  <li><a href="book-browser/grid.html">Book Browser: Grid</a></li>
-  <li><a href="book-browser/table.html">Book Browser: Table</a></li>
-  <li><a href="reading-stats.html">Reading Statistics</a></li>
-</ul>
-</section>
-
-<section>
-<h2>🔗 Integrations</h2>
-<ul>
-  <li><a href="integration/kobo.html">Kobo</a></li>
-  <li><a href="integration/opds.html">OPDS</a></li>
-  <li><a href="integration/koreader.html">KOReader</a></li>
-  <li><a href="integration/komga-api.html">Komga API Compatibility</a></li>
-</ul>
-</section>
-
-<section>
-<h2>🔒 Authentication</h2>
-<ul>
-  <li><a href="authentication/overview.html">Overview</a></li>
-  <li><a href="authentication/authelia.html">Authelia</a></li>
-  <li><a href="authentication/authentik.html">Authentik</a></li>
-</ul>
-</section>
-
-<section>
-<h2>🛠️ Administration</h2>
-<ul>
-  <li><a href="content-restrictions.html">Content Restrictions</a></li>
-  <li><a href="tools/user-management.html">User Management</a></li>
-  <li><a href="tools/audit-logs.html">Audit Logs</a></li>
-  <li><a href="tools/global-preferences.html">Global Preferences</a></li>
-  <li><a href="email-setup.html">Email Setup</a></li>
-</ul>
-</section>
-
-<section>
-<h2>🎨 Customization &amp; Tools</h2>
-<ul>
-  <li><a href="tools/custom-icons.html">Custom SVG Icons</a></li>
-  <li><a href="tools/custom-fonts.html">Custom Fonts for EPUB Reader</a></li>
-  <li><a href="tools/cover-art-settings.html">Cover Settings</a></li>
-  <li><a href="tools/devices.html">Devices</a></li>
-  <li><a href="tools/task-manager.html">System Task Manager</a></li>
-  <li><a href="tools/telemetry.html">Telemetry</a></li>
-</ul>
-</section>
+<p class="page-footer">Trove began as a fork of BookLore, and these pages grew from its documentation. Screenshots show a demonstration library of public-domain books from Project Gutenberg and LibriVox.</p>
+</main>
+</div>
 </body>
 </html>

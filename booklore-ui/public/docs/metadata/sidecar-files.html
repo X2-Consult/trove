@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Sidecar Files · Trove Help</title>
+<title>Sidecar files · Trove Help</title>
 <link rel="stylesheet" href="../docs.css">
 <script src="../docs.js" defer></script>
 </head>
@@ -15,8 +15,8 @@
 <div class="layout">
 <nav class="sidebar" id="docs-nav" aria-label="Help topics"></nav>
 <main class="doc">
-<h1>Sidecar Files</h1>
-<p>Sidecar files are standalone JSON metadata files stored alongside your book files on disk. They provide a portable, human-readable backup of book metadata that can be imported into Trove or used with other tools.</p>
+<h1>Sidecar files</h1>
+<p class="lede">Sidecar files are standalone JSON metadata files stored alongside your book files on disk. They provide a portable, human-readable backup of book metadata that can be imported into Trove or used with other tools.</p>
 
 <h2 id="file-format">File Format</h2>
 <p>For a book named <code>MyBook.epub</code>, the sidecar files are:</p>
@@ -56,11 +56,20 @@
 <p>Only non-null fields are included in the output.</p>
 
 <h2 id="settings">Settings</h2>
-<p>Configure sidecar behavior in <strong>Settings &gt; Metadata Settings</strong> under the Metadata Persistence section:</p>
-<div class="table-wrap"><table><thead><tr><th>Setting</th><th>Description</th></tr></thead><tbody><tr><td><strong>Write on Update</strong></td><td>Automatically write sidecar files when metadata is changed</td></tr><tr><td><strong>Write on Scan</strong></td><td>Automatically write sidecar files during library scans</td></tr><tr><td><strong>Include Cover File</strong></td><td>Save a <code>.cover.jpg</code> alongside the JSON file</td></tr></tbody></table></div>
+<p>Turn sidecars on in <strong>Settings › Metadata 1</strong>, under <strong>Sidecar JSON Files</strong> (see <a href="metadata-settings.html">Metadata settings</a>):</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Setting</th><th>What it does</th></tr></thead>
+<tbody>
+<tr><td><strong>Enable Sidecar JSON</strong></td><td>Allows sidecar files at all</td></tr>
+<tr><td><strong>Write on Metadata Update</strong></td><td>Updates a book's sidecar whenever its details are edited</td></tr>
+<tr><td><strong>Write on Initial Scan</strong></td><td>Creates sidecars when books are first added to a library</td></tr>
+<tr><td><strong>Include Cover Image File</strong></td><td>Also saves the cover as <code>BookName.cover.jpg</code></td></tr>
+</tbody>
+</table></div>
+<p>To read metadata back from sidecars during scans, set a library's <strong>Metadata source</strong> to Sidecar Only, Prefer Sidecar or Prefer Embedded (see <a href="../library/setup-first-library.html#options">Your first library</a>). Sidecars aren't written when <code>DISK_TYPE=NETWORK</code> is set; on a network share with the default setting they're written with the same verified copies as books.</p>
 
 <h2 id="per-book-operations">Per-Book Operations</h2>
-<p>In the <strong>Metadata Center</strong>, the Sidecar tab shows:</p>
+<p>On a <a href="metadata-center.html#sidecar">book's page</a>, the Sidecar tab shows:</p>
 <ul>
 <li>A <strong>sync status badge</strong> indicating whether the sidecar is in sync, outdated, conflicting, missing, or not applicable</li>
 <li>The current sidecar JSON content</li>
@@ -69,10 +78,10 @@
 </ul>
 
 <h2 id="library-wide-operations">Library-Wide Operations</h2>
-<p>In <strong>Settings &gt; Library Metadata Settings</strong>, each library has bulk sidecar options:</p>
+<p>In <strong>Settings › Metadata 2</strong> (<a href="metadata-fetch-configuration.html">Library metadata</a>), each library has:</p>
 <ul>
-<li><strong>Export All</strong> generates sidecar files for every book in the library</li>
-<li><strong>Import All</strong> reads sidecar files from disk and updates Trove metadata for all books that have them</li>
+<li><strong>Export Sidecar</strong> generates sidecar files for every book in the library</li>
+<li><strong>Import Sidecar</strong> reads sidecar files from disk and updates Trove metadata for all books that have them</li>
 </ul>
 </main>
 </div>

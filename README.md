@@ -34,8 +34,8 @@ Organize, read, annotate, sync across devices, and share, all without relying on
 - **Security hardening.** Books opened in the reader can't reach your login, login tokens are harder to misuse,
   cover downloads can't be pointed at your own network, and several access-control gaps are closed.
 - **Lower memory use.** JVM settings that hand unused memory back to the system, plus fixes for leaks during scans and bulk jobs.
-- **Local documentation archive.** The original docs site went offline with the abandoned project; a full copy lives at
-  `/docs` in the app itself, so in-app help links keep working.
+- **Help built into the app.** The original docs site went offline with the abandoned project. Trove's help lives at
+  `/docs` in the app itself, rewritten for Trove with current screenshots, so in-app help links keep working.
 
 ---
 

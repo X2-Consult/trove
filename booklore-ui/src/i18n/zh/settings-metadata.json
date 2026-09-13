@@ -10,8 +10,6 @@
     "persistence": {
         "sectionTitle": "元数据持久化",
         "sectionDesc": "配置元数据如何写入原始文件，以及元数据更改时文件如何移动或重命名。",
-        "networkWarningTitle": "网络存储警告：",
-        "networkWarning": "这些功能会直接修改和移动磁盘上的书籍文件（包括重写元数据和重命名文件）。它们仅适用于本地文件系统。在 NAS 或云端存储上使用未经测试，可能导致文件损坏、写入不完整或永久数据丢失。与网络存储相关的 GitHub 问题将不会得到支持。",
         "unsupportedNote": "<b>不支持</b>向 FB2、AZW3 和 MOBI 格式写入元数据。",
         "writeEpub": "将元数据写入 EPUB",
         "writeEpubDesc": "编辑书籍信息时，将元数据直接写入 EPUB 文件。",

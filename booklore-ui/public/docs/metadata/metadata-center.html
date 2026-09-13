@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Metadata Center · Trove Help</title>
+<title>Book page · Trove Help</title>
 <link rel="stylesheet" href="../docs.css">
 <script src="../docs.js" defer></script>
 </head>
@@ -15,8 +15,8 @@
 <div class="layout">
 <nav class="sidebar" id="docs-nav" aria-label="Help topics"></nav>
 <main class="doc">
-<h1>Metadata Center</h1>
-<p>The Metadata Center is the central hub for viewing and managing everything about a book. Access it by clicking any book cover or title in the book browser. It has four top-level tabs (Book Details, Edit Metadata, Search Metadata, Sidecar). The Book Details tab includes a row of content tabs at the bottom (Similar Books, Files, Notes, Reading Sessions, Reviews).</p>
+<h1>Book page</h1>
+<p class="lede">A book's page (the Metadata Center) is where you see and manage everything about it. Access it by clicking any book cover or title in the book browser. It has four top-level tabs (Book Details, Edit Metadata, Search Metadata, Sidecar). The Book Details tab includes a row of content tabs at the bottom (Similar Books, Files, Notes, Reading Sessions, Reviews).</p>
 <figure><img alt="Metadata Center" loading="lazy" src="../images/metadata/metadata-center/book-details.jpg"/></figure>
 <aside class="note note-tip"><p class="note-title">Display Mode</p><p>The Metadata Center can open as a full page or a popup dialog. Configure this in <a href="../view-preferences.html">View Preferences</a> under Metadata Center Display Mode.</p></aside>
 
@@ -34,7 +34,7 @@
 <ul>
 <li>Genres and tags (clickable to filter your library)</li>
 <li>Library, publisher, published date, language</li>
-<li>Trove Progress (metadata completeness score), metadata match score</li>
+<li>Trove Progress (how far you are in Trove's own readers), plus KOReader Progress or Kobo Progress when a device has synced, and the metadata match score (how complete the book's details are)</li>
 <li>Page count, age rating, content rating, file size</li>
 <li>ISBN and file path</li>
 </ul>
@@ -114,6 +114,7 @@
 <p>Click <strong>Back to List</strong> to return to search results, or <strong>Save Changes</strong> to persist your selections. Lock controls at the bottom let you protect fields before saving.</p>
 
 <h2 id="sidecar">Sidecar</h2>
+<p>This tab is hidden when Trove is set not to write to book folders (<code>DISK_TYPE=NETWORK</code>, see <a href="../library/network-storage.html">Network storage</a>).</p>
 <p>Export and import portable metadata files that travel alongside the book file on disk.</p>
 <figure><img alt="Sidecar" loading="lazy" src="../images/metadata/metadata-center/sidecar.jpg"/></figure>
 <p>A sidecar is a <code>metadata.json</code> file written to the same directory as the book file. It contains a complete snapshot of the book's metadata in a structured JSON format, including title, authors, genres, series info, provider identifiers, ratings, and cover references.</p>
@@ -132,7 +133,7 @@
 <li>File management requires appropriate permissions. Deleting the last remaining file of a book is not allowed.</li>
 <li>Locked fields are visually indicated with a yellow lock icon. Locking a field prevents automated metadata fetches from overwriting your manual edits but does not prevent you from editing the field directly.</li>
 <li>See <a href="../metadata/metadata-settings.html">Metadata Settings</a> for configuring which provider fields are visible in the Edit Metadata form.</li>
-<li>See <a href="../metadata/metadata-fetch-configuration.html">Fetch Configuration</a> for controlling how automated metadata lookups behave.</li>
+<li>See <a href="metadata-fetch-configuration.html">Library metadata</a> for controlling how automated metadata lookups behave.</li>
 </ul>
 </main>
 </div>

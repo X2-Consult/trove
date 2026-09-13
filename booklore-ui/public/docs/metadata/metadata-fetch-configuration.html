@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Library Metadata Configuration · Trove Help</title>
+<title>Library metadata · Trove Help</title>
 <link rel="stylesheet" href="../docs.css">
 <script src="../docs.js" defer></script>
 </head>
@@ -15,8 +15,8 @@
 <div class="layout">
 <nav class="sidebar" id="docs-nav" aria-label="Help topics"></nav>
 <main class="doc">
-<h1>Library Metadata Configuration</h1>
-<p>Configure how Trove fetches and applies book metadata from online providers. Set global defaults with per-field provider priorities, enable or disable specific fields, and create library-specific overrides for different collections.</p>
+<h1>Library metadata</h1>
+<p class="lede">Configure how Trove fetches and applies book metadata from online providers. Set global defaults with per-field provider priorities, enable or disable specific fields, and create library-specific overrides for different collections.</p>
 <p>Navigate to <strong>Settings &gt; Metadata 2</strong> to access this page. Requires the <strong>Manage Metadata Configuration</strong> permission.</p>
 <figure><img alt="Metadata Configuration" loading="lazy" src="../images/metadata/metadata-fetch-configuration/metadata-configuration.jpg"/></figure>
 
@@ -33,8 +33,8 @@
 
 <h2 id="metadata-providers">Metadata Providers</h2>
 <p>Trove integrates with the following providers:</p>
-<div class="table-wrap"><table><thead><tr><th>Provider</th><th>Strengths</th></tr></thead><tbody><tr><td><strong>Amazon</strong></td><td>High-quality covers, comprehensive catalog, ratings and reviews</td></tr><tr><td><strong>Google Books</strong></td><td>Detailed publisher descriptions, accurate ISBNs, broad coverage</td></tr><tr><td><strong>GoodReads</strong></td><td>Community ratings, excellent series data, comprehensive genres</td></tr><tr><td><strong>Hardcover</strong></td><td>Modern releases, moods and tags, community-driven data</td></tr><tr><td><strong>Comicvine</strong></td><td>Specialized comic book and graphic novel metadata</td></tr><tr><td><strong>Douban</strong></td><td>Asian literature (Chinese, Japanese, Korean titles)</td></tr><tr><td><strong>Lubimyczytac</strong></td><td>Polish literature and book ratings</td></tr><tr><td><strong>Ranobedb</strong></td><td>Light novels and web novel metadata</td></tr><tr><td><strong>Audible</strong></td><td>Audiobook-specific metadata, narrator info, ratings</td></tr></tbody></table></div>
-<aside class="note note-info"><p class="note-title">Provider Availability</p><p>Some providers (Hardcover, Comicvine, Ranobedb, Douban) are disabled by default. Enable them in <strong>Settings &gt; Metadata 1</strong> before they appear in the priority dropdowns.</p></aside>
+<div class="table-wrap"><table><thead><tr><th>Provider</th><th>Strengths</th></tr></thead><tbody><tr><td><strong>Amazon</strong></td><td>High-quality covers, comprehensive catalog, ratings and reviews</td></tr><tr><td><strong>Google Books</strong></td><td>Detailed publisher descriptions, accurate ISBNs, broad coverage</td></tr><tr><td><strong>GoodReads</strong></td><td>Community ratings, excellent series data, comprehensive genres</td></tr><tr><td><strong>Hardcover</strong></td><td>Modern releases, moods and tags, community-driven data</td></tr><tr><td><strong>Open Library</strong></td><td>Open catalogue from the Internet Archive; strong on older books</td></tr><tr><td><strong>Bookshelf</strong></td><td>Book details from bookshelf.nz (needs an API token)</td></tr><tr><td><strong>Comicvine</strong></td><td>Specialized comic book and graphic novel metadata</td></tr><tr><td><strong>Douban</strong></td><td>Asian literature (Chinese, Japanese, Korean titles)</td></tr><tr><td><strong>Lubimyczytac</strong></td><td>Polish literature and book ratings</td></tr><tr><td><strong>Ranobedb</strong></td><td>Light novels and web novel metadata</td></tr><tr><td><strong>Audible</strong></td><td>Audiobook-specific metadata, narrator info, ratings</td></tr></tbody></table></div>
+<aside class="note note-info"><p class="note-title">Provider Availability</p><p>Some providers (Hardcover, Bookshelf, Comicvine, Ranobedb, Douban) are off by default. Enable them in <strong>Settings &gt; Metadata 1</strong> before they appear in the priority dropdowns.</p></aside>
 
 <h2 id="default-metadata-settings">Default Metadata Settings</h2>
 <p>The top section of the page configures the <strong>global defaults</strong> that apply to all libraries unless overridden.</p>
@@ -122,14 +122,14 @@
 <h2 id="sidecar-export-import">Sidecar Export &amp; Import</h2>
 <p>Each library panel includes <strong>Export Sidecar</strong> and <strong>Import Sidecar</strong> buttons for bulk metadata file operations.</p>
 <h3 id="export-sidecar">Export Sidecar</h3>
-<p>Writes the current metadata for every book in the library to <code>.sidecar.json</code> files alongside the book files on disk. This is useful for:</p>
+<p>Writes the current metadata for every book in the library to <code>.metadata.json</code> files alongside the book files on disk. This is useful for:</p>
 <ul>
 <li>Backing up metadata before a major change</li>
 <li>Sharing metadata between Trove instances</li>
 <li>Preserving metadata independently from the database</li>
 </ul>
 <h3 id="import-sidecar">Import Sidecar</h3>
-<p>Reads <code>.sidecar.json</code> files from disk and applies them to the corresponding books in the library. Metadata is applied using the <strong>Replace When Provided</strong> mode, so only fields present in the sidecar file are updated.</p>
+<p>Reads <code>.metadata.json</code> files from disk and applies them to the corresponding books in the library. Metadata is applied using the <strong>Replace When Provided</strong> mode, so only fields present in the sidecar file are updated.</p>
 <aside class="note note-info"><p class="note-title">Fault Tolerant</p><p>Both export and import operations process books individually. If one book fails, the rest continue. The result shows how many books were successfully processed.</p></aside>
 
 <h2 id="configuration-examples">Configuration Examples</h2>

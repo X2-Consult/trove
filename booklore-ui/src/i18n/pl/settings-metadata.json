@@ -10,8 +10,6 @@
     "persistence": {
         "sectionTitle": "Trwałość metadanych",
         "sectionDesc": "Skonfiguruj sposób zapisywania metadanych do oryginalnych plików i przenoszenia lub zmiany nazw plików przy zmianach metadanych.",
-        "networkWarningTitle": "Ostrzeżenie dotyczące przechowywania sieciowego:",
-        "networkWarning": "Te funkcje bezpośrednio modyfikują i przenoszą pliki książek na dysku (w tym przepisywanie metadanych i zmianę nazw plików). Są przeznaczone wyłącznie dla lokalnych systemów plików. Używanie ich na NAS lub w chmurze nie zostało przetestowane i może prowadzić do uszkodzenia plików, niekompletnych zapisów lub trwałej utraty danych. Zgłoszenia na GitHub dotyczące przechowywania sieciowego nie będą obsługiwane.",
         "unsupportedNote": "Zapis metadanych <b>nie jest obsługiwany</b> dla formatów FB2, AZW3 i MOBI.",
         "writeEpub": "Zapisuj metadane do EPUB",
         "writeEpubDesc": "Zapisuj metadane bezpośrednio w plikach EPUB podczas edycji informacji o książce.",

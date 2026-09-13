@@ -10,8 +10,6 @@
     "persistence": {
         "sectionTitle": "Obstojnost metapodatkov",
         "sectionDesc": "Konfiguriraj, kako se metapodatki zapisujejo v izvorne datoteke in kako se datoteke premikajo ali preimenujejo ob spremembah.",
-        "networkWarningTitle": "Opozorilo za mrežno shrambo:",
-        "networkWarning": "Te funkcije neposredno spreminjajo in premikajo datoteke na disku (vključno s ponovnim zapisovanjem metapodatkov in preimenovanjem). Zasnovane so izključno za lokalne datotečne sisteme. Uporaba na NAS napravah ali v oblaku ni testirana in lahko povzroči poškodbe datotek, nepopolne zapise ali trajno izgubo podatkov. Težave na Githubu, povezane z mrežno shrambo, ne bodo obravnavane.",
         "unsupportedNote": "Zapisovanje metapodatkov <b>ni podprto</b> za formate FB2, AZW3 in MOBI.",
         "writeEpub": "Zapiši metapodatke v EPUB",
         "writeEpubDesc": "Zapiši metapodatke neposredno v datoteke EPUB ob urejanju podatkov o knjigi.",

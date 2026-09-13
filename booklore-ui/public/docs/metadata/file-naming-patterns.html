@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>File Naming Patterns · Trove Help</title>
+<title>File naming patterns · Trove Help</title>
 <link rel="stylesheet" href="../docs.css">
 <script src="../docs.js" defer></script>
 </head>
@@ -15,8 +15,8 @@
 <div class="layout">
 <nav class="sidebar" id="docs-nav" aria-label="Help topics"></nav>
 <main class="doc">
-<h1>File Naming Patterns</h1>
-<p>Configure automatic file organization using metadata placeholders. Patterns are applied when uploading books, finalizing Bookdrop imports, moving files between libraries, and (optionally) after metadata updates.</p>
+<h1>File naming patterns</h1>
+<p class="lede">Configure automatic file organization using metadata placeholders. Patterns are applied when uploading books, finalizing Bookdrop imports, moving files between libraries, and (optionally) after metadata updates.</p>
 <figure><img alt="File Naming Patterns UI" loading="lazy" src="../images/metadata/file-naming-patterns/file-naming-patterns.jpg"/></figure>
 
 <h2 id="how-patterns-work">How Patterns Work</h2>
@@ -28,6 +28,19 @@
 
 <h2 id="available-placeholders">Available Placeholders</h2>
 <div class="table-wrap"><table><thead><tr><th>Placeholder</th><th>Description</th><th>Example</th></tr></thead><tbody><tr><td><code>{title}</code></td><td>Book title</td><td>The Hobbit</td></tr><tr><td><code>{subtitle}</code></td><td>Book subtitle</td><td>There and Back Again</td></tr><tr><td><code>{authors}</code></td><td>Author name(s)</td><td>J.R.R. Tolkien</td></tr><tr><td><code>{year}</code></td><td>Publication year</td><td>1937</td></tr><tr><td><code>{series}</code></td><td>Series name</td><td>Middle-earth</td></tr><tr><td><code>{seriesIndex}</code></td><td>Series position, zero-padded</td><td>01</td></tr><tr><td><code>{language}</code></td><td>Language code</td><td>en</td></tr><tr><td><code>{publisher}</code></td><td>Publisher name</td><td>Allen &amp; Unwin</td></tr><tr><td><code>{isbn}</code></td><td>ISBN (prefers ISBN-13)</td><td>9780547928227</td></tr><tr><td><code>{currentFilename}</code></td><td>Original filename with extension</td><td>hobbit_original.epub</td></tr></tbody></table></div>
+
+<h3 id="modifiers">Modifiers</h3>
+<p>Add a modifier after a colon to change how a value is written:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Modifier</th><th>Gives</th><th>Example with authors "Arthur Conan Doyle, Joseph Bell"</th></tr></thead>
+<tbody>
+<tr><td><code>{authors:first}</code></td><td>Only the first of several values</td><td>Arthur Conan Doyle</td></tr>
+<tr><td><code>{authors:sort}</code></td><td>The first value, surname first</td><td>Doyle, Arthur Conan</td></tr>
+<tr><td><code>{authors:initial}</code></td><td>One capital letter (for authors, of the first author's surname)</td><td>D</td></tr>
+<tr><td><code>{title:upper}</code>, <code>{title:lower}</code></td><td>Upper or lower case</td><td>A STUDY IN SCARLET</td></tr>
+</tbody>
+</table></div>
+<p>So <code>{authors:initial}/{authors:sort}/{title}</code> gives <code>D/Doyle, Arthur Conan/A Study in Scarlet.epub</code>, the layout many large libraries use. <code>{extension}</code> is also available, though the extension is added for you anyway.</p>
 
 <h2 id="folder-structures">Folder Structures</h2>
 <p>Use forward slashes to create nested folder structures:</p>
@@ -48,6 +61,8 @@
 <li>Without series index: <code>Dune.epub</code></li>
 </ul>
 <p>This is essential for metadata that may be missing, like series, subtitle, or ISBN.</p>
+<h3 id="otherwise">Otherwise</h3>
+<p>Put a <code>|</code> inside a block to give an alternative for when the first part can't be filled: <code>&lt;{series}|Standalone&gt;/{title}</code> files books without a series under <code>Standalone</code>.</p>
 <h3 id="examples">Examples</h3>
 <p><strong>Subtitle block:</strong></p>
 <pre><code>{title}&lt;: {subtitle}&gt;</code></pre>
@@ -75,6 +90,9 @@
 <h3 id="with-missing-metadata">With Missing Metadata</h3>
 <p><strong>Sample book:</strong> Project Hail Mary by Andy Weir, Year: 2021, no series, no subtitle. Original file: <code>project_hail_mary_final.epub</code></p>
 <div class="table-wrap"><table><thead><tr><th>Pattern</th><th>Output</th><th>What happened</th></tr></thead><tbody><tr><td><code>{authors}/&lt;{series}/&gt;&lt;{seriesIndex}. &gt;{title}&lt; ({year})&gt;</code></td><td><code>Andy Weir/Project Hail Mary (2021).epub</code></td><td>Series and index blocks removed, year block kept</td></tr><tr><td><code>&lt;{seriesIndex}. &gt;{title}&lt; - {authors}&gt;</code></td><td><code>Project Hail Mary - Andy Weir.epub</code></td><td>Index block removed</td></tr><tr><td><code>&lt;[{series}] &gt;{title} - {authors}</code></td><td><code>Project Hail Mary - Andy Weir.epub</code></td><td>Brackets and series removed entirely</td></tr><tr><td><code>{title}&lt;: {subtitle}&gt;</code></td><td><code>Project Hail Mary.epub</code></td><td>Subtitle block removed</td></tr></tbody></table></div>
+
+<h2 id="safe-file-names">Safe file names</h2>
+<p>Whatever the metadata says, the names Trove creates are safe on every common filesystem, including SMB shares and Windows: the characters <code>\ / : * ? " &lt; &gt; |</code> are removed from values, names don't end in a space or a full stop, reserved Windows names such as <code>CON</code>, <code>PRN</code> or <code>LPT1</code> are avoided, and very long titles are shortened. The same applies to <code>{currentFilename}</code>. Renaming a file only in upper or lower case works on case-insensitive shares too.</p>
 
 <h2 id="configuration">Configuration</h2>
 <h3 id="default-pattern">Default Pattern</h3>

@@ -10,8 +10,6 @@
     "persistence": {
         "sectionTitle": "Metadatalagring",
         "sectionDesc": "Konfigurera hur metadata skrivs till originalfiler och hur filer flyttas eller byter namn när metadata ändras.",
-        "networkWarningTitle": "Varning för nätverkslagring:",
-        "networkWarning": "Dessa funktioner modifierar och flyttar bokfiler direkt på disk (inklusive omskrivning av metadata och namnbyte). De är designade enbart för lokala filsystem. Användning på NAS eller molnlagring är otestad och kan leda till filkorruption, ofullständiga skrivningar eller permanent dataförlust. Github-ärenden relaterade till nätverkslagring stöds inte.",
         "unsupportedNote": "Att skriva metadata stöds <b>inte</b> för FB2-, AZW3- och MOBI-format.",
         "writeEpub": "Skriv metadata till EPUB",
         "writeEpubDesc": "Skriv metadata direkt i EPUB-filer vid redigering av bokinformation.",

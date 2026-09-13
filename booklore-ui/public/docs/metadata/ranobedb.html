@@ -16,14 +16,14 @@
 <nav class="sidebar" id="docs-nav" aria-label="Help topics"></nav>
 <main class="doc">
 <h1>RanobeDB</h1>
-<p><a href="https://web.archive.org/web/20260305125548/https://ranobedb.org/">RanobeDB</a> is a community-driven light novel database with extensive metadata for Japanese light novels, including English titles, authors, descriptions, series information, ratings, and cover images. If you have a light novel collection, this is the provider to prioritize. It covers light novels only, not manga or other book types.</p>
-<aside class="note note-info"><p class="note-title">No Setup Required</p><p>RanobeDB doesn't need API tokens, cookies, or any authentication. Just toggle it on in <strong>Settings &gt; Metadata 2</strong> and you're done.</p></aside>
+<p class="lede"><a href="https://web.archive.org/web/20260305125548/https://ranobedb.org/">RanobeDB</a> is a community-driven light novel database with extensive metadata for Japanese light novels, including English titles, authors, descriptions, series information, ratings, and cover images. If you have a light novel collection, this is the provider to prioritize. It covers light novels only, not manga or other book types.</p>
+<aside class="note note-info"><p class="note-title">No Setup Required</p><p>RanobeDB doesn't need API tokens, cookies, or any authentication. Switch it on under <strong>Metadata Providers</strong> in <strong>Settings › Metadata 1</strong>, and give it a priority in <strong>Settings › Metadata 2</strong>.</p></aside>
 
 <h2 id="enabling-ranobedb">Enabling RanobeDB</h2>
-<p>Open <strong>Settings &gt; Metadata 2</strong>, find <strong>Ranobedb</strong> in the provider list, flip the toggle, and save. That's all there is to it.</p>
+<p>Open <strong>Settings › Metadata 1</strong>, find <strong>Ranobedb</strong> under Ready-to-Use Providers, switch it on, and click <strong>Save Configurations</strong>.</p>
 
 <h2 id="using-it-in-metadata-fetch">Using It in Metadata Fetch</h2>
-<p>Once enabled, RanobeDB appears as a priority option in the Advanced Metadata Fetch dialog. You can set it as Priority 1, 2, 3, or 4 for any individual field.</p>
+<p>Once enabled, RanobeDB appears as a choice in the priority columns of <a href="metadata-fetch-configuration.html">Library metadata</a> (Settings › Metadata 2) and in the Custom Fetch dialog. You can set it as Priority 1, 2, 3, or 4 for any individual field.</p>
 <p><strong>For light novels</strong>, set RanobeDB as Priority 1 for most fields. Fallbacks to Google Books or Goodreads are optional but may not match well since light novel titles often differ across platforms. If RanobeDB doesn't have data for a particular field, Trove automatically tries the next provider in your priority list.</p>
 
 <h2 id="what-you-get">What You Get</h2>
@@ -35,7 +35,7 @@
 <aside class="note note-info"><p class="note-title">Authors Only</p><p>RanobeDB provides author names but does not include illustrators as a separate field.</p></aside>
 
 <h2 id="troubleshooting">Troubleshooting</h2>
-<div class="table-wrap"><table><thead><tr><th>Problem</th><th>What to check</th></tr></thead><tbody><tr><td>No results returned</td><td>Make sure the provider is enabled in Settings &gt; Metadata 2. Verify the book exists on ranobedb.org by searching manually.</td></tr><tr><td>Wrong book matched</td><td>Use <strong>title + author name</strong> for the most accurate results. English titles work best.</td></tr><tr><td>Slow responses</td><td>RanobeDB is community-driven, so Trove rate-limits requests to avoid overloading their servers. Be patient and try again later if you hit delays.</td></tr><tr><td>Network errors</td><td>Confirm your Trove instance can reach ranobedb.org (check firewalls, DNS, and proxy settings).</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th>Problem</th><th>What to check</th></tr></thead><tbody><tr><td>No results returned</td><td>Make sure the provider is switched on in Settings › Metadata 1 and has a priority in Metadata 2. Verify the book exists on ranobedb.org by searching manually.</td></tr><tr><td>Wrong book matched</td><td>Use <strong>title + author name</strong> for the most accurate results. English titles work best.</td></tr><tr><td>Slow responses</td><td>RanobeDB is community-driven, so Trove rate-limits requests to avoid overloading their servers. Be patient and try again later if you hit delays.</td></tr><tr><td>Network errors</td><td>Confirm your Trove instance can reach ranobedb.org (check firewalls, DNS, and proxy settings).</td></tr></tbody></table></div>
 <aside class="note note-info"><p class="note-title">API Status</p><p>RanobeDB's API is still under development. Trove uses the available endpoints, and future updates may enhance functionality as the API matures.</p></aside>
 </main>
 </div>

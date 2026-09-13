@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Hardcover API Token Setup · Trove Help</title>
+<title>Hardcover token · Trove Help</title>
 <link rel="stylesheet" href="../docs.css">
 <script src="../docs.js" defer></script>
 </head>
@@ -15,8 +15,8 @@
 <div class="layout">
 <nav class="sidebar" id="docs-nav" aria-label="Help topics"></nav>
 <main class="doc">
-<h1>Hardcover API Token Setup</h1>
-<p><a href="https://web.archive.org/web/20260316213240/https://hardcover.app/">Hardcover</a> is a book tracking and discovery platform with rich metadata: covers, descriptions, community ratings, review counts, moods, and tags. To use it as a metadata provider in Trove, you need a free API token from your Hardcover account.</p>
+<h1>Hardcover token</h1>
+<p class="lede"><a href="https://web.archive.org/web/20260316213240/https://hardcover.app/">Hardcover</a> is a book tracking and discovery platform with rich metadata: covers, descriptions, community ratings, review counts, moods, and tags. To use it as a metadata provider in Trove, you need a free API token from your Hardcover account.</p>
 
 <h2 id="get-your-token">Get Your Token</h2>
 <ol>
@@ -32,10 +32,10 @@
 <li>Open <strong>Settings &gt; Metadata 1</strong></li>
 <li>Enable the <strong>Hardcover</strong> checkbox</li>
 <li>Paste the token (without the <code>Bearer </code> prefix) into the <strong>API Token</strong> field</li>
-<li>Click <strong>Save</strong></li>
+<li>Click <strong>Save Configurations</strong></li>
 </ol>
 <figure><img alt="Trove Metadata 1 settings with the Hardcover token field" loading="lazy" src="https://web.archive.org/web/20260316213240im_/https://booklore.org/assets/images/hardcover-2-fe413a316dd334a2bd00eebb1d251b5a.jpg"/></figure>
-<p>Hardcover is now active as a metadata provider. You can set its priority for individual fields in the Advanced Metadata Fetch dialog.</p>
+<p>Hardcover is now active as a metadata provider. Give it a priority for the fields you want from it in <a href="metadata-fetch-configuration.html">Library metadata</a> (Settings › Metadata 2). The same token can also sync your reading progress to Hardcover; see <a href="../tools/devices.html">Device settings</a>.</p>
 
 <h2 id="troubleshooting">Troubleshooting</h2>
 <div class="table-wrap"><table><thead><tr><th>Problem</th><th>What to check</th></tr></thead><tbody><tr><td>Authentication errors</td><td>Make sure you removed the <code>Bearer </code> prefix. Check for extra spaces at the start or end of the token.</td></tr><tr><td>Token stopped working</td><td>Hardcover tokens expire after 1 year. Go back to the API page and copy the new token. Hardcover may also reset tokens during their beta period.</td></tr><tr><td>No results for a book</td><td>Hardcover's coverage is broad but not exhaustive. Verify the book exists on hardcover.app by searching manually.</td></tr></tbody></table></div>

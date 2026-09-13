@@ -16,14 +16,14 @@
 <nav class="sidebar" id="docs-nav" aria-label="Help topics"></nav>
 <main class="doc">
 <h1>LubimyCzytac</h1>
-<p><a href="https://web.archive.org/web/20260305062700/https://lubimyczytac.pl/">LubimyCzytac</a> is Poland's largest book rating and review platform, often called the "Polish Goodreads." It's the best source for metadata on Polish literature and Polish translations, covering titles, authors, descriptions, ratings, series information, ISBNs, and cover images that may not exist on English-language platforms.</p>
-<aside class="note note-info"><p class="note-title">No Setup Required</p><p>LubimyCzytac doesn't need API tokens, cookies, or any authentication. Just toggle it on in <strong>Settings &gt; Metadata 2</strong> and you're done.</p></aside>
+<p class="lede"><a href="https://web.archive.org/web/20260305062700/https://lubimyczytac.pl/">LubimyCzytac</a> is Poland's largest book rating and review platform, often called the "Polish Goodreads." It's the best source for metadata on Polish literature and Polish translations, covering titles, authors, descriptions, ratings, series information, ISBNs, and cover images that may not exist on English-language platforms.</p>
+<aside class="note note-info"><p class="note-title">No Setup Required</p><p>LubimyCzytac doesn't need API tokens, cookies, or any authentication. Switch it on under <strong>Metadata Providers</strong> in <strong>Settings › Metadata 1</strong>, and give it a priority in <strong>Settings › Metadata 2</strong>.</p></aside>
 
 <h2 id="enabling-lubimyczytac">Enabling LubimyCzytac</h2>
-<p>Open <strong>Settings &gt; Metadata 2</strong>, find <strong>Lubimyczytac</strong> in the provider list, flip the toggle, and save. That's all there is to it.</p>
+<p>Open <strong>Settings › Metadata 1</strong>, find <strong>Lubimyczytac</strong> under Ready-to-Use Providers, switch it on, and click <strong>Save Configurations</strong>.</p>
 
 <h2 id="using-it-in-metadata-fetch">Using It in Metadata Fetch</h2>
-<p>Once enabled, LubimyCzytac appears as a priority option in the Advanced Metadata Fetch dialog. You can set it as Priority 1, 2, 3, or 4 for any individual field.</p>
+<p>Once enabled, LubimyCzytac appears as a choice in the priority columns of <a href="metadata-fetch-configuration.html">Library metadata</a> (Settings › Metadata 2) and in the Custom Fetch dialog. You can set it as Priority 1, 2, 3, or 4 for any individual field.</p>
 <p><strong>For Polish books or Polish translations</strong>, set LubimyCzytac as Priority 1 for most fields and use Google Books or Goodreads as fallbacks. <strong>For English books</strong>, keep it as Priority 3 or 4 behind providers like Amazon or Google. If LubimyCzytac doesn't have data for a particular field, Trove automatically tries the next provider in your priority list.</p>
 
 <h2 id="what-you-get">What You Get</h2>
@@ -38,7 +38,7 @@
 <div class="table-wrap"><table><thead><tr><th>Polish Name</th><th>Code</th><th>Language</th></tr></thead><tbody><tr><td>polski</td><td><code>pl</code></td><td>Polish</td></tr><tr><td>angielski</td><td><code>en</code></td><td>English</td></tr><tr><td>niemiecki</td><td><code>de</code></td><td>German</td></tr><tr><td>francuski</td><td><code>fr</code></td><td>French</td></tr><tr><td>hiszpański</td><td><code>es</code></td><td>Spanish</td></tr><tr><td>włoski</td><td><code>it</code></td><td>Italian</td></tr></tbody></table></div>
 
 <h2 id="troubleshooting">Troubleshooting</h2>
-<div class="table-wrap"><table><thead><tr><th>Problem</th><th>What to check</th></tr></thead><tbody><tr><td>No results returned</td><td>Make sure the provider is enabled in Settings &gt; Metadata 2. Verify the book exists on lubimyczytac.pl by searching manually.</td></tr><tr><td>Wrong book matched</td><td>Use <strong>title + author name</strong> for the most accurate results. For Polish books, searching with the Polish title gives the highest accuracy.</td></tr><tr><td>Missing fields</td><td>Not every book has complete metadata. LubimyCzytac coverage is strongest for Polish literature and weakest for niche English-only titles.</td></tr><tr><td>Network errors</td><td>Confirm your Trove instance can reach lubimyczytac.pl (check firewalls, DNS, and proxy settings).</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th>Problem</th><th>What to check</th></tr></thead><tbody><tr><td>No results returned</td><td>Make sure the provider is switched on in Settings › Metadata 1 and has a priority in Metadata 2. Verify the book exists on lubimyczytac.pl by searching manually.</td></tr><tr><td>Wrong book matched</td><td>Use <strong>title + author name</strong> for the most accurate results. For Polish books, searching with the Polish title gives the highest accuracy.</td></tr><tr><td>Missing fields</td><td>Not every book has complete metadata. LubimyCzytac coverage is strongest for Polish literature and weakest for niche English-only titles.</td></tr><tr><td>Network errors</td><td>Confirm your Trove instance can reach lubimyczytac.pl (check firewalls, DNS, and proxy settings).</td></tr></tbody></table></div>
 <aside class="note note-info"><p class="note-title">Web Scraping</p><p>LubimyCzytac doesn't provide a public API, so Trove uses web scraping. This is reliable but may occasionally break if the LubimyCzytac website structure changes. If metadata fetching suddenly stops working for this provider, check for a Trove update.</p></aside>
 </main>
 </div>
