@@ -1,21 +1,30 @@
 package org.booklore.service.komga;
 
+import org.booklore.config.security.service.AuthenticationService;
+import org.booklore.config.security.userdetails.OpdsUserDetails;
+import org.booklore.exception.APIException;
 import org.booklore.mapper.komga.KomgaMapper;
+import org.booklore.model.dto.OpdsUserV2;
 import org.booklore.model.dto.komga.KomgaBookDto;
+import org.booklore.model.dto.komga.KomgaLibraryDto;
 import org.booklore.model.dto.komga.KomgaPageDto;
 import org.booklore.model.dto.komga.KomgaPageableDto;
 import org.booklore.model.dto.komga.KomgaSeriesDto;
 import org.booklore.model.dto.settings.AppSettings;
 import org.booklore.model.entity.BookEntity;
 import org.booklore.model.entity.BookFileEntity;
+import org.booklore.model.entity.BookLoreUserEntity;
 import org.booklore.model.entity.BookMetadataEntity;
 import org.booklore.model.entity.LibraryEntity;
+import org.booklore.model.entity.UserPermissionsEntity;
 import org.booklore.model.enums.BookFileType;
 import org.booklore.repository.BookRepository;
 import org.booklore.repository.LibraryRepository;
+import org.booklore.repository.UserRepository;
 import org.booklore.service.MagicShelfService;
 import org.booklore.service.appsettings.AppSettingService;
 import org.booklore.service.reader.CbxReaderService;
+import org.booklore.service.restriction.ContentRestrictionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,6 +38,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -53,6 +63,15 @@ class KomgaServiceTest {
     @Mock
     private AppSettingService appSettingService;
 
+    @Mock
+    private AuthenticationService authenticationService;
+
+    @Mock
+    private UserRepository userRepository;
+
+    @Mock
+    private ContentRestrictionService contentRestrictionService;
+
     @InjectMocks
     private KomgaService komgaService;
 
@@ -68,6 +87,12 @@ class KomgaServiceTest {
         AppSettings appSettings = new AppSettings();
         appSettings.setKomgaGroupUnknown(true);
         lenient().when(appSettingService.getAppSettings()).thenReturn(appSettings);
+
+        // Signed in through an OPDS account belonging to an admin unless a test says otherwise.
+        signInAs(BookLoreUserEntity.builder().id(100L)
+                .permissions(UserPermissionsEntity.builder().permissionAdmin(true).build())
+                .libraries(new ArrayList<>()).isDefaultPassword(false).build());
+        lenient().when(contentRestrictionService.applyRestrictions(anyList(), any())).thenAnswer(inv -> inv.getArgument(0));
 
         // Create multiple books for testing pagination
         seriesBooks = new ArrayList<>();
@@ -245,5 +270,88 @@ class KomgaServiceTest {
         // Verify that only books for Series A and B were loaded (optimization check)
         verify(bookRepository, never()).findAllWithMetadataByLibraryId(anyLong());
         verify(bookRepository, never()).findAllWithMetadata();
+    }
+
+    private void signInAs(BookLoreUserEntity user) {
+        lenient().when(authenticationService.getOpdsUser())
+                .thenReturn(new OpdsUserDetails(OpdsUserV2.builder().id(7L).userId(user.getId()).username("reader").build()));
+        lenient().when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+    }
+
+    /** A non-admin with access to `library` only. */
+    private BookLoreUserEntity reader() {
+        BookLoreUserEntity user = BookLoreUserEntity.builder().id(200L)
+                .permissions(UserPermissionsEntity.builder().permissionAdmin(false).build())
+                .libraries(new ArrayList<>(List.of(library))).isDefaultPassword(false).build();
+        signInAs(user);
+        return user;
+    }
+
+    private BookEntity bookInOtherLibrary() {
+        LibraryEntity other = new LibraryEntity();
+        other.setId(2L);
+        BookEntity book = new BookEntity();
+        book.setId(999L);
+        book.setLibrary(other);
+        book.setMetadata(BookMetadataEntity.builder().title("Elsewhere").build());
+        return book;
+    }
+
+    @Test
+    void readersOnlySeeTheirOwnLibraries() {
+        reader();
+        LibraryEntity other = new LibraryEntity();
+        other.setId(2L);
+        when(libraryRepository.findAll()).thenReturn(List.of(library, other));
+        when(komgaMapper.toKomgaLibraryDto(library)).thenReturn(KomgaLibraryDto.builder().id("1").build());
+
+        assertThat(komgaService.getAllLibraries()).extracting(KomgaLibraryDto::getId).containsExactly("1");
+    }
+
+    @Test
+    void readersDontSeeBooksFromOtherLibrariesOrRestrictedBooks() {
+        BookLoreUserEntity reader = reader();
+        BookEntity restricted = seriesBooks.get(0);
+        List<BookEntity> all = new ArrayList<>(seriesBooks);
+        all.add(bookInOtherLibrary());
+        when(bookRepository.findAllWithMetadata()).thenReturn(all);
+        when(contentRestrictionService.applyRestrictions(anyList(), eq(reader.getId())))
+                .thenAnswer(inv -> inv.<List<BookEntity>>getArgument(0).stream().filter(b -> b != restricted).toList());
+        when(komgaMapper.toKomgaBookDto(any())).thenAnswer(inv -> KomgaBookDto.builder().id(inv.<BookEntity>getArgument(0).getId().toString()).build());
+
+        KomgaPageableDto<KomgaBookDto> result = komgaService.getAllBooks(null, 0, 100);
+
+        assertThat(result.getTotalElements()).isEqualTo(49);
+        assertThat(result.getContent()).extracting(KomgaBookDto::getId).doesNotContain("1", "999");
+    }
+
+    @Test
+    void aRestrictedBookIsNotFoundByItsId() {
+        BookLoreUserEntity reader = reader();
+        BookEntity restricted = seriesBooks.get(0);
+        when(bookRepository.findById(1L)).thenReturn(Optional.of(restricted));
+        when(contentRestrictionService.applyRestrictions(anyList(), eq(reader.getId()))).thenReturn(List.of());
+
+        assertThatThrownBy(() -> komgaService.getBookById(1L)).isInstanceOf(APIException.class).hasMessageContaining("not found");
+        assertThatThrownBy(() -> komgaService.getBookPages(1L)).isInstanceOf(APIException.class);
+    }
+
+    @Test
+    void readersSeriesComeFromTheBooksTheyCanSee() {
+        reader();
+        List<BookEntity> all = new ArrayList<>(seriesBooks);
+        all.add(bookInOtherLibrary());
+        when(bookRepository.findAllWithMetadata()).thenReturn(all);
+        when(komgaMapper.getBookSeriesName(any())).thenAnswer(inv -> {
+            BookEntity book = inv.getArgument(0);
+            return book.getMetadata().getSeriesName() != null ? book.getMetadata().getSeriesName() : book.getMetadata().getTitle();
+        });
+        when(komgaMapper.toKomgaSeriesDto(anyString(), anyLong(), anyList()))
+                .thenAnswer(inv -> KomgaSeriesDto.builder().name(inv.getArgument(0)).build());
+
+        KomgaPageableDto<KomgaSeriesDto> result = komgaService.getAllSeries(null, 0, 20, false);
+
+        assertThat(result.getContent()).extracting(KomgaSeriesDto::getName).containsExactly("Test Series");
+        verify(bookRepository, never()).findDistinctSeriesNamesGrouped(anyString());
     }
 }
