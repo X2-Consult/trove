@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Email Setup Guide · Trove Help</title>
+<title>Sending by email · Trove Help</title>
 <link rel="stylesheet" href="docs.css">
 <script src="docs.js" defer></script>
 </head>
@@ -15,10 +15,9 @@
 <div class="layout">
 <nav class="sidebar" id="docs-nav" aria-label="Help topics"></nav>
 <main class="doc">
-<h1>Email Setup Guide</h1>
-<p>Trove allows you to send books directly via email using various email providers. This guide will walk you through setting up Gmail as your email provider, enabling you to use the "Quick Book Send" feature from any book card.</p>
-<aside class="note note-info"><p class="note-title">What's New in v2</p><p>Users with email permission can now set up their own personal email providers and recipients without interfering with other users' configurations. Each user manages their own email settings independently. Additionally, administrators can optionally share email providers with all users, making it
-easy to provide centralized email configurations while still allowing users to create their own private providers.</p></aside>
+<h1>Sending by email</h1>
+<p class="lede">Trove can email books to a Kindle, an e-reader or a friend. You set up an email account to send from (a provider) and the addresses to send to (recipients); after that it's one click from any book. This guide uses Gmail, but any SMTP service works.</p>
+<aside class="note note-info"><p class="note-title">Everyone has their own</p><p>Each user with the <strong>Email Books</strong> permission sets up their own providers and recipients, which nobody else sees. Admins can also share a provider with everyone.</p></aside>
 
 <h2 id="prerequisites">Prerequisites</h2>
 <p>Before setting up Gmail as your email provider, ensure you have:</p>
@@ -49,31 +48,31 @@ easy to provide centralized email configurations while still allowing users to c
 <h2 id="step-2-configure-email-provider-in-trove">Step 2: Configure Email Provider in Trove</h2>
 <p>Now let's add Gmail as an email provider in your Trove settings.</p>
 <aside class="note note-info"><p class="note-title">Personal and Shared Providers</p><p>Your email provider configuration is personal to your account by default. Other users won't see or be able to use your email providers unless you're an admin and choose to share them. Admins can optionally share providers with all users, while non-admin users' providers remain private.</p></aside>
-<figure><img alt="Email Providers Page" loading="lazy" src="images/email-setup/email-1.jpg"/></figure>
+<figure><img alt="The Email settings before any provider is set up" loading="lazy" src="images/email-setup/email-1.jpg"/></figure>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Email</strong> in Trove</li>
-<li>Click <strong>Create Provider</strong></li>
+<li>Click <strong>Add Provider</strong></li>
 </ol>
 
-<figure><img alt="Gmail Configuration" loading="lazy" src="images/email-setup/email-2.jpg"/></figure>
+<figure><img alt="The Create Email Provider dialog filled in for Gmail with example values" loading="lazy" src="images/email-setup/email-2.jpg"/></figure>
 <p>Fill in the Gmail configuration details:</p>
-<div class="table-wrap"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td><strong>Name</strong></td><td>Gmail (or any descriptive name)</td></tr><tr><td><strong>Host</strong></td><td><code>smtp.gmail.com</code></td></tr><tr><td><strong>Port</strong></td><td><code>587</code></td></tr><tr><td><strong>Username</strong></td><td>Your full Gmail address (e.g., <code>EMAIL-TO-FIX</code>)</td></tr><tr><td><strong>Password</strong></td><td>The 16-character app password you generated</td></tr><tr><td><strong>From Address</strong></td><td>Your Gmail address (same as username)</td></tr><tr><td><strong>Auth</strong></td><td>✅ Enabled</td></tr><tr><td><strong>StartTLS</strong></td><td>✅ Enabled</td></tr><tr><td><strong>Shared</strong></td><td>⬜ (Admin only - check to share with all users)</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td><strong>Name</strong></td><td>Gmail (or any descriptive name)</td></tr><tr><td><strong>Host</strong></td><td><code>smtp.gmail.com</code></td></tr><tr><td><strong>Port</strong></td><td><code>587</code></td></tr><tr><td><strong>Username</strong></td><td>Your full Gmail address (for example <code>elinor@gmail.com</code>)</td></tr><tr><td><strong>Password</strong></td><td>The 16-character app password you generated</td></tr><tr><td><strong>From Address</strong></td><td>Your Gmail address (same as username)</td></tr><tr><td><strong>Auth</strong></td><td>✅ Enabled</td></tr><tr><td><strong>StartTLS</strong></td><td>✅ Enabled</td></tr><tr><td><strong>Shared</strong></td><td>⬜ (Admin only - check to share with all users)</td></tr></tbody></table></div>
 <ol>
-<li>Click <strong>Create Email Provider</strong> to save the configuration</li>
+<li>Click <strong>Create Provider</strong></li>
 </ol>
-<aside class="note note-info"><p class="note-title">Admin Sharing</p><p>If you are an administrator, you'll see a <strong>Shared</strong> checkbox. Enabling this option will make the email provider available to all users in your Trove instance. Shared providers appear with an "S" badge and can only be modified or deleted by the admin who created them.</p></aside>
+<aside class="note note-info"><p class="note-title">Admin Sharing</p><p>If you are an administrator, you'll see a <strong>Shared</strong> checkbox. Enabling this option will make the email provider available to all users in your Trove instance. Shared providers are marked with a share icon and can only be modified or deleted by the admin who created them.</p></aside>
 
 <h2 id="step-3-set-up-recipient-emails">Step 3: Set Up Recipient Emails</h2>
 <p>After configuring your email provider, you'll need to add recipients who will receive your books via email.</p>
 <aside class="note note-info"><p class="note-title">Personal Recipients</p><p>Your recipient list is private to your account. Each user maintains their own list of recipients independently.</p></aside>
 <ol>
 <li>Navigate to <strong>Email</strong> &gt; <strong>Recipients</strong> in Trove</li>
-<li>Click <strong>Create Recipient</strong></li>
+<li>Click <strong>Add Recipient</strong></li>
 </ol>
 
-<figure><img alt="Add Recipient" loading="lazy" src="images/email-setup/email-3.jpg"/></figure>
+<figure><img alt="Adding Elinor's Kindle as a recipient" loading="lazy" src="images/email-setup/email-3.jpg"/></figure>
 <p>Fill in the recipient details:</p>
-<div class="table-wrap"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td><strong>Email Address</strong></td><td>The recipient's email address (e.g., <code>EMAIL-TO-FIX</code>)</td></tr><tr><td><strong>Name</strong></td><td>A friendly name for the recipient (e.g., <code>John's Kindle</code>)</td></tr><tr><td><strong>Default Recipient</strong></td><td>Check this box to set as your default recipient</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td><strong>Email Address</strong></td><td>The recipient's email address (for example <code>elinor_kindle@kindle.com</code>)</td></tr><tr><td><strong>Name</strong></td><td>A friendly name for the recipient (e.g., <code>John's Kindle</code>)</td></tr><tr><td><strong>Default Recipient</strong></td><td>Check this box to set as your default recipient</td></tr></tbody></table></div>
 <ol>
 <li>Click <strong>Save</strong> to add the recipient</li>
 </ol>
@@ -81,12 +80,13 @@ easy to provide centralized email configurations while still allowing users to c
 <aside class="note note-tip"><p class="note-title">Quick Send Ready</p><p>Once you have configured a default email provider and default recipient, you can send books with one click using "Quick Book Send" from any book card. Your default settings are personal to your account.</p></aside>
 
 <p>This is how the interface should look after setting up both the email provider and recipient:</p>
-<figure><img alt="Recipients List" loading="lazy" src="images/email-setup/email-4.jpg"/></figure>
+<figure><img alt="One provider and two recipients set up" loading="lazy" src="images/email-setup/email-4.jpg"/></figure>
 
+<aside class="note note-tip"><p class="note-title">Sending to a Kindle</p><p>Amazon only accepts documents from addresses you've approved. In your Amazon account, under <strong>Preferences › Personal Document Settings</strong>, add the provider's <strong>From Address</strong> to the approved list, and use your Kindle's <code>@kindle.com</code> address as the recipient. Kindles take EPUB and PDF by email.</p></aside>
 <h2 id="step-4-sending-books-via-email">Step 4: Sending Books via Email</h2>
 <p>Trove offers two convenient methods to send books via email:</p>
 <aside class="note note-info"><p>When sending books, you'll use your own configured email providers and recipients. Other users sending books will use their own configurations.</p></aside>
-<figure><img alt="Advanced Send" loading="lazy" src="images/email-setup/email-5.jpg"/></figure>
+<figure><img alt="The Custom Send dialog for Emma" loading="lazy" src="images/email-setup/email-5.jpg"/></figure>
 <h3 id="quick-book-send-one-click">Quick Book Send (One-Click)</h3>
 <p>For fast, streamlined sending using your default settings:</p>
 <ol>
@@ -96,6 +96,7 @@ easy to provide centralized email configurations while still allowing users to c
 <li>The book is instantly sent using your <strong>default email provider</strong> to your <strong>default recipient</strong></li>
 </ol>
 <aside class="note note-tip"><p>Perfect for regular sending to the same recipient (such as your Kindle).</p></aside>
+<p>Files over 25 MB ask you to confirm first, since many mail services refuse large attachments.</p>
 <h3 id="custom-advanced-send">Custom/Advanced Send</h3>
 <p>For flexible sending with specific provider and recipient selection:</p>
 <ol>
@@ -109,9 +110,9 @@ easy to provide centralized email configurations while still allowing users to c
 <aside class="note note-tip"><p>Perfect for sending to different recipients or using specific email providers for certain books.</p></aside>
 
 <h2 id="multi-user-email-configuration">Multi-User Email Configuration</h2>
-<aside class="note note-info"><p class="note-title">Multi-User Email Configuration</p><p>In the new email configuration system, each user can configure their own email providers and recipients. Administrators can optionally share email providers with all users for centralized management.</p></aside>
-<h3 id="how-email-v2-works">How Email v2 Works</h3>
-<p>In the new email configuration system:</p>
+<aside class="note note-info"><p class="note-title">Multi-User Email Configuration</p><p>Each user can configure their own email providers and recipients. Administrators can optionally share email providers with all users for centralized management.</p></aside>
+<h3 id="how-it-works">How it works</h3>
+<p>In short:</p>
 <ul>
 <li><strong>Personal Email Providers</strong>: Each user can configure their own private email providers (Gmail, Outlook, custom SMTP, etc.)</li>
 <li><strong>Shared Email Providers (Admin Only)</strong>: Administrators can create shared providers that are available to all users</li>
@@ -125,7 +126,7 @@ easy to provide centralized email configurations while still allowing users to c
 <p><strong>What are Shared Providers?</strong></p>
 <ul>
 <li>Administrators can mark email providers as "shared" to make them available to all users</li>
-<li>Shared providers appear with an "S" badge in the provider list</li>
+<li>Shared providers are marked with a share icon in the provider list</li>
 <li>All users can use shared providers to send books</li>
 <li>Only the admin who created a shared provider can modify or delete it</li>
 </ul>
@@ -249,7 +250,7 @@ easy to provide centralized email configurations while still allowing users to c
 <p>The configuration process is similar - simply adjust the host, port, and authentication settings according to your provider's documentation.</p>
 <aside class="note note-tip"><p>You can configure multiple email providers and switch between them as needed. The default provider will be used for Quick Book Send, but you can select different providers when manually sending books. All your private email configurations are personal to your account and won't be visible to other
 users. Administrators can optionally share providers to make them available to everyone.</p></aside>
-<aside class="note note-info"><p class="note-title">Privacy Note</p><p>In email configuration v2, your private email provider credentials, recipient lists, and sending history are private to your account. Administrators can create shared providers that are available to all users, but they can only be modified by the admin who created them. Other users with email
+<aside class="note note-info"><p class="note-title">Privacy Note</p><p>Your private email provider credentials, recipient lists, and sending history are private to your account. Administrators can create shared providers that are available to all users, but they can only be modified by the admin who created them. Other users with email
 permission will have their own separate private configurations.</p></aside>
 </main>
 </div>

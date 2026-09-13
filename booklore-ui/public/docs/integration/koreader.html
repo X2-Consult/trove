@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>KOReader Sync · Trove Help</title>
+<title>KOReader · Trove Help</title>
 <link rel="stylesheet" href="../docs.css">
 <script src="../docs.js" defer></script>
 </head>
@@ -15,11 +15,12 @@
 <div class="layout">
 <nav class="sidebar" id="docs-nav" aria-label="Help topics"></nav>
 <main class="doc">
-<h1>KOReader Sync</h1>
-<p>KOReader sync lets you push and pull reading progress between <a href="https://web.archive.org/web/20260304100502/https://koreader.rocks/">KOReader</a> and Trove. Read a few chapters on your e-reader, push the progress, and it shows up in Trove. Pick up on another device, pull the latest position, and continue where you left off.</p>
+<h1>KOReader</h1>
+<p class="lede">KOReader sync lets you push and pull reading progress between <a href="https://web.archive.org/web/20260304100502/https://koreader.rocks/">KOReader</a> and Trove. Read a few chapters on your e-reader, push the progress, and it shows up in Trove. Pick up on another device, pull the latest position, and continue where you left off.</p>
 <p>Trove matches books by file content hash, so the same physical file must exist in both places. In practice this means KOReader needs to have downloaded the book from Trove (typically via OPDS) so the file bytes match. A book sideloaded from a different source won't produce the same hash, and progress won't link up.</p>
 <aside class="note note-tip"><p class="note-title">Sync with Trove Reader</p><p>By default, KOReader progress and the built-in Trove web reader progress are tracked independently (they use different position formats). You can optionally enable <strong>Sync reading progress with Trove eBook Reader</strong> in the KOReader settings on the Devices page, which converts KOReader's XPointer positions to EPUB CFI so your web reader picks up where you left off. This conversion is approximate and may update by chapter rather than exact page.</p></aside>
 
+<aside class="note note-warning"><p class="note-title">When Trove rewrites a file</p><p>Matching uses the file as it is in Trove now. If Trove later changes the file (for example by <a href="../metadata/metadata-settings.html">writing edited metadata into it</a>), the copy on your e-reader no longer matches and its progress stops syncing. Download the book again after such changes, or leave writing metadata to files off for EPUBs you read in KOReader.</p></aside>
 <h2 id="step-1-configure-koreader-sync-in-trove">Step 1: Configure KOReader Sync in Trove</h2>
 <p>Go to <strong>Settings &gt; Devices</strong> in Trove. You'll see the <strong>KOReader Settings</strong> section with an enable toggle, an API path, and username/password fields.</p>
 <ol>
@@ -30,11 +31,11 @@
 <li>Enter a <strong>username</strong> and <strong>password</strong> for KOReader to authenticate with (these are KOReader-specific credentials, separate from your Trove login)</li>
 <li>Click <strong>Save</strong></li>
 <li>Toggle <strong>Enable KOReader Sync</strong> on</li>
-<li>Copy the <strong>KOReader API Path</strong> shown (e.g., <code>http://192.168.0.2:6060/api/koreader</code>). You'll need this in KOReader.</li>
+<li>Copy the <strong>KOReader API Path</strong> shown (for example <code>http://trove.example.com/api/koreader</code>). You'll need this in KOReader.</li>
 </ol>
 <figure><img alt="KOReader Settings with sync enabled, API path populated, username and password filled in, and Save button" loading="lazy" src="../images/integration/koreader/credentials-setup.jpg"/></figure>
-<aside class="note note-info"><p class="note-title">Permissions</p><p>Only users with the <strong>KOReader Sync</strong> permission can use this feature. Admins have it by default. To grant it to other users, go to <strong>Settings &gt; Users</strong> and enable the <strong>KOReader Sync</strong> checkbox on their row.</p></aside>
-<figure><img alt="Settings &gt; Users page showing the user list with permission columns including KOReader Sync" loading="lazy" src="../images/integration/koreader/user-permissions.jpg"/></figure>
+<aside class="note note-info"><p class="note-title">Permissions</p><p>Only users with the <strong>KOReader Sync</strong> permission can use this feature. Admins have it by default. To grant it to someone else, go to <strong>Settings › Users</strong>, open their card with the arrow, and tick <strong>KOReader Sync</strong> under Device Sync.</p></aside>
+<figure><img alt="A user's permissions, with KOReader Sync ticked under Device Sync" loading="lazy" src="../images/integration/koreader/user-permissions.jpg"/></figure>
 
 <h2 id="step-2-set-up-sync-in-koreader">Step 2: Set Up Sync in KOReader</h2>
 <p>Open a book in KOReader to access the tools menu.</p>
@@ -62,8 +63,8 @@
 <aside class="note note-tip"><p class="note-title">Auto Sync</p><p>KOReader can sync automatically. Enable <strong>Automatically keep documents in sync</strong> and optionally set <strong>Periodically sync every # pages</strong> so you don't have to push/pull manually each time.</p></aside>
 
 <h2 id="viewing-synced-progress">Viewing Synced Progress</h2>
-<p>KOReader progress appears on the book's detail page in Trove as <strong>KOReader Progress</strong> with a percentage and a green progress indicator.</p>
-<figure><img alt="Book detail page for Digital Fortress showing KOReader Progress at 21.1% alongside Trove Progress and other metadata" loading="lazy" src="../images/integration/koreader/synced-progress.jpg"/></figure>
+<p>KOReader progress appears on the book's detail page in Trove as <strong>KOReader Progress</strong>, a percentage in an orange badge.</p>
+<figure><img alt="Treasure Island's page showing KOReader Progress of 41.7%" loading="lazy" src="../images/integration/koreader/synced-progress.jpg"/></figure>
 <p>Click the reset icon next to the KOReader progress to clear it in Trove. This does not affect the reading position stored on your KOReader device.</p>
 
 <h2 id="troubleshooting">Troubleshooting</h2>

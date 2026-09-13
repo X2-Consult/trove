@@ -1261,6 +1261,27 @@ Object.assign(scenes, {
   },
 });
 
+Object.assign(scenes, {
+  // The audiobook player with the LibriVox recording of The Happy Prince: the player, its chapter
+  // list, and the sleep timer. Nothing is played aloud; the page is only opened.
+  async audiobookPlayer(page) {
+    const id = await bookId(page, 'The Happy Prince and Other Tales');
+    await open(page, `/audiobook-player/book/${id}`);
+    await page.waitForTimeout(3000);
+    await shot(page, 'readers/audiobook-player', 'audiobook-player');
+    const trackList = page.locator('header p-button:has(.pi-list)').first();
+    await trackList.click();
+    await page.waitForTimeout(1000);
+    await shot(page, 'readers/audiobook-player', 'audiobook-chapters');
+    await page.locator('.track-list-sidebar .sidebar-header').locator('button, p-button').last().click(); // its close button
+    await page.waitForTimeout(600);
+    await page.locator('p-button', {hasText: 'Sleep Timer'}).click();
+    await page.waitForTimeout(700);
+    await shot(page, 'readers/audiobook-player', 'audiobook-sleep-timer');
+    await page.keyboard.press('Escape');
+  },
+});
+
 /** The id of the book with this title, from the API. */
 async function bookId(page, title) {
   const book = (await apiGet(page, '/books?stripForListView=true')).find(b => b.metadata?.title === title);

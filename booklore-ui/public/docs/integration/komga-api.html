@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Komga API Integration Guide · Trove Help</title>
+<title>Komga API · Trove Help</title>
 <link rel="stylesheet" href="../docs.css">
 <script src="../docs.js" defer></script>
 </head>
@@ -15,8 +15,8 @@
 <div class="layout">
 <nav class="sidebar" id="docs-nav" aria-label="Help topics"></nav>
 <main class="doc">
-<h1>Komga API Integration Guide</h1>
-<p>The Komga API allows you to access your Trove library using popular manga and comic reading applications that support the Komga server standard. This guide will walk you through setting up the Komga API and connecting your favorite reading apps to your Trove collection.</p>
+<h1>Komga API</h1>
+<p class="lede">The Komga API allows you to access your Trove library using popular manga and comic reading applications that support the Komga server standard. This guide will walk you through setting up the Komga API and connecting your favorite reading apps to your Trove collection.</p>
 
 <h2 id="what-is-the-komga-api">What is the Komga API?</h2>
 <p><a href="https://web.archive.org/web/20260302013459/https://komga.org/">Komga</a> is a popular media server for comics and manga. Trove provides a Komga-compatible API layer that enables Komga clients to access your Trove library. With the Komga API enabled in Trove, you can:</p>
@@ -40,13 +40,13 @@
 <p>Trove provides the Komga API at a dedicated endpoint:</p>
 <h3 id="komga-base-url">Komga Base URL</h3>
 <ul>
-<li><strong>URL:</strong> <code>http://localhost:8080/komga</code></li>
+<li><strong>URL:</strong> <code>http://your-server:6060/komga</code></li>
 <li><strong>API Endpoints:</strong> <code>/komga/api/v1/*</code></li>
 <li><strong>Compatibility:</strong> Works with Komga-compatible reading apps</li>
 <li><strong>Authentication:</strong> Requires OPDS user credentials (see Step 3)</li>
 </ul>
 <p>You can copy this URL directly from the <strong>Komga API Endpoint</strong> section in your settings.</p>
-<aside class="note note-tip"><p class="note-title">Network Access</p><p>Replace <code>localhost:8080</code> with your actual Trove server address when accessing from other devices on your network.</p></aside>
+<aside class="note note-tip"><p class="note-title">Network Access</p><p>Use your Trove server's address when accessing from other devices on your network.</p></aside>
 
 <h2 id="step-3-create-opds-users-for-authentication">Step 3: Create OPDS Users for Authentication</h2>
 <p>The Komga API uses OPDS user credentials for authentication. To access your Komga API, you'll need to create dedicated OPDS user credentials.</p>
@@ -309,7 +309,7 @@ GET /komga/api/v1/books/123?clean=true</code></pre>
 
 <h2 id="network-considerations">Network Considerations</h2>
 <h3 id="local-network-access">Local Network Access</h3>
-<aside class="note note-info"><p class="note-title">Local Network Access</p><p>Replace <code>localhost:8080</code> with your actual Trove server IP address when connecting from other devices on your local network.</p><p>Example: <code>http://192.168.1.100:8080/komga</code></p></aside>
+<aside class="note note-info"><p class="note-title">Local Network Access</p><p>From other devices, use your server's address, for example <code>http://192.168.1.100:6060/komga</code>, or your domain name behind a reverse proxy.</p></aside>
 <h3 id="remote-access">Remote Access</h3>
 <aside class="note note-info"><p class="note-title">Remote Access</p><p>Ensure your Trove server is accessible from the internet. Use HTTPS for secure connections when accessing remotely.</p><p>Example: <code>https://trove.yourdomain.com/komga</code></p></aside>
 <h3 id="firewall-settings">Firewall Settings</h3>

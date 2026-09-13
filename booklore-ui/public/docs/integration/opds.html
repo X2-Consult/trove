@@ -16,12 +16,12 @@
 <nav class="sidebar" id="docs-nav" aria-label="Help topics"></nav>
 <main class="doc">
 <h1>OPDS</h1>
-<p>OPDS (Open Publication Distribution System) lets you browse and download books from your Trove library using any OPDS-compatible reading app. Point your app at Trove's catalog URL, authenticate, and your full library is available on any device: e-readers, tablets, phones.</p>
+<p class="lede">OPDS (Open Publication Distribution System) lets you browse and download books from your Trove library using any OPDS-compatible reading app. Point your app at Trove's catalog URL, authenticate, and your full library is available on any device: e-readers, tablets, phones.</p>
 <p>Trove also provides a <strong>Komga-compatible API</strong> for apps that speak the Komga protocol (Tachiyomi, Komelia, etc.), which is especially useful for comic/manga readers that support per-page streaming of CBX files. Both APIs share the same user accounts and respect library access permissions.</p>
 
 <h2 id="server-control">Server Control</h2>
-<p>Go to <strong>Settings &gt; OPDS</strong> in Trove. The top section has two toggles:</p>
-<figure><img alt="Trove OPDS Configuration page showing server toggles, endpoint URLs, and OPDS user management" loading="lazy" src="../images/integration/opds/opds.jpg"/></figure>
+<p>Go to <strong>Settings › OPDS</strong> in Trove. The top section has two toggles:</p>
+<figure><img alt="OPDS and the Komga API switched on, their addresses, and an OPDS user" loading="lazy" src="../images/integration/opds/opds.jpg"/></figure>
 <p><strong>OPDS Server Enabled</strong> activates the standard OPDS catalog at <code>/api/v1/opds</code>. This is what most reading apps connect to.</p>
 <p><strong>Komga API</strong> activates the Komga-compatible API at <code>/komga/api/</code>. Enable this if you use Tachiyomi, Komelia, or other Komga clients. It uses the same OPDS user accounts for authentication.</p>
 <p>When the Komga API is enabled, an additional toggle appears:</p>

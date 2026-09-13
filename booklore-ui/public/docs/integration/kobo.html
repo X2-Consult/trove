@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Kobo Integration · Trove Help</title>
+<title>Kobo · Trove Help</title>
 <link rel="stylesheet" href="../docs.css">
 <script src="../docs.js" defer></script>
 </head>
@@ -15,8 +15,8 @@
 <div class="layout">
 <nav class="sidebar" id="docs-nav" aria-label="Help topics"></nav>
 <main class="doc">
-<h1>Kobo Integration</h1>
-<p>Sync books from your Trove library to your Kobo eReader. Books are managed through a dedicated Kobo shelf. Adding or removing books from this shelf controls what syncs to your device.</p>
+<h1>Kobo</h1>
+<p class="lede">Sync books from your Trove library to your Kobo eReader. Books are managed through a dedicated Kobo shelf. Adding or removing books from this shelf controls what syncs to your device.</p>
 
 <h2 id="what-you-ll-achieve">What You'll Achieve</h2>
 <p>With Kobo integration, you can:</p>
@@ -47,9 +47,9 @@
 </ul>
 <h3 id="file-support">File Support</h3>
 <ul>
-<li><strong>EPUB Files</strong>: Full support for EPUB format books</li>
-<li><strong>Quality Preservation</strong>: Books maintain their original formatting and metadata</li>
-<li><strong>No PDF Support</strong>: PDF files are currently not supported for Kobo sync</li>
+<li><strong>EPUB</strong> books sync as they are, or converted to KEPUB (Kobo's own flavour, with better typography and reading statistics) if an admin turns on <strong>Convert to KEPUB</strong>.</li>
+<li><strong>Comics</strong> (CBZ, CBR, CB7) sync when an admin turns on <strong>Convert CBX to EPUB</strong>.</li>
+<li><strong>PDFs</strong> and audiobooks don't sync to a Kobo.</li>
 </ul>
 
 <h2 id="nginx-reverse-proxy-configuration">Nginx Reverse Proxy Configuration</h2>
@@ -66,16 +66,27 @@ proxy_buffers 4 256k;
 proxy_busy_buffers_size 256k;
 large_client_header_buffers 8 32k;</code></pre>
 <aside class="note note-info"><p class="note-title">Nginx Proxy Manager</p><p>The proxy headers are already set automatically, but you still need to add the buffer settings manually.</p></aside>
+<aside class="note note-tip"><p class="note-title">Native installs</p><p>If you let <code>install.sh</code> set up nginx or Caddy, the headers and buffer sizes Kobo needs are already in place.</p></aside>
 <aside class="note note-warning"><p class="note-title">Other Reverse Proxies</p><p>If you use Caddy, Traefik, or another reverse proxy, configure equivalent headers and buffer settings. Consult your proxy's documentation.</p></aside>
 
-<h2 id="step-1-get-your-api-token">Step 1: Get Your API Token</h2>
+<h2 id="step-1-get-your-api-token">Step 1: Switch on Kobo sync</h2>
 <ol>
-<li>Go to <strong>Settings &gt; Devices</strong> in Trove</li>
-<li>Find the <strong>Kobo Sync Settings</strong> section</li>
-<li>Copy your unique API token</li>
+<li>Go to <strong>Settings › Devices</strong> and find <strong>Kobo Integration Configuration</strong></li>
+<li>Switch on <strong>Enable Kobo Sync</strong>. Trove creates your <strong>Kobo Sync Token</strong></li>
+<li>Copy the token with the copy button (the eye button shows it)</li>
 </ol>
-<figure><img alt="Device Settings" loading="lazy" src="../images/integration/kobo/device-settings.jpg"/></figure>
-<p>You can regenerate the token at any time, but you'll need to update your Kobo's configuration afterward.</p>
+<figure><img alt="Kobo sync switched on, with the sync token and progress thresholds" loading="lazy" src="../images/integration/kobo/device-settings.jpg"></figure>
+<p>The same section has your personal options:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Setting</th><th>What it does</th></tr></thead>
+<tbody>
+<tr><td><strong>Two-Way Reading Progress Sync</strong></td><td>Also sends your place in Trove's own reader to the Kobo, not just the Kobo's to Trove</td></tr>
+<tr><td><strong>Mark as Reading at</strong></td><td>Progress at which a book counts as started (1% by default)</td></tr>
+<tr><td><strong>Mark as Finished at</strong></td><td>Progress at which a book counts as read (99% by default, allowing for notes and index pages)</td></tr>
+<tr><td><strong>Auto-Add New Books to Kobo Shelf</strong></td><td>Puts every newly added book on your Kobo shelf</td></tr>
+</tbody>
+</table></div>
+<p>Admins also see <strong>Administrator Settings</strong> for everyone: KEPUB conversion and its size limit, forced hyphenation, and converting comics to EPUB. See <a href="../tools/devices.html">Device settings</a>. <strong>Regenerate Token</strong> makes a new token; the Kobo then needs the new address.</p>
 <aside class="note note-info"><p class="note-title">Permissions</p><p>Admin users have Kobo Sync enabled by default. Other users need the permission granted by an admin (see below).</p></aside>
 
 <h2 id="step-2-configure-your-kobo">Step 2: Configure Your Kobo</h2>
@@ -89,9 +100,9 @@ large_client_header_buffers 8 32k;</code></pre>
 <li>Find the <code>[OneStoreServices]</code> section and update the <code>api_endpoint</code> line:</li>
 </ol>
 <p><strong>Local network:</strong></p>
-<pre><code>api_endpoint=http://192.168.1.100:6060/api/kobo/your-token-here</code></pre>
+<pre><code>api_endpoint=http://192.168.1.100:6060/api/kobo/YOUR-TOKEN</code></pre>
 <p><strong>Remote server (with reverse proxy):</strong></p>
-<pre><code>api_endpoint=https://trove.example.com/api/kobo/your-token-here</code></pre>
+<pre><code>api_endpoint=https://trove.example.com/api/kobo/YOUR-TOKEN</code></pre>
 <p><img alt="Before Change" loading="lazy" src="https://web.archive.org/web/20260301053224im_/https://booklore.org/assets/images/config-before-3088123f97228e4e437fb459387abf5b.jpg"/>
 <img alt="After Change" loading="lazy" src="https://web.archive.org/web/20260301053224im_/https://booklore.org/assets/images/config-after-57e84910bfd350e3881b0f35189ad41a.jpg"/></p>
 <ol start="5">
@@ -103,11 +114,11 @@ large_client_header_buffers 8 32k;</code></pre>
 <li>In Trove, click the three-dot menu on any book card and select <strong>Assign Shelf</strong></li>
 <li>Choose your <strong>Kobo</strong> shelf</li>
 </ol>
-<figure><img alt="Assign Shelf" loading="lazy" src="../images/integration/kobo/assign-shelf.jpg"/></figure>
+<figure><img alt="Putting Dracula on the Kobo shelf" loading="lazy" src="../images/integration/kobo/assign-shelf.jpg"/></figure>
 <ol start="3">
 <li>Repeat for all books you want on your device</li>
 </ol>
-<figure><img alt="Shelf With Books" loading="lazy" src="../images/integration/kobo/shelf-with-books.jpg"/></figure>
+<figure><img alt="The Kobo shelf with four books" loading="lazy" src="../images/integration/kobo/shelf-with-books.jpg"/></figure>
 <ol start="4">
 <li>On your Kobo, go to <strong>My Books</strong> and tap the sync icon, then <strong>Sync Now</strong></li>
 </ol>
@@ -132,7 +143,7 @@ large_client_header_buffers 8 32k;</code></pre>
 </ol>
 <figure><img alt="Sync After Removal" loading="lazy" src="https://web.archive.org/web/20260301053224im_/https://booklore.org/assets/images/sync-after-removal-5d0207dccd4185396a9ff9a82a1ecbf5.jpg"/></figure>
 <p>The book is removed from your Kobo shelf in Trove but remains in your main library.</p>
-<figure><img alt="Shelf After Removal" loading="lazy" src="../images/integration/kobo/shelf-after-removal.jpg"/></figure>
+<figure><img alt="The Kobo shelf after Dracula was removed on the device" loading="lazy" src="../images/integration/kobo/shelf-after-removal.jpg"/></figure>
 <h3 id="from-trove">From Trove</h3>
 <ol>
 <li>Go to your Kobo shelf</li>
@@ -142,10 +153,11 @@ large_client_header_buffers 8 32k;</code></pre>
 </ol>
 
 <h2 id="viewing-synced-progress">Viewing Synced Progress</h2>
-<p>Reading progress from your Kobo appears on the book's detail page in Trove as a percentage with a red progress bar under the cover.</p>
-<figure><img alt="Synced Progress" loading="lazy" src="../images/integration/kobo/synced-progress.jpg"/></figure>
-<p>Click <strong>Reset Progress</strong> to clear the Kobo progress in Trove. This does not affect the device's read status.</p>
+<p>Reading progress from your Kobo appears on the book's detail page in Trove as <strong>Kobo Progress</strong>, with an orange badge and a red bar under the cover.</p>
+<figure><img alt="Frankenstein's page showing Kobo Progress of 63%" loading="lazy" src="../images/integration/kobo/synced-progress.jpg"/></figure>
+<p>Click the reset arrow beside it to clear the Kobo progress in Trove. This does not affect the device's read status.</p>
 
+<aside class="note note-info"><p class="note-title">Coming from BookLore</p><p>Devices set up with BookLore keep syncing after the move to Trove, with the same token and address.</p></aside>
 <h2 id="granting-access-to-other-users">Granting Access to Other Users</h2>
 <p>By default, only admins have Kobo Sync enabled. To grant it to other users:</p>
 <ol>
