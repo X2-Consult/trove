@@ -478,6 +478,157 @@ Object.assign(scenes, {
   },
 });
 
+Object.assign(scenes, {
+  // The PDF reader (pdf.js): a page of The Art of War, and the tools menu with its view modes.
+  async pdfReader(page) {
+    const id = await bookId(page, 'The Art of War');
+    await open(page, `/pdf-reader/book/${id}`);
+    await page.waitForTimeout(3000);
+    for (let i = 0; i < 3; i++) {
+      await page.getByTitle('Next Page', {exact: true}).first().click();
+      await page.waitForTimeout(500);
+    }
+    await page.waitForTimeout(1000);
+    await shot(page, 'readers/pdf-reader', 'pdf-reader-overview');
+    await page.getByTitle('Tools', {exact: true}).first().click();
+    await page.waitForTimeout(800);
+    await shot(page, 'readers/pdf-reader', 'pdf-reader-view-modes', {hover: true});
+    await page.keyboard.press('Escape');
+  },
+
+  // The comic reader: a page of Neill's Oz drawings, the page list, settings, a note and the shortcuts.
+  async cbxReader(page) {
+    const id = await bookId(page, 'The Marvelous Land of Oz Picture Book');
+    const token = await page.evaluate(() => localStorage.getItem('accessToken_Internal'));
+    const headers = {Authorization: `Bearer ${token}`};
+    const notes = await (await page.request.get(`${BASE}/api/v2/book-notes/book/${id}`, {headers})).json();
+    for (const note of notes) await page.request.delete(`${BASE}/api/v2/book-notes/${note.id}`, {headers});
+
+    await open(page, `/cbx-reader/book/${id}`);
+    await page.waitForTimeout(2500);
+    for (let i = 0; i < 2; i++) {
+      await page.keyboard.press('ArrowRight');
+      await page.waitForTimeout(700);
+    }
+    await page.mouse.move(VIEWPORT.width / 2, VIEWPORT.height / 2);
+    await page.waitForTimeout(3500); // controls fade while reading
+    await shot(page, 'readers/cbx-reader', 'cbx-reader-overview', {hover: true});
+
+    // Drawers sit over a dimmed page and close when it's clicked (not with Escape); dialogs close with Escape.
+    const toggle = async (title, name, closeAt) => {
+      await readerToolbar(page, title);
+      await shot(page, 'readers/cbx-reader', name, {hover: true});
+      if (closeAt) await page.mouse.click(closeAt, VIEWPORT.height / 2);
+      else await page.keyboard.press('Escape');
+      await page.waitForTimeout(800);
+    };
+    await toggle('Contents', 'cbx-reader-pages', VIEWPORT.width - 150); // drawer on the left
+    await toggle('Settings', 'cbx-reader-settings', 150); // drawer on the right
+    await toggle('Keyboard Shortcuts (?)', 'cbx-reader-shortcuts');
+
+    await readerToolbar(page, 'Add Note');
+    await page.locator('textarea:visible').first().fill('Jack Pumpkinhead comes to life on this page - compare the drawing with the description in chapter 2.');
+    await shot(page, 'readers/cbx-reader', 'cbx-reader-notes', {hover: true});
+    await page.keyboard.press('Escape');
+  },
+});
+
+// Settings screenshots: [tab, section heading or null for the top of the tab, help page, image name].
+const SETTINGS_SHOTS = [
+  ['reader', 'Settings Application Mode', 'reader-preferences', 'settings-application-mode'],
+  ['reader', 'Appearance', 'reader-preferences', 'ebook-appearance'],
+  ['reader', 'Typography', 'reader-preferences', 'ebook-typography'],
+  ['reader', 'Comic Book Reader: Default Settings', 'reader-preferences', 'comic-reader'],
+  ['view', 'Library and Shelf View & Sort Preferences', 'view-preferences', 'library-shelf-view-sort'],
+  ['view', 'Filter Preferences', 'view-preferences', 'filter-preferences'],
+  ['view', 'Sidebar Library and Shelf Sorting Preference', 'view-preferences', 'sidebar-sorting'],
+  ['metadata', 'Metadata Persistence', 'metadata/metadata-settings', 'metadata-persistence'],
+  ['metadata', 'Automatic Metadata Download', 'metadata/metadata-settings', 'auto-metadata-download'],
+  ['metadata', 'Metadata Providers', 'metadata/metadata-settings', 'metadata-providers'],
+  ['metadata', 'Enabled Fields in Metadata Editor & Picker', 'metadata/metadata-settings', 'enabled-fields'],
+  ['metadata', 'Public Reviews', 'metadata/metadata-settings', 'public-reviews'],
+  ['metadata-library', null, 'metadata/metadata-fetch-configuration', 'metadata-configuration'],
+  ['naming-pattern', null, 'metadata/file-naming-patterns', 'file-naming-patterns'],
+  ['application', null, 'tools/global-preferences', 'global-preferences'],
+  ['user', null, 'tools/user-management', 'user-management'],
+  ['task', null, 'tools/task-manager', 'system-task-manager'],
+  ['audit-logs', null, 'tools/audit-logs', 'audit-logs'],
+  ['opds', null, 'integration/opds', 'opds'],
+  ['device', 'KOReader Sync Configuration', 'tools/devices', 'koreader-sync'],
+  ['device', 'Hardcover Integration', 'tools/devices', 'hardcover-integration'],
+  ['device', 'Kobo Integration Configuration', 'tools/devices', 'kobo-integration'],
+  ['device', 'Administrator Settings', 'tools/devices', 'kobo-admin-settings'],
+  ['reader', 'Custom Font Library', 'tools/custom-fonts', 'font-00'],
+];
+
+Object.assign(scenes, {
+  async settings(page) {
+    let currentTab = null;
+    for (const [tab, heading, pageSlug, name] of SETTINGS_SHOTS) {
+      if (tab !== currentTab || !heading) {
+        await open(page, `/settings?tab=${tab}`);
+        await page.waitForTimeout(1200);
+        currentTab = tab;
+      }
+      if (heading) await scrollToHeading(page, heading, 'h2, h3, h4, .section-title');
+      await shot(page, pageSlug, name);
+    }
+  },
+});
+
+Object.assign(scenes, {
+  // The library's menu and what it opens: edit, find duplicates, add a physical book, re-scan.
+  async libraryMenu(page) {
+    const library = (await apiGet(page, '/libraries')).find(l => l.name === 'Classics');
+    const menu = async item => {
+      await page.locator('.entity-menu-wrapper').locator('button, a, i').first().click();
+      await page.waitForTimeout(700);
+      if (item) {
+        await page.locator('[role=menuitem], .p-menu li, .p-tieredmenu li', {hasText: item}).first().click();
+        await page.waitForTimeout(1200);
+      }
+    };
+    await open(page, `/library/${library.id}/books`);
+    await menu();
+    await shot(page, 'library/duplicate-detection', 'library-menu');
+    await shot(page, 'library/physical-books', 'library-menu');
+    await page.keyboard.press('Escape');
+
+    await menu('Edit Library');
+    await shot(page, 'library/edit-library', 'edit-library-1');
+    const body = page.locator('.library-creator .dialog-body').first();
+    await body.evaluate(el => el.scrollBy(0, 420));
+    await page.waitForTimeout(500);
+    await shot(page, 'library/edit-library', 'edit-library-2');
+    await body.evaluate(el => el.scrollTo(0, el.scrollHeight));
+    await page.waitForTimeout(500);
+    await shot(page, 'library/edit-library', 'edit-library-3');
+    await page.keyboard.press('Escape');
+    await page.waitForTimeout(600);
+
+    await menu('Find Duplicates');
+    await shot(page, 'library/duplicate-detection', 'find-duplicates-dialog');
+    await page.keyboard.press('Escape');
+    await page.waitForTimeout(600);
+
+    await menu('Add Physical Book');
+    const dialog = page.locator('.p-dialog').last();
+    const fields = dialog.locator('input[type=text]:visible, input:not([type]):visible');
+    await fields.nth(0).fill('Sense and Sensibility');
+    await shot(page, 'library/physical-books', 'add-dialog');
+    await page.keyboard.press('Escape'); // not added: the library stays as it is
+    await page.waitForTimeout(600);
+
+    // Re-scanning shows the same progress as the first scan after creating a library.
+    await menu('Re-scan Library');
+    await page.locator('.p-dialog button', {hasText: /^\s*Rescan\s*$/}).click();
+    // The activity button's icon changes with state (pulse, spinner, bell), so find it by its aria label.
+    await page.locator('button.topbar-item:has(i[aria-label])').first().click();
+    await page.waitForTimeout(600);
+    await shot(page, 'library/setup-first-library', 'library-processing', {keepToasts: true});
+  },
+});
+
 /** The id of the book with this title, from the API. */
 async function bookId(page, title) {
   const book = (await apiGet(page, '/books?stripForListView=true')).find(b => b.metadata?.title === title);
@@ -496,8 +647,8 @@ async function scrollBy(page, pixels) {
 }
 
 /** Brings a section heading to just below the top of the view, so its chart fills the screenshot. */
-async function scrollToHeading(page, text) {
-  const heading = page.locator('h3, h2', {hasText: text}).first();
+async function scrollToHeading(page, text, selector = 'h3, h2') {
+  const heading = page.locator(selector, {hasText: text}).first();
   // Charts further down render as they come into view, so scroll until the heading exists.
   for (let step = 0; step < 40 && await heading.count() === 0; step++) {
     await scrollBy(page, 700);
