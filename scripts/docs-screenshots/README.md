@@ -9,7 +9,7 @@ accounts or copyrighted cover art.
 | `build-library.sh` | Downloads and assembles the sample library (below) |
 | `sample-data.py` | Sets the sample books' details, author biographies and reading history through the API |
 | `capture.mjs` | Drives the instance with Playwright and saves each screenshot as `booklore-ui/public/docs/images/<page>/<name>.jpg` |
-| `link-images.mjs` | Points help pages' `<img>` tags that still load from the old docs site at the new files |
+| `link-images.mjs` | Points help pages' `<img>` tags at local files, matching them by name |
 
 ## The docs instance
 
@@ -46,6 +46,16 @@ Titles, series order, first publication years, genres, descriptions and author b
 written for these screenshots, and the reading history is sample data. Metadata was not fetched from
 the online providers: they would bring in modern publishers' cover art and copy. Screens that do show
 provider results (metadata search, Bookdrop, author search) have those results blurred.
+
+## Screens from other software
+
+Screens of other software (Authentik's admin pages, a Kobo and KOReader in use, Amazon and Hardcover
+in a browser) can't come from the docs instance. They're the ones the BookLore documentation used,
+copied from its archived site into `images/` so the help doesn't depend on the Wayback Machine,
+with anything private or copyrighted blurred first: the Kobo shelf's book covers, a Kobo sync
+token, a Hardcover API token, Amazon cookie values and a user name in a Finder window. The Authentik
+screens show BookLore's own demo server. The two Trove settings screens from that set (where the
+Amazon cookie and Hardcover token go) are captured afresh by the `providerTokens` scene.
 
 ## Running it
 

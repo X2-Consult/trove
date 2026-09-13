@@ -59,11 +59,11 @@ Trove receives and validates the tokens, extracts user information, matches it w
 <li>
 <p><strong>Navigate to Applications</strong><br/>
 Open your Authentik dashboard and click <strong>"Create a new application"</strong>. This will launch a setup wizard that guides you through the process.</p>
-<figure><img alt="Create Application" loading="lazy" src="https://web.archive.org/web/20260216110411im_/https://booklore.org/assets/images/authentik-1-6b54ac579c46e39829a7457063e6de08.jpg"/></figure>
+<figure><img alt="Create Application" loading="lazy" src="../images/authentication/authentik/authentik-1.jpg"/></figure>
 </li>
 <li>
 <p><strong>Configure Application Details</strong></p>
-<figure><img alt="Application Configuration" loading="lazy" src="https://web.archive.org/web/20260216110411im_/https://booklore.org/assets/images/authentik-2-31f1afc059d464889ec223295db85c76.jpg"/></figure>
+<figure><img alt="Application Configuration" loading="lazy" src="../images/authentication/authentik/authentik-2.jpg"/></figure>
 <p>Fill in the application section:</p>
 <ul>
 <li><strong>Name:</strong> <code>Trove</code> (or your preferred name) - This name will be displayed to users on the Authentik login page</li>
@@ -73,7 +73,7 @@ Open your Authentik dashboard and click <strong>"Create a new application"</stro
 </li>
 <li>
 <p><strong>Select Provider Type</strong></p>
-<figure><img alt="Choose Provider" loading="lazy" src="https://web.archive.org/web/20260216110411im_/https://booklore.org/assets/images/authentik-3-a906171fad7aba090014900f68c98284.jpg"/></figure>
+<figure><img alt="Choose Provider" loading="lazy" src="../images/authentication/authentik/authentik-3.jpg"/></figure>
 <ul>
 <li>Choose <strong>OAuth2/OpenID Provider</strong> from the available options</li>
 <li>Click <strong>Next</strong> to configure provider settings</li>
@@ -81,7 +81,7 @@ Open your Authentik dashboard and click <strong>"Create a new application"</stro
 </li>
 <li>
 <p><strong>Configure Provider Settings</strong></p>
-<figure><img alt="Configure Provider" loading="lazy" src="https://web.archive.org/web/20260216110411im_/https://booklore.org/assets/images/authentik-4-2b90ac1f67a25c8da7ad20e3fd5aba2e.jpg"/></figure>
+<figure><img alt="Configure Provider" loading="lazy" src="../images/authentication/authentik/authentik-4.jpg"/></figure>
 <ul>
 <li><strong>Name:</strong> <code>Trove OAuth2</code> (or your preferred name) - This is the internal provider name</li>
 <li><strong>Authorization Flow:</strong> Select <code>default-provider-authorization-implicit-consent</code>
@@ -102,7 +102,7 @@ Open your Authentik dashboard and click <strong>"Create a new application"</stro
 <li>
 <p><strong>Set Up Redirect URIs</strong></p>
 <p>Configure where Authentik should redirect users after authentication. These URIs are critical for security:</p>
-<figure><img alt="Redirect URIs" loading="lazy" src="https://web.archive.org/web/20260216110411im_/https://booklore.org/assets/images/authentik-5-d88f2e77be72a219a0bd07e79cf92858.jpg"/></figure>
+<figure><img alt="Redirect URIs" loading="lazy" src="../images/authentication/authentik/authentik-5.jpg"/></figure>
 <p>Add these redirect URIs, with your Trove address in place of <code>trove.example.com</code> (Trove shows the exact callback address under <strong>Provider Configuration Reference</strong> in Settings › OIDC):</p>
 <ul>
 <li><strong>Strict:</strong> <code>https://trove.example.com/oauth2-callback</code>, the address that receives the sign-in response</li>
@@ -120,7 +120,7 @@ Regex: http://192.168.1.100:6060/.*</code></pre>
 <li>
 <p><strong>Configure OAuth Scopes</strong></p>
 <p>Define what information Authentik will share with Trove. Each scope grants access to specific user data:</p>
-<figure><img alt="OAuth Scopes" loading="lazy" src="https://web.archive.org/web/20260216110411im_/https://booklore.org/assets/images/authentik-6-657886eeda188d599edb56e8c1d0c253.jpg"/></figure>
+<figure><img alt="OAuth Scopes" loading="lazy" src="../images/authentication/authentik/authentik-6.jpg"/></figure>
 <p>Add the following scopes (all are required):</p>
 <ul>
 <li>✉️ <strong>email</strong> - User's email address for notifications and account identification</li>
@@ -134,7 +134,7 @@ Regex: http://192.168.1.100:6060/.*</code></pre>
 <li>
 <p><strong>Bind Users to Application</strong></p>
 <p>Control which users can access Trove through Authentik. This step is crucial for access control:</p>
-<figure><img alt="Configure Bindings" loading="lazy" src="https://web.archive.org/web/20260216110411im_/https://booklore.org/assets/images/authentik-7-38305853a0a025d83bcc4056701b49dd.jpg"/></figure>
+<figure><img alt="Configure Bindings" loading="lazy" src="../images/authentication/authentik/authentik-7.jpg"/></figure>
 <p>In the "Configure Bindings" section:</p>
 <ul>
 <li><strong>Type:</strong> Select <strong>User</strong> to bind individual users, or <strong>Group</strong> to bind entire groups</li>
@@ -148,12 +148,12 @@ Regex: http://192.168.1.100:6060/.*</code></pre>
 
 <h3 id="step-2-retrieve-provider-credentials">Step 2: Retrieve Provider Credentials</h3>
 <p>Get the credentials needed to connect Trove to Authentik. You'll need these in the next step:</p>
-<figure><img alt="Provider List" loading="lazy" src="https://web.archive.org/web/20260216110411im_/https://booklore.org/assets/images/authentik-8-91839c249e514725651e98ced6ddd188.jpg"/></figure>
+<figure><img alt="Provider List" loading="lazy" src="../images/authentication/authentik/authentik-8.jpg"/></figure>
 <ol>
 <li><strong>Navigate to Providers</strong><br/>
 From the Authentik main page, go to <strong>Applications → Providers</strong> and select the provider you just created (it should be named <code>Trove OAuth2</code> if you followed the naming convention)</li>
 </ol>
-<figure><img alt="Provider Credentials" loading="lazy" src="https://web.archive.org/web/20260216110411im_/https://booklore.org/assets/images/authentik-9-250d3672ad6feb522bbfc153f21f0544.jpg"/></figure>
+<figure><img alt="Provider Credentials" loading="lazy" src="../images/authentication/authentik/authentik-9.jpg"/></figure>
 <ol start="2">
 <li><strong>Copy Credentials</strong><br/>
 You'll need two pieces of information from this screen:
@@ -211,7 +211,7 @@ Under <strong>Login Methods</strong>, switch on <strong>OIDC Login</strong> to s
 <h2 id="testing-the-integration">Testing the Integration</h2>
 <h3 id="step-4-test-login-with-authentik">Step 4: Test Login with Authentik</h3>
 <p>Verify that the integration works correctly before rolling it out to users. Testing ensures a smooth experience:</p>
-<figure><img alt="User Impersonation" loading="lazy" src="https://web.archive.org/web/20260216110411im_/https://booklore.org/assets/images/authentik-11-0b78d81cba8c8ebcd6423d4545dc3830.jpg"/></figure>
+<figure><img alt="User Impersonation" loading="lazy" src="../images/authentication/authentik/authentik-11.jpg"/></figure>
 <ol>
 <li>
 <p><strong>Impersonate a User (Recommended for Testing)</strong></p>
@@ -229,7 +229,7 @@ Under <strong>Login Methods</strong>, switch on <strong>OIDC Login</strong> to s
 </ul>
 </li>
 </ol>
-<figure><img alt="Authentik Login Page" loading="lazy" src="https://web.archive.org/web/20260216110411im_/https://booklore.org/assets/images/authentik-12-ef08d9ad05d8ec5c0ae8524997934c83.jpg"/></figure>
+<figure><img alt="Authentik Login Page" loading="lazy" src="../images/authentication/authentik/authentik-12.jpg"/></figure>
 <ol start="2">
 <li><strong>Access Trove</strong>
 <ul>

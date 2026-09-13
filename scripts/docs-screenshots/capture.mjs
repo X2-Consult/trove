@@ -1310,6 +1310,33 @@ Object.assign(scenes, {
   },
 });
 
+Object.assign(scenes, {
+  // Where an Amazon cookie and a Hardcover token go, in Metadata Providers. The values typed in are
+  // made-up examples, blurred anyway, and nothing is saved.
+  async providerTokens(page) {
+    await open(page, '/settings?tab=metadata');
+    await scrollToHeading(page, 'Metadata Providers', 'h2, h3, h4, .section-title');
+    const cookie = page.getByPlaceholder('Paste your Amazon cookie');
+    await cookie.fill('session-id=000-0000000-0000000; ubid-main=000-0000000-0000000; session-token=example');
+    // The Hardcover switch unlocks once a token has been entered.
+    await page.getByPlaceholder('Enter Hardcover API token').fill('eyJhbGciOiJIUzI1NiJ9.example-token-not-real.example-signature');
+    await page.waitForTimeout(500);
+    const hardcover = page.locator('label.setting-label', {hasText: /^\s*Hardcover\s*$/}).locator('xpath=..');
+    if (!await hardcover.locator('p-toggleswitch input').isChecked()) await hardcover.locator('p-toggleswitch').click();
+    await page.evaluate(() => {
+      for (const el of document.querySelectorAll('input')) {
+        if (/session-id=|eyJhbGci/.test(el.value)) el.style.filter = 'blur(4px)';
+      }
+    });
+    await cookie.scrollIntoViewIfNeeded();
+    await scrollBy(page, 120);
+    await shot(page, 'metadata/amazon-cookie', 'amazon-cookie-2');
+    await page.getByPlaceholder('Enter Hardcover API token').evaluate(el => el.scrollIntoView({block: 'center'}));
+    await page.waitForTimeout(400);
+    await shot(page, 'metadata/hardcover-token', 'hardcover-2');
+  },
+});
+
 /** The id of the book with this title, from the API. */
 async function bookId(page, title) {
   const book = (await apiGet(page, '/books?stripForListView=true')).find(b => b.metadata?.title === title);
