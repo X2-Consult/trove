@@ -30,7 +30,6 @@
     "maxUploadSize": "Dimensione massima caricamento file",
     "maxUploadPlaceholder": "Dimensione massima",
     "maxUploadDesc": "Definisce la dimensione massima consentita (in MB) per ogni file caricato. Si applica ai formati EPUB, PDF, CBZ, CBR e CB7.",
-    "restartWarning": "Le modifiche avranno effetto dopo il riavvio del server",
     "invalidInput": "Input non valido",
     "invalidInputDetail": "Inserisci una dimensione massima valida per il caricamento file in MB."
   },

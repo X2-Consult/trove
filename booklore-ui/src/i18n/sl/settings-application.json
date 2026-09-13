@@ -32,7 +32,6 @@
     "maxUploadSize": "Največja velikost naložene datoteke",
     "maxUploadPlaceholder": "Največja velikost",
     "maxUploadDesc": "Določa največjo dovoljeno velikost (v MB) za vsako naloženo datoteko. Velja za formate EPUB, PDF, CBZ, CBR in CB7.",
-    "restartWarning": "Spremembe bodo stopile v veljavo po ponovnem zagonu strežnika",
     "invalidInput": "Neveljaven vnos",
     "invalidInputDetail": "Prosim, vnesi veljavno največjo velikost datoteke v MB."
   },

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Devices · Trove Help</title>
+<title>Device settings · Trove Help</title>
 <link rel="stylesheet" href="../docs.css">
 <script src="../docs.js" defer></script>
 </head>
@@ -15,18 +15,18 @@
 <div class="layout">
 <nav class="sidebar" id="docs-nav" aria-label="Help topics"></nav>
 <main class="doc">
-<h1>Devices</h1>
-<p>The Devices page lets you configure integrations with external reading devices and services. It contains three sections: <strong>KOReader Sync</strong>, <strong>Hardcover Integration</strong>, and <strong>Kobo Integration</strong>.</p>
+<h1>Device settings</h1>
+<p class="lede">The Devices page lets you configure integrations with external reading devices and services. It contains three sections: <strong>KOReader Sync</strong>, <strong>Hardcover Integration</strong>, and <strong>Kobo Integration</strong>.</p>
 <p>Navigate to <strong>Settings &gt; Devices</strong> to access this page.</p>
 
 <h2 id="koreader-sync">KOReader Sync</h2>
 <p>Sync your reading progress between your KOReader device and Trove. When enabled, reading progress updates on your KOReader device are automatically reflected in Trove.</p>
 <p>Requires the <strong>KOReader Sync</strong> permission.</p>
-<figure><img alt="KOReader Sync Configuration" loading="lazy" src="../images/tools/devices/koreader-sync.jpg"/></figure>
+<figure><img alt="KOReader sync settings" loading="lazy" src="../images/tools/devices/koreader-sync.jpg"/></figure>
 <h3 id="sync-configuration">Sync Configuration</h3>
 <div class="table-wrap"><table><thead><tr><th>Setting</th><th>Description</th></tr></thead><tbody><tr><td><strong>Enable KOReader Sync</strong></td><td>Turns on synchronization. Only available after credentials are saved.</td></tr><tr><td><strong>Sync reading progress with Trove eBook Reader</strong></td><td>Enables bidirectional sync between KOReader and Trove's built-in web reader. Progress is approximate and may update by chapter rather than exact page.</td></tr></tbody></table></div>
 <h3 id="credentials">Credentials</h3>
-<div class="table-wrap"><table><thead><tr><th>Field</th><th>Description</th></tr></thead><tbody><tr><td><strong>KOReader API Path</strong></td><td>The API endpoint to configure on your KOReader device. Auto-generated from your Trove URL (e.g., <code>https://demo.booklore.org/api/koreader</code>). Read-only with a copy button.</td></tr><tr><td><strong>KOReader Username</strong></td><td>Your username for authenticating with the sync service.</td></tr><tr><td><strong>KOReader Password</strong></td><td>Your password (minimum 6 characters).</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th>Field</th><th>Description</th></tr></thead><tbody><tr><td><strong>KOReader API Path</strong></td><td>The API endpoint to configure on your KOReader device. Auto-generated from your Trove URL (e.g., <code>https://trove.example.com/api/koreader</code>). Read-only with a copy button.</td></tr><tr><td><strong>KOReader Username</strong></td><td>Your username for authenticating with the sync service.</td></tr><tr><td><strong>KOReader Password</strong></td><td>Your password (minimum 6 characters).</td></tr></tbody></table></div>
 <p>Click <strong>Edit</strong> to modify your credentials, then <strong>Save</strong> to persist them. The sync toggles are disabled until credentials are saved.</p>
 <aside class="note note-tip"><p class="note-title">Setting Up Your KOReader Device</p><p>On your KOReader device, go to <strong>Tools &gt; Progress sync &gt; Custom sync server</strong> and enter the API Path, Username, and Password shown on this page.</p></aside>
 
@@ -38,10 +38,11 @@
 <div class="table-wrap"><table><thead><tr><th>Setting</th><th>Description</th></tr></thead><tbody><tr><td><strong>Sync KOReader Reading Progress to Hardcover</strong></td><td>Enable or disable the sync. When enabled, the API Key field appears.</td></tr><tr><td><strong>Hardcover API Key</strong></td><td>Your personal API key from Hardcover. Get it from <a href="https://web.archive.org/web/20260309185346/https://hardcover.app/account/api">hardcover.app/account/api</a>. This key is private to your account.</td></tr></tbody></table></div>
 <aside class="note note-info"><p class="note-title">How It Works</p><p>When KOReader progress is synced to Trove, Trove automatically forwards the update to Hardcover. Books are marked as "Currently Reading" when progress begins and "Read" when progress reaches 99%+. Trove matches books to Hardcover using the Hardcover book ID stored in metadata.</p></aside>
 
+<p>Step-by-step setup is in <a href="../integration/koreader.html">KOReader</a>.</p>
 <h2 id="kobo-integration">Kobo Integration</h2>
 <p>Sync your Trove library and reading progress with your Kobo e-reader. Books on your Kobo shelf are delivered to the device, and reading progress can be synced bidirectionally.</p>
 <p>Requires the <strong>Kobo Sync</strong> permission.</p>
-<figure><img alt="Kobo Integration Configuration" loading="lazy" src="../images/tools/devices/kobo-integration.jpg"/></figure>
+<figure><img alt="Kobo sync settings" loading="lazy" src="../images/tools/devices/kobo-integration.jpg"/></figure>
 <h3 id="sync-configuration">Sync Configuration</h3>
 <div class="table-wrap"><table><thead><tr><th>Setting</th><th>Description</th></tr></thead><tbody><tr><td><strong>Enable Kobo Sync</strong></td><td>Turns on Kobo synchronization. Automatically creates a "Kobo" shelf in your library. Disabling deletes the Kobo shelf.</td></tr><tr><td><strong>Two-Way Reading Progress Sync</strong></td><td>Enables bidirectional sync between Trove's web reader and your Kobo device. Due to different position formats, accuracy is best-effort and typically accurate to the chapter level.</td></tr><tr><td><strong>Kobo Sync Token</strong></td><td>Your unique authentication token for the Kobo device. Keep this secure. Use the regenerate button if you need a new token (invalidates the previous one).</td></tr></tbody></table></div>
 <h3 id="reading-thresholds">Reading Thresholds</h3>

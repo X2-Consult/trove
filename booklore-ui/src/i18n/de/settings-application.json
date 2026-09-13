@@ -32,7 +32,6 @@
     "maxUploadSize": "Maximale Dateiupload-Größe",
     "maxUploadPlaceholder": "Max. Größe",
     "maxUploadDesc": "Legt die maximal erlaubte Größe (in MB) pro hochgeladener Datei fest. Gilt für alle unterstützten Formate.",
-    "restartWarning": "Änderungen werden nach einem Neustart des Servers wirksam",
     "invalidInput": "Ungültige Eingabe",
     "invalidInputDetail": "Bitte geben Sie eine gültige maximale Dateiupload-Größe in MB ein."
   },

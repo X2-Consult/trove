@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Authelia Authentication · Trove Help</title>
+<title>Authelia · Trove Help</title>
 <link rel="stylesheet" href="../docs.css">
 <script src="../docs.js" defer></script>
 </head>
@@ -15,9 +15,9 @@
 <div class="layout">
 <nav class="sidebar" id="docs-nav" aria-label="Help topics"></nav>
 <main class="doc">
-<h1>Authelia Authentication</h1>
-<p>Seamlessly integrate Authelia as your single sign-on (SSO) provider for Trove. Simplify user authentication, enhance security, and provide a streamlined login experience across your applications.</p>
-<aside class="note note-danger"><p class="note-title">Username Matching Required</p><p>The username in Authelia must exactly match the username in Trove for authentication to work properly. Case sensitivity matters. If a user doesn't exist in Trove with the matching username, authentication will fail.</p></aside>
+<h1>Authelia</h1>
+<p class="lede">Seamlessly integrate Authelia as your single sign-on (SSO) provider for Trove. Simplify user authentication, enhance security, and provide a streamlined login experience across your applications.</p>
+<aside class="note note-info"><p class="note-title">Who can sign in</p><p>Either create each user in Trove first with the same username they have in Authelia, or switch on <strong>Automatic User Provisioning</strong> in Trove so accounts are created on first sign-in. See <a href="overview.html">Single sign-on</a>.</p></aside>
 
 <h2 id="what-you-ll-achieve">What You'll Achieve</h2>
 <p>With Authelia integration, you can:</p>
@@ -117,7 +117,7 @@ Trove receives and validates the tokens, extracts user information, matches it w
 <ol>
 <li>
 <p><strong>Open Trove Settings</strong><br/>
-Navigate to <strong>Settings → Authentication</strong> in your Trove admin interface. You'll need administrator privileges to access this section.</p>
+Go to <strong>Settings › OIDC</strong> in your Trove admin interface. You'll need administrator privileges to access this section.</p>
 </li>
 <li>
 <p><strong>Configure OIDC Provider</strong>
@@ -146,7 +146,7 @@ Enter the credentials you copied from Authelia:</p>
 </li>
 <li>
 <p><strong>Enable OIDC Authentication</strong><br/>
-Toggle <strong>"OIDC Enabled"</strong> to ON to activate Authelia authentication</p>
+Under <strong>Login Methods</strong>, switch on <strong>OIDC Login</strong> to start using Authelia</p>
 <ul>
 <li>When enabled, users will see a "Login with Authelia" button on the Trove login page</li>
 <li>The standard username/password login will still be available unless specifically disabled</li>
@@ -175,11 +175,11 @@ Toggle <strong>"OIDC Enabled"</strong> to ON to activate Authelia authentication
 <ol>
 <li>
 <p><strong>Navigate to Authentication Settings</strong><br/>
-Go to <strong>Trove → Settings → Authentication</strong></p>
+Go to <strong>Trove → Settings › OIDC</strong></p>
 </li>
 <li>
 <p><strong>Disable OIDC</strong><br/>
-Toggle <strong>"OIDC Enabled"</strong> to <strong>OFF</strong></p>
+Under <strong>Login Methods</strong>, switch off <strong>OIDC Login</strong></p>
 <ul>
 <li>This immediately disables Authelia authentication</li>
 <li>Active sessions remain valid until they expire</li>
@@ -210,7 +210,7 @@ You'll be redirected to the standard Trove login page with username/password fie
 </ul>
 <p><strong>Redirect Errors:</strong></p>
 <ul>
-<li>✓ Verify callback URL: <code>/oauth2/callback</code> (<strong>without</strong> trailing slash)</li>
+<li>✓ Verify callback URL: <code>/oauth2-callback</code> (<strong>without</strong> trailing slash)</li>
 <li>✓ Confirm domain matches exactly in both systems</li>
 <li>✓ Ensure HTTPS is used in production</li>
 <li>✓ Validate wildcard pattern: <code>https://your-domain/*</code></li>

@@ -30,7 +30,6 @@
     "maxUploadSize": "Max. uploadgrootte",
     "maxUploadPlaceholder": "Max. grootte",
     "maxUploadDesc": "Bepaalt de maximaal toegestane grootte (in MB) per geüpload bestand. Van toepassing op alle ondersteunde bestandsformaten.",
-    "restartWarning": "Wijzigingen worden van kracht na het herstarten van de server",
     "invalidInput": "Ongeldige invoer",
     "invalidInputDetail": "Voer een geldige maximale uploadgrootte in MB in."
   },

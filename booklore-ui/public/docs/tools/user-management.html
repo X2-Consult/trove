@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>User Management · Trove Help</title>
+<title>Users and permissions · Trove Help</title>
 <link rel="stylesheet" href="../docs.css">
 <script src="../docs.js" defer></script>
 </head>
@@ -15,8 +15,8 @@
 <div class="layout">
 <nav class="sidebar" id="docs-nav" aria-label="Help topics"></nav>
 <main class="doc">
-<h1>User Management</h1>
-<p>User Management lets administrators create, edit, and delete users, assign granular permissions, control library access, and set up content restrictions to limit what specific users can see.</p>
+<h1>Users and permissions</h1>
+<p class="lede">User Management lets administrators create, edit, and delete users, assign granular permissions, control library access, and set up content restrictions to limit what specific users can see.</p>
 <p>Navigate to <strong>Settings &gt; Users</strong> to access this page. Only admin users can manage other users.</p>
 
 <h2 id="current-users">Current Users</h2>
@@ -28,23 +28,26 @@
 <li><strong>Permission summary badges</strong> showing how many permissions are enabled per category (e.g., 3/5)</li>
 </ul>
 <p>Click the arrow on a user row to expand it and view or edit their full details.</p>
-<figure><img alt="User Management" loading="lazy" src="../images/tools/user-management/user-management.jpg"/></figure>
+<figure><img alt="The Users tab with the admin account" loading="lazy" src="../images/tools/user-management/user-management.jpg"/></figure>
 
 <h2 id="adding-a-user">Adding a User</h2>
 <p>Click <strong>"+ Add User"</strong> in the top right corner. The creation form requires:</p>
-<div class="table-wrap"><table><thead><tr><th>Field</th><th>Required</th><th>Notes</th></tr></thead><tbody><tr><td><strong>Full Name</strong></td><td>Yes</td><td>Minimum 3 characters</td></tr><tr><td><strong>Username</strong></td><td>Yes</td><td>Must be unique</td></tr><tr><td><strong>Email</strong></td><td>Yes</td><td>Must be a valid email address</td></tr><tr><td><strong>Password</strong></td><td>Yes</td><td>Minimum 6 characters</td></tr><tr><td><strong>Confirm Password</strong></td><td>Yes</td><td>Must match password</td></tr><tr><td><strong>Library Access</strong></td><td>Yes</td><td>Select which libraries the user can access</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th>Field</th><th>Required</th><th>Notes</th></tr></thead><tbody><tr><td><strong>Full Name</strong></td><td>Yes</td><td>Minimum 3 characters</td></tr><tr><td><strong>Username</strong></td><td>Yes</td><td>Must be unique</td></tr><tr><td><strong>Email</strong></td><td>Yes</td><td>Must be a valid email address</td></tr><tr><td><strong>Password</strong></td><td>Yes</td><td>At least 8 characters</td></tr><tr><td><strong>Confirm Password</strong></td><td>Yes</td><td>Must match password</td></tr><tr><td><strong>Library Access</strong></td><td>Yes</td><td>Select which libraries the user can access</td></tr></tbody></table></div>
 <p>After filling in the details, you can assign permissions and content restrictions before saving.</p>
 
 <h2 id="user-information">User Information</h2>
 <p>Expand a user row and click the edit button to modify their details.</p>
 <div class="table-wrap"><table><thead><tr><th>Field</th><th>Description</th></tr></thead><tbody><tr><td><strong>Full Name</strong></td><td>The user's display name</td></tr><tr><td><strong>Email</strong></td><td>The user's email address</td></tr><tr><td><strong>Libraries</strong></td><td>Which libraries the user can access. Admin users automatically have access to all libraries.</td></tr></tbody></table></div>
 
+<h3 id="passwords">Passwords</h3>
+<p>The key button on a user's row (<strong>Change password</strong>) sets a new password for them, which is how you help someone who's forgotten theirs; Trove doesn't send reset emails. Users can change their own password from their profile, under the person button in the top bar. Users who sign in with <a href="../authentication/overview.html">single sign-on</a> have no Trove password.</p>
+
 <h2 id="permissions">Permissions</h2>
 <p>Permissions are organized into categories. Each permission is a checkbox that can be toggled individually. Enabling <strong>Full Administrator Access</strong> grants all permissions automatically.</p>
 <h3 id="administration">Administration</h3>
 <div class="table-wrap"><table><thead><tr><th>Permission</th><th>Description</th></tr></thead><tbody><tr><td><strong>Full Administrator Access</strong></td><td>Grants all permissions and full system control</td></tr></tbody></table></div>
 <h3 id="book-management">Book Management</h3>
-<div class="table-wrap"><table><thead><tr><th>Permission</th><th>Description</th></tr></thead><tbody><tr><td><strong>Upload Books</strong></td><td>Upload book files via Bookdrop</td></tr><tr><td><strong>Download Books</strong></td><td>Download book files</td></tr><tr><td><strong>Delete Books</strong></td><td>Remove books from libraries</td></tr><tr><td><strong>Manage Library</strong></td><td>Create, edit, and delete libraries</td></tr><tr><td><strong>Email Books</strong></td><td>Send books to devices or email addresses</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th>Permission</th><th>Description</th></tr></thead><tbody><tr><td><strong>Upload Books</strong></td><td>Upload book files (into a library or Bookdrop)</td></tr><tr><td><strong>Download Books</strong></td><td>Download book files</td></tr><tr><td><strong>Delete Books</strong></td><td>Remove books from libraries</td></tr><tr><td><strong>Manage Library</strong></td><td>Create, edit, and delete libraries</td></tr><tr><td><strong>Email Books</strong></td><td>Send books to devices or email addresses</td></tr></tbody></table></div>
 <h3 id="system-access">System Access</h3>
 <div class="table-wrap"><table><thead><tr><th>Permission</th><th>Description</th></tr></thead><tbody><tr><td><strong>Access Bookdrop</strong></td><td>Use the Bookdrop upload interface</td></tr><tr><td><strong>View Library Statistics</strong></td><td>View library-level statistics and analytics</td></tr><tr><td><strong>View User Reading Statistics</strong></td><td>View personal reading statistics</td></tr></tbody></table></div>
 <h3 id="system-configuration">System Configuration</h3>
@@ -52,7 +55,7 @@
 <h3 id="metadata-editing">Metadata Editing</h3>
 <div class="table-wrap"><table><thead><tr><th>Permission</th><th>Description</th></tr></thead><tbody><tr><td><strong>Edit Single Metadata</strong></td><td>Edit metadata for individual books</td></tr><tr><td><strong>Bulk Auto Fetch Metadata</strong></td><td>Run automatic metadata fetch on multiple books</td></tr><tr><td><strong>Bulk Custom Fetch Metadata</strong></td><td>Run custom metadata fetch on multiple books</td></tr><tr><td><strong>Access Bulk Metadata Editor</strong></td><td>Use the bulk metadata editor</td></tr><tr><td><strong>Bulk Regenerate Cover</strong></td><td>Regenerate covers for multiple books</td></tr><tr><td><strong>Move/Organize Files</strong></td><td>Move and reorganize book files on disk</td></tr><tr><td><strong>Bulk Lock/Unlock Metadata</strong></td><td>Lock or unlock metadata fields in bulk</td></tr></tbody></table></div>
 <h3 id="device-sync">Device Sync</h3>
-<div class="table-wrap"><table><thead><tr><th>Permission</th><th>Description</th></tr></thead><tbody><tr><td><strong>KOReader Sync</strong></td><td>Sync reading progress with KOReader devices</td></tr><tr><td><strong>Kobo Sync</strong></td><td>Sync books and progress with Kobo devices</td></tr><tr><td><strong>OPDS Feed Access</strong></td><td>Access the OPDS catalog feed</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th>Permission</th><th>Description</th></tr></thead><tbody><tr><td><strong>KOReader Sync</strong></td><td>Sync reading progress with KOReader devices</td></tr><tr><td><strong>Kobo Sync</strong></td><td>Sync books and progress with Kobo devices</td></tr><tr><td><strong>OPDS Feed Access</strong></td><td>Set up OPDS accounts and use the OPDS and Komga feeds</td></tr></tbody></table></div>
 <h3 id="bulk-reset">Bulk Reset</h3>
 <div class="table-wrap"><table><thead><tr><th>Permission</th><th>Description</th></tr></thead><tbody><tr><td><strong>Bulk Reset Trove Read Progress</strong></td><td>Reset reading progress tracked by Trove</td></tr><tr><td><strong>Bulk Reset KOReader Read Progress</strong></td><td>Reset KOReader sync progress</td></tr><tr><td><strong>Bulk Reset Book Read Status</strong></td><td>Reset read/unread status for books</td></tr></tbody></table></div>
 <h3 id="permission-summary-badges">Permission Summary Badges</h3>

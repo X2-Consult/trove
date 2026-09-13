@@ -156,24 +156,6 @@
   }
 }
 
-.warning-message {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.875rem;
-  color: var(--p-text-muted-color);
-  margin-top: 0.5rem;
-
-  .pi {
-    color: var(--p-orange-500);
-    font-size: settings.$settings-section-description-size;
-  }
-
-  @media (max-width: 768px) {
-    margin-top: 0.5rem;
-  }
-}
-
 .slider-container {
   flex: 1;
   min-width: 200px;

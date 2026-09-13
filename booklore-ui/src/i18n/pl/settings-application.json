@@ -30,7 +30,6 @@
     "maxUploadSize": "Maks. rozmiar przesyłanego pliku",
     "maxUploadPlaceholder": "Maks. rozmiar",
     "maxUploadDesc": "Określa maksymalny dozwolony rozmiar (w MB) każdego przesyłanego pliku. Dotyczy formatów EPUB, PDF, CBZ, CBR i CB7.",
-    "restartWarning": "Zmiany zostaną zastosowane po ponownym uruchomieniu serwera",
     "invalidInput": "Nieprawidłowe dane",
     "invalidInputDetail": "Proszę wprowadzić prawidłowy maksymalny rozmiar przesyłanego pliku w MB."
   },

@@ -1282,6 +1282,34 @@ Object.assign(scenes, {
   },
 });
 
+Object.assign(scenes, {
+  // API tokens: creating one (its value blurred) and the list. Earlier runs' tokens are revoked first.
+  async apiTokens(page) {
+    const token = await page.evaluate(() => localStorage.getItem('accessToken_Internal'));
+    const headers = {Authorization: `Bearer ${token}`};
+    const existing = await (await page.request.get(`${BASE}/api/v1/api-tokens`, {headers})).json().catch(() => []);
+    for (const t of Array.isArray(existing) ? existing : []) {
+      await page.request.delete(`${BASE}/api/v1/api-tokens/${t.id}`, {headers});
+    }
+    await open(page, '/settings?tab=api-tokens');
+    await page.waitForTimeout(800);
+    await page.getByRole('button', {name: 'New Token'}).click();
+    await page.waitForTimeout(600);
+    await page.locator('.p-dialog:visible input').first().fill('Reading app on my phone');
+    await page.locator('.p-dialog:visible').getByRole('button', {name: 'Create'}).click();
+    await page.waitForTimeout(1200);
+    await page.evaluate(() => {
+      for (const el of document.querySelectorAll('.p-dialog input, .p-dialog code, .p-dialog pre')) {
+        if (/blt_/.test(el.value || el.textContent || '')) el.style.filter = 'blur(5px)';
+      }
+    });
+    await shot(page, 'tools/api-tokens', 'token-created');
+    await page.locator('.p-dialog:visible').getByRole('button', {name: 'Done'}).click();
+    await page.waitForTimeout(800);
+    await shot(page, 'tools/api-tokens', 'api-tokens');
+  },
+});
+
 /** The id of the book with this title, from the API. */
 async function bookId(page, title) {
   const book = (await apiGet(page, '/books?stripForListView=true')).find(b => b.metadata?.title === title);

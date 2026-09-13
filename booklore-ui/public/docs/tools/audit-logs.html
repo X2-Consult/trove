@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Audit Logs · Trove Help</title>
+<title>Audit logs · Trove Help</title>
 <link rel="stylesheet" href="../docs.css">
 <script src="../docs.js" defer></script>
 </head>
@@ -15,8 +15,8 @@
 <div class="layout">
 <nav class="sidebar" id="docs-nav" aria-label="Help topics"></nav>
 <main class="doc">
-<h1>Audit Logs</h1>
-<p>Audit Logs provide a record of admin-significant actions performed across the system. Every login attempt, library change, user management action, and configuration update is logged with a timestamp, the user who performed it, and the originating IP address.</p>
+<h1>Audit logs</h1>
+<p class="lede">Audit Logs provide a record of admin-significant actions performed across the system. Every login attempt, library change, user management action, and configuration update is logged with a timestamp, the user who performed it, and the originating IP address.</p>
 <p>Audit Logs are available to <strong>admin users only</strong> and can be found under <strong>Settings &gt; Audit Logs</strong>.</p>
 
 <h2 id="activity-log">Activity Log</h2>
@@ -50,7 +50,7 @@
 <p>Click the refresh icon in the toolbar to enable <strong>auto-refresh</strong>. When active, the log automatically reloads every 10 seconds, making it useful for monitoring live activity. The icon spins while auto-refresh is enabled. Click it again to disable.</p>
 
 <h2 id="ip-geolocation">IP Geolocation</h2>
-<p>Each log entry includes the originating IP address along with a country flag. The country is resolved automatically using IP geolocation. Private or local IP addresses (127.x.x.x, 192.168.x.x, etc.) do not display a country flag.</p>
+<p>Each entry shows the IP address the request came from, with a country flag. To find the country, Trove sends each <strong>public</strong> IP address to the free ip-api.com service (over plain HTTP); private and local addresses (such as <code>192.168.x.x</code> or <code>127.0.0.1</code>) are never sent and show no flag.</p>
 
 <h2 id="notes">Notes</h2>
 <ul>

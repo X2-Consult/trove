@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Cover Settings · Trove Help</title>
+<title>Cover settings · Trove Help</title>
 <link rel="stylesheet" href="../docs.css">
 <script src="../docs.js" defer></script>
 </head>
@@ -15,19 +15,37 @@
 <div class="layout">
 <nav class="sidebar" id="docs-nav" aria-label="Help topics"></nav>
 <main class="doc">
-<h1>Cover Settings</h1>
-<p>Configure cover image handling in <strong>Settings &gt; Application</strong>.</p>
+<h1>Cover settings</h1>
+<p class="lede">Where covers come from, how odd-shaped ones are trimmed, and how to redo covers for many books at once.</p>
 
-<h2 id="cover-cropping">Cover Cropping</h2>
-<p>Automatically crop oversized cover images to prevent display issues. This is particularly useful for web comics that often have very tall images as their first page.</p>
-<div class="table-wrap"><table><thead><tr><th>Setting</th><th>Description</th></tr></thead><tbody><tr><td><strong>Enable Cover Cropping</strong></td><td>Crops images that exceed the aspect ratio threshold (disabled by default)</td></tr><tr><td><strong>Smart Cropping</strong></td><td>Skips solid-color areas at the top of the image to avoid blank cropped results</td></tr><tr><td><strong>Aspect Ratio Threshold</strong></td><td>Sets the threshold for how much larger the image has to be before it gets cropped</td></tr></tbody></table></div>
-
-<h2 id="bulk-cover-actions">Bulk Cover Actions</h2>
-<p>Select multiple books in the library view to access bulk cover options:</p>
+<h2 id="where-covers-come-from">Where covers come from</h2>
 <ul>
-<li><strong>Regenerate Covers</strong> – Force thumbnail regeneration for selected books</li>
-<li><strong>Upload Custom Cover</strong> – Apply a single cover image to all selected books</li>
+<li><strong>The book file.</strong> When a book is scanned, Trove uses the cover inside it: an EPUB's cover image, the first page of a PDF or comic, an audiobook's embedded artwork.</li>
+<li><strong>Metadata sources.</strong> Fetching metadata can bring a cover from Amazon, Google Books, Open Library and others, if <strong>Update Covers</strong> is on in <a href="../metadata/metadata-fetch-configuration.html">Library metadata</a>.</li>
+<li><strong>You.</strong> On a book's Edit Metadata tab you can upload an image or search the web for one. Lock the cover to keep it.</li>
+<li><strong>Generated.</strong> <strong>Generate Custom Cover</strong> (in a book's <strong>Metadata</strong> menu) makes a plain cover showing the title and author, handy for books with no cover at all.</li>
 </ul>
+
+<h2 id="trimming-tall-or-wide-covers">Trimming tall or wide covers</h2>
+<p>In <strong>Settings › Application</strong>, under <strong>Book Cover Image</strong>. Web comics and some scans have a first page far taller (or wider) than a book cover, which looks wrong as a thumbnail.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Setting</th><th>What it does</th></tr></thead>
+<tbody>
+<tr><td><strong>Vertical Cover Cropping</strong></td><td>Trims very tall images from the top to a cover shape</td></tr>
+<tr><td><strong>Horizontal Cover Cropping</strong></td><td>Trims very wide images from the left</td></tr>
+<tr><td><strong>Aspect Ratio Threshold</strong></td><td>How out of proportion an image must be before it's trimmed (2.5 means two and a half times taller or wider than normal)</td></tr>
+<tr><td><strong>Smart Cropping</strong></td><td>Skips plain borders and margins so the trimmed cover shows the picture, not blank edge</td></tr>
+</tbody>
+</table></div>
+<p>The settings apply to covers made from now on. To apply them to existing books, use <strong>Regenerate Covers</strong> on the same page. See <a href="global-preferences.html">Application settings</a>.</p>
+
+<h2 id="redoing-many-covers-at-once">Redoing many covers at once</h2>
+<p>Select books in the <a href="../book-browser/grid.html">grid or table</a>, open the selection bar's metadata menu, and choose:</p>
+<ul>
+<li><strong>Regenerate Covers</strong>: take the cover from each file again</li>
+<li><strong>Generate Custom Covers</strong>: make title-and-author covers</li>
+</ul>
+<p>For a single book, the same options are in its <strong>Metadata</strong> menu (<strong>Regenerate Cover (File)</strong> and <strong>Generate Custom Cover</strong>).</p>
 </main>
 </div>
 </body>

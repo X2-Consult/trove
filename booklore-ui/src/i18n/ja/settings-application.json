@@ -30,7 +30,6 @@
     "maxUploadSize": "最大ファイルアップロードサイズ",
     "maxUploadPlaceholder": "最大サイズ",
     "maxUploadDesc": "アップロードファイルの最大許容サイズ（MB単位）を定義します。EPUB、PDF、CBZ、CBR、CB7形式に適用されます。",
-    "restartWarning": "変更はサーバーの再起動後に有効になります",
     "invalidInput": "無効な入力",
     "invalidInputDetail": "有効な最大ファイルアップロードサイズ（MB）を入力してください。"
   },

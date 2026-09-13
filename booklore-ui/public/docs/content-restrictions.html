@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Content Restrictions · Trove Help</title>
+<title>Content restrictions · Trove Help</title>
 <link rel="stylesheet" href="docs.css">
 <script src="docs.js" defer></script>
 </head>
@@ -15,11 +15,11 @@
 <div class="layout">
 <nav class="sidebar" id="docs-nav" aria-label="Help topics"></nav>
 <main class="doc">
-<h1>Content Restrictions</h1>
-<p>Content Restrictions let admins control what books are visible to specific users based on metadata like categories, tags, moods, age ratings, and content ratings.</p>
+<h1>Content restrictions</h1>
+<p class="lede">Content Restrictions let admins control what books are visible to specific users based on metadata like categories, tags, moods, age ratings, and content ratings.</p>
 
 <h2 id="configuration">Configuration</h2>
-<p>Content restrictions are configured per user in <strong>Settings &gt; User Management</strong>. Expand a user's card to find the Content Restrictions section.</p>
+<p>Content restrictions are set per user in <strong>Settings › Users</strong>. Expand a user's card to find the Content Restrictions section.</p>
 
 <h2 id="restriction-types">Restriction Types</h2>
 <div class="table-wrap"><table><thead><tr><th>Type</th><th>Description</th><th>Example values</th></tr></thead><tbody><tr><td><strong>Category</strong></td><td>Filter by book genre/category</td><td>Horror, Romance, True Crime</td></tr><tr><td><strong>Tag</strong></td><td>Filter by book tags</td><td>violence, explicit-language</td></tr><tr><td><strong>Mood</strong></td><td>Filter by book moods</td><td>dark, disturbing</td></tr><tr><td><strong>Age Rating</strong></td><td>Filter by numeric age rating</td><td>0, 6, 10, 13, 16, 18, 21</td></tr><tr><td><strong>Content Rating</strong></td><td>Filter by content rating label</td><td>Everyone, Teen, Mature, Adult, Explicit</td></tr></tbody></table></div>
@@ -41,6 +41,7 @@
 <li><strong>Direct book access</strong> is checked when opening a specific book. If a restricted book is accessed directly (e.g., via URL), the server returns a 403 Forbidden response</li>
 </ul>
 <aside class="note note-info"><p>Only admins can configure content restrictions. Users cannot see or modify their own restrictions.</p></aside>
+<aside class="note note-info"><p>The restrictions also apply to the user's <a href="integration/opds.html">OPDS</a> feeds.</p></aside>
 </main>
 </div>
 </body>

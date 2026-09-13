@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Custom SVG Icons · Trove Help</title>
+<title>Custom icons · Trove Help</title>
 <link rel="stylesheet" href="../docs.css">
 <script src="../docs.js" defer></script>
 </head>
@@ -15,239 +15,51 @@
 <div class="layout">
 <nav class="sidebar" id="docs-nav" aria-label="Help topics"></nav>
 <main class="doc">
-<h1>Custom SVG Icons</h1>
-<p>Personalize your Trove library with custom SVG icons for collections, tags, and more. Add your own icon designs or delete unwanted ones with an intuitive drag-and-drop interface.</p>
-<aside class="note note-tip"><p class="note-title">Pro Tip</p><p>Use SVG icons from sites like, <a href="https://web.archive.org/web/20260110053807/https://lucide.dev/">Lucide</a>, <a href="https://web.archive.org/web/20260110053807/https://iconoir.com/">Iconoir</a> , <a href="https://web.archive.org/web/20260110053807/https://heroicons.com/">Heroicons</a>, or <a href="https://web.archive.org/web/20260110053807/https://feathericons.com/">Feather Icons</a> for professional, consistent designs.</p></aside>
+<h1>Custom icons</h1>
+<p class="lede">Libraries, shelves and magic shelves can each have an icon. Besides the built-in set, you can add your own SVG icons, and everyone on the server can use them.</p>
 
-<h2 id="what-you-ll-achieve">What You'll Achieve</h2>
-<p>With Custom SVG Icons, you can:</p>
-<ul>
-<li><strong>Add unique icons</strong> by pasting SVG code directly</li>
-<li><strong>Preview icons instantly</strong> before saving</li>
-<li><strong>Browse your collection</strong> with search and pagination</li>
-<li><strong>Delete icons easily</strong> using drag-and-drop to trash</li>
-<li><strong>Use icons anywhere</strong> in collections, tags, and library organization</li>
-</ul>
+<h2 id="opening-the-icon-picker">Opening the icon picker</h2>
+<p>Click <strong>Choose icon</strong> (or the current icon) in the dialog for a library, shelf or magic shelf.</p>
+<figure><img alt="The Edit Library dialog with its icon button" loading="lazy" src="../images/tools/custom-icons/0-icons--library-creator.jpg"></figure>
+<p>The picker has three tabs.</p>
 
-<h2 id="how-custom-icons-work">How Custom Icons Work</h2>
-<h3 id="the-icon-management-flow">The Icon Management Flow</h3>
+<h2 id="prime-icons">Prime Icons</h2>
+<p>The built-in icons: books, folders, tags, stars and hundreds more. Search by name and click one to use it.</p>
+<figure><img alt="The Prime Icons tab" loading="lazy" src="../images/tools/custom-icons/1-icons--prime.jpg"></figure>
+
+<h2 id="svg-library">SVG Library</h2>
+<p>SVG icons added to this server, including a starter set. Search by name, and click one to use it.</p>
+<figure><img alt="The SVG Library tab, with an anchor, a moon and a magnifier among the icons" loading="lazy" src="../images/tools/custom-icons/2-icons--custom.jpg"></figure>
+<p>To delete an icon, drag it onto <strong>Drop here to delete</strong> at the bottom. Deleting can't be undone, and libraries or shelves using the icon lose it.</p>
+
+<h2 id="add-custom">Add Custom</h2>
+<figure><img alt="Adding a castle icon: its name, SVG code and preview" loading="lazy" src="../images/tools/custom-icons/3-icons--add-custom.jpg"></figure>
 <ol>
-<li>
-<p><strong>🎨 Create or Find SVG</strong><br/>
-Design your own SVG or copy from icon libraries online.</p>
-</li>
-<li>
-<p><strong>📋 Paste &amp; Preview</strong><br/>
-Paste the SVG code into Trove and see an instant preview.</p>
-</li>
-<li>
-<p><strong>💾 Save with Name</strong><br/>
-Give your icon a memorable name and save it to your collection.</p>
-</li>
-<li>
-<p><strong>🔍 Browse &amp; Search</strong><br/>
-Find your icons quickly with search and pagination.</p>
-</li>
-<li>
-<p><strong>🗑️ Delete When Needed</strong><br/>
-Drag unwanted icons to the trash bin for easy removal.</p>
-</li>
+<li>Enter an <strong>Icon Name</strong>: letters, numbers and hyphens, such as <code>castle</code> or <code>book-open</code>.</li>
+<li>Paste the <strong>SVG Code</strong>, the whole thing from <code>&lt;svg</code> to <code>&lt;/svg&gt;</code>. The preview shows how it will look.</li>
+<li>Click <strong>Add to Queue</strong>. Add as many icons as you like this way.</li>
+<li>Click <strong>Save All Icons</strong>.</li>
 </ol>
+<p>A saved icon appears in the SVG Library. You need the <strong>Manage Icons</strong> permission to add or delete icons.</p>
 
-<h2 id="getting-started">Getting Started</h2>
-<h3 id="opening-the-icon-picker">Opening the Icon Picker</h3>
-<p>The icon picker appears when assigning icons to a Library, Shelf, or Magic Shelf.</p>
-<figure><img alt="Prime Icons Tab" loading="lazy" src="../images/tools/custom-icons/0-icons--library-creator.jpg"/></figure>
-<ol>
-<li>
-<p><strong>Navigate to Library/Shelf/Magic Shelf Settings</strong></p>
-</li>
-<li>
-<p><strong>Click the Choose Icon Button</strong></p>
-</li>
-<li>
-<p><strong>Choose Your Tab</strong>: Select from Prime Icons, SVG Icons, or Add SVG Icon</p>
-</li>
-</ol>
-
-<h2 id="understanding-the-icon-picker-interface">Understanding the Icon Picker Interface</h2>
-<h3 id="interface-overview">Interface Overview</h3>
-<p>The Icon Picker has three main tabs for different icon sources:</p>
-
-<h3 id="tab-1-prime-icons-built-in">Tab 1: Prime Icons (Built-in)</h3>
-<p>Browse the default PrimeNG icon library:</p>
-<figure><img alt="Prime Icons Tab" loading="lazy" src="../images/tools/custom-icons/1-icons--prime.jpg"/></figure>
-<h4 id="features">Features:</h4>
+<h2 id="tips-for-good-icons">Tips for good icons</h2>
 <ul>
-<li><strong>🔍 Search Bar</strong>: Quickly filter icons by name</li>
-<li><strong>🎯 Icon Grid</strong>: Visual grid of all available icons</li>
-<li><strong>✅ Selection</strong>: Click any icon to select and apply it</li>
-</ul>
-<aside class="note note-info"><p class="note-title">Built-in Library</p><p>Prime Icons come pre-installed with Trove and cover common use cases like folders, tags, books, and more.</p></aside>
-
-<h3 id="tab-2-svg-icons-your-collection">Tab 2: SVG Icons (Your Collection)</h3>
-<p>Browse and manage your custom SVG icons:</p>
-<figure><img alt="SVG Icons Tab" loading="lazy" src="../images/tools/custom-icons/2-icons--custom.jpg"/></figure>
-<h4 id="1-search-your-icons">1. Search Your Icons</h4>
-<p>Use the search bar to filter icons by name:</p>
-<pre><code>Search: "book" → Shows: book-open, book-closed, bookmark</code></pre>
-<h4 id="2-icon-grid-display">2. Icon Grid Display</h4>
-<p>Each icon displays as a clickable tile with:</p>
-<ul>
-<li>Visual preview of the SVG</li>
-<li>Icon name on hover</li>
-</ul>
-<h4 id="3-trash-bin-delete-icons">3. Trash Bin (Delete Icons)</h4>
-<p>Located in the bottom-right corner for easy access.</p>
-<p><strong>How to Delete:</strong></p>
-<ol>
-<li>
-<p><strong>Drag the Icon</strong><br/>
-Click and hold on any SVG icon</p>
-</li>
-<li>
-<p><strong>Drag to Trash</strong><br/>
-Move your cursor to the trash bin area</p>
-</li>
-<li>
-<p><strong>Drop to Delete</strong><br/>
-Release to permanently delete the icon</p>
-</li>
-<li>
-<p><strong>Visual Feedback</strong><br/>
-The trash bin highlights when you hover over it</p>
-</li>
-</ol>
-<aside class="note note-danger"><p class="note-title">Permanent Deletion</p><p>Deleted icons cannot be recovered. You'll need to re-add them if needed later.</p></aside>
-
-<h3 id="tab-3-add-svg-icon-create-new">Tab 3: Add SVG Icon (Create New)</h3>
-<p>Add new custom icons by pasting SVG code:</p>
-<figure><img alt="Add SVG Tab" loading="lazy" src="../images/tools/custom-icons/3-icons--add-custom.jpg"/></figure>
-<h4 id="step-by-step-guide">Step-by-Step Guide</h4>
-<h5>1. Name Your Icon<a href="#1-name-your-icon">​</a></h5>
-<p>Enter a descriptive name in the input field:</p>
-<pre><code>Icon Name: "rocket-ship"</code></pre>
-<p><strong>Naming Rules:</strong></p>
-<ul>
-<li>Only letters, numbers, and underscores</li>
-<li>Maximum 255 characters</li>
-<li>No spaces or special characters</li>
-</ul>
-<aside class="note note-warning"><p class="note-title">Naming Convention</p><p>Use lowercase with hyphens for consistency: <code>my-custom-icon</code> instead of <code>MyCustomIcon</code></p></aside>
-<h5>2. Paste SVG Code<a href="#2-paste-svg-code">​</a></h5>
-<p>Copy SVG code from your source and paste into the textarea:</p>
-<pre><code class="language-xml">
-&lt;svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chess-king-icon lucide-chess-king"&gt;
-    &lt;path d="M4 20a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v1a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z"/&gt;
-    &lt;path d="m6.7 18-1-1C4.35 15.682 3 14.09 3 12a5 5 0 0 1 4.95-5c1.584 0 2.7.455 4.05 1.818C13.35 7.455 14.466 7 16.05 7A5 5 0 0 1 21 12c0 2.082-1.359 3.673-2.7 5l-1 1"/&gt;
-    &lt;path d="M10 4h4"/&gt;
-    &lt;path d="M12 2v6.818"/&gt;
-svg&gt;</code></pre>
-<p><strong>Valid SVG Sources:</strong></p>
-<ul>
-<li>Icon libraries (Lucide, Iconoir, Heroicons, etc.)</li>
-<li>Custom designs from Figma, Sketch, or Illustrator</li>
-</ul>
-<aside class="note note-info"><p class="note-title">SVG Requirements</p><ul>
-<li>Must include <code><svg></svg></code> tag</li>
-<li>Maximum file size: 1MB</li>
-<li>Should include <code>viewBox</code> for proper scaling</li>
-<li><strong>Recommended</strong>: Use <code>fill="none"</code> and <code>stroke="white"</code> for best visual alignment</li>
-</ul></aside>
-<h5>3. Preview Your Icon<a href="#3-preview-your-icon">​</a></h5>
-<p>As you paste, the preview updates automatically.</p>
-<p>The preview shows exactly how your icon will appear in Trove.</p>
-<h5>4. Save the Icon<a href="#4-save-the-icon">​</a></h5>
-<p>Click the <strong>"Save SVG"</strong> button to finalize:</p>
-<p><strong>What Happens Next:</strong></p>
-<ol>
-<li>✅ Icon is saved to ~/trove/data/icons/svg/</li>
-<li>🔄 You're automatically switched to the SVG Icons tab</li>
-<li>🎯 Your new icon is pre-selected and ready to use</li>
-</ol>
-
-<h2 id="best-practices">Best Practices</h2>
-<h3 id="finding-quality-svg-icons">Finding Quality SVG Icons</h3>
-<h4 id="recommended-icon-libraries">Recommended Icon Libraries</h4>
-<ol>
-<li><strong><a href="https://web.archive.org/web/20260110053807/https://lucide.dev/">Lucide</a></strong></li>
-<li><strong><a href="https://web.archive.org/web/20260110053807/https://iconoir.com/">Iconoir</a></strong></li>
-<li><strong><a href="https://web.archive.org/web/20260110053807/https://heroicons.com/">Heroicons</a></strong></li>
-<li><strong><a href="https://web.archive.org/web/20260110053807/https://feathericons.com/">Feather Icons</a></strong></li>
-</ol>
-<aside class="note note-tip"><p class="note-title">Icon Consistency</p><p>Choose icons from the same library for a cohesive look across your collections.</p></aside>
-
-<h3 id="naming-conventions">Naming Conventions</h3>
-<p>Use consistent naming for easier management:</p>
-<h4 id="good-names">Good Names ✅</h4>
-<pre><code>book-open
-folder-filled
-tag-outline
-star-filled-blue</code></pre>
-<h4 id="bad-names">Bad Names ❌</h4>
-<pre><code>Icon1
-MyIcon
-NEW ICON!!!
-icon_with_spaces</code></pre>
-<p><strong>Best Practices:</strong></p>
-<ul>
-<li>Use lowercase letters</li>
-<li>Separate words with hyphens</li>
-<li>Be descriptive but concise</li>
-<li>Avoid version numbers (use meaningful names instead)</li>
+<li>Use a <code>viewBox</code> (usually <code>0 0 24 24</code>) so the icon scales cleanly.</li>
+<li>Draw with <code>stroke="currentColor"</code> or <code>fill="currentColor"</code>: the icon then takes the colour of the text around it, in light and dark themes alike. Fixed colours such as <code>#000</code> can disappear on a dark background.</li>
+<li>Icons from one family look best together. <a href="https://lucide.dev">Lucide</a>, <a href="https://heroicons.com">Heroicons</a> and <a href="https://iconoir.com">Iconoir</a> are free to use and let you copy an icon's SVG directly.</li>
+<li>Icons can be up to 1 MB, but a good icon is a few hundred bytes. Remove editor metadata before pasting.</li>
 </ul>
 
 <h2 id="troubleshooting">Troubleshooting</h2>
-<h3 id="common-issues-and-solutions">Common Issues and Solutions</h3>
-<h4 id="issue-invalid-svg-content">Issue: "Invalid SVG content"</h4>
-<p><strong>Causes:</strong></p>
-<ul>
-<li>Missing <code><svg></svg></code> tag</li>
-<li>Incomplete or corrupted SVG code</li>
-<li>Non-XML characters</li>
-</ul>
-<p><strong>Solutions:</strong></p>
-<ul>
-<li>Copy the entire SVG code (from <code><svg></svg></code> to <code></code>)</li>
-<li>Validate SVG using <a href="https://web.archive.org/web/20260110053807/https://www.svgviewer.dev/">SVG Validator</a></li>
-<li>Try downloading the SVG file and copying from there</li>
-</ul>
-
-<h4 id="issue-icon-doesn-t-appear-after-saving">Issue: Icon doesn't appear after saving</h4>
-<p><strong>Causes:</strong></p>
-<ul>
-<li>Browser cache</li>
-<li>Network error during save</li>
-</ul>
-<p><strong>Solutions:</strong></p>
-<ol>
-<li>Refresh the page (F5)</li>
-<li>Clear browser cache</li>
-<li>Try saving again</li>
-<li>Check browser console for errors</li>
-</ol>
-
-<h4 id="issue-icon-appears-too-large-small">Issue: Icon appears too large/small</h4>
-<p><strong>Causes:</strong></p>
-<ul>
-<li>Missing <code>viewBox</code> attribute</li>
-<li>Hardcoded <code>width</code> and <code>height</code></li>
-</ul>
-<p><strong>Solutions:</strong></p>
-<pre><code class="language-xml">
-&lt;svg viewBox="0 0 24 24"&gt;
-    
-svg&gt;</code></pre>
-
-<h4 id="issue-icon-colors-don-t-match-theme">Issue: Icon colors don't match theme</h4>
-<p><strong>Causes:</strong></p>
-<ul>
-<li>Hardcoded <code>fill</code> or <code>stroke</code> colors in SVG</li>
-</ul>
-<p><strong>Solutions:</strong></p>
-<pre><code class="language-xml">
-        fill="#000000" → fill="none"
-        stroke="#ff0000" → stroke="white"</code></pre>
+<div class="table-wrap"><table>
+<thead><tr><th>Problem</th><th>What to check</th></tr></thead>
+<tbody>
+<tr><td>"Invalid SVG content"</td><td>The code must start with <code>&lt;svg</code> and end with <code>&lt;/svg&gt;</code>, with nothing cut off.</td></tr>
+<tr><td>The name isn't accepted</td><td>Use only letters, numbers and hyphens, and a name that isn't already taken.</td></tr>
+<tr><td>Icon is invisible or black</td><td>Replace fixed colours with <code>currentColor</code>.</td></tr>
+<tr><td>Icon is tiny or cropped</td><td>Check the <code>viewBox</code> matches the drawing, and remove fixed <code>width</code>/<code>height</code> if needed.</td></tr>
+</tbody>
+</table></div>
 </main>
 </div>
 </body>

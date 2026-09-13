@@ -32,7 +32,6 @@
     "maxUploadSize": "Maks. veličina učitavanja",
     "maxUploadPlaceholder": "Maks. veličina",
     "maxUploadDesc": "Definira maksimalnu dopuštenu veličinu (u MB) za svaku prenesenu datoteku. Odnosi se na sve podržane formate datoteka.",
-    "restartWarning": "Promjene će stupiti na snagu nakon ponovnog pokretanja poslužitelja",
     "invalidInput": "Nevažeći unos",
     "invalidInputDetail": "Unesite valjanu maksimalnu veličinu učitavanja datoteke u MB."
   },

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Authentik Authentication · Trove Help</title>
+<title>Authentik · Trove Help</title>
 <link rel="stylesheet" href="../docs.css">
 <script src="../docs.js" defer></script>
 </head>
@@ -15,9 +15,9 @@
 <div class="layout">
 <nav class="sidebar" id="docs-nav" aria-label="Help topics"></nav>
 <main class="doc">
-<h1>Authentik Authentication</h1>
-<p>Seamlessly integrate Authentik as your single sign-on (SSO) provider for Trove. Centralize user authentication, enhance security, and simplify access management across your applications.</p>
-<aside class="note note-danger"><p class="note-title">Username Matching Required</p><p>The username in Authentik must exactly match the username in Trove for authentication to work properly. Case sensitivity matters. If a user doesn't exist in Trove with the matching username, authentication will fail.</p></aside>
+<h1>Authentik</h1>
+<p class="lede">Seamlessly integrate Authentik as your single sign-on (SSO) provider for Trove. Centralize user authentication, enhance security, and simplify access management across your applications.</p>
+<aside class="note note-info"><p class="note-title">Who can sign in</p><p>Either create each user in Trove first with the same username they have in Authentik, or switch on <strong>Automatic User Provisioning</strong> in Trove so accounts are created on first sign-in. See <a href="overview.html">Single sign-on</a>.</p></aside>
 
 <h2 id="what-you-ll-achieve">What You'll Achieve</h2>
 <p>With Authentik integration, you can:</p>
@@ -103,28 +103,18 @@ Open your Authentik dashboard and click <strong>"Create a new application"</stro
 <p><strong>Set Up Redirect URIs</strong></p>
 <p>Configure where Authentik should redirect users after authentication. These URIs are critical for security:</p>
 <figure><img alt="Redirect URIs" loading="lazy" src="https://web.archive.org/web/20260216110411im_/https://booklore.org/assets/images/authentik-5-d88f2e77be72a219a0bd07e79cf92858.jpg"/></figure>
-<p>Add the following URIs (replace <code><your-booklore-domain></your-booklore-domain></code> with your actual domain):</p>
+<p>Add these redirect URIs, with your Trove address in place of <code>trove.example.com</code> (Trove shows the exact callback address under <strong>Provider Configuration Reference</strong> in Settings › OIDC):</p>
 <ul>
-<li><strong>Strict:</strong> <code>https://<your-booklore-domain>/oauth2-callback</your-booklore-domain></code>
-<ul>
-<li>This is the exact callback endpoint that handles the OAuth response</li>
-<li>The trailing slash is required and must not be omitted</li>
+<li><strong>Strict:</strong> <code>https://trove.example.com/oauth2-callback</code>, the address that receives the sign-in response</li>
+<li><strong>Regex:</strong> <code>https://trove.example.com/.*</code>, which also covers returning to Trove after signing out</li>
 </ul>
-</li>
-<li><strong>Regex:</strong> <code>https://<your-booklore-domain>/*</your-booklore-domain></code>
-<ul>
-<li>This pattern allows flexibility for various OAuth flows</li>
-<li>The asterisk permits any path under your domain</li>
-</ul>
-</li>
-</ul>
-<aside class="note note-danger"><p class="note-title">Important: Redirect URI Format</p><p>Ensure the trailing slash is included in the strict redirect URI. Use your actual domain without brackets or placeholders. Incorrect redirect URIs are the most common cause of authentication failures.</p></aside>
+<aside class="note note-danger"><p class="note-title">The redirect URI must match exactly</p><p>Use your real address, with <code>https://</code> if Trove is served over HTTPS, and no extra slash at the end. A mismatched redirect URI is the most common reason sign-in fails.</p></aside>
 <p><strong>Example for a production setup:</strong></p>
 <pre><code>Strict: https://books.example.com/oauth2-callback
-Regex: https://books.example.com/*</code></pre>
+Regex: https://books.example.com/.*</code></pre>
 <p><strong>Example for local testing:</strong></p>
-<pre><code>Strict: http://localhost:3000/oauth2-callback
-Regex: http://localhost:3000/*</code></pre>
+<pre><code>Strict: http://192.168.1.100:6060/oauth2-callback
+Regex: http://192.168.1.100:6060/.*</code></pre>
 <p>Ensure the signing key is set to "authentik Self-signed certificate".</p>
 </li>
 <li>
@@ -182,7 +172,7 @@ You'll need two pieces of information from this screen:
 <ol>
 <li>
 <p><strong>Open Trove Settings</strong><br/>
-Navigate to <strong>Settings → Authentication</strong> in your Trove admin interface. You'll need administrator privileges to access this section.</p>
+Go to <strong>Settings › OIDC</strong> in your Trove admin interface. You'll need administrator privileges to access this section.</p>
 </li>
 <li>
 <p><strong>Configure OIDC Provider</strong>
@@ -209,9 +199,9 @@ Enter the credentials you copied from Authentik:</p>
 </li>
 <li>
 <p><strong>Enable OIDC Authentication</strong><br/>
-Toggle <strong>"OIDC Enabled"</strong> to ON to activate Authentik authentication</p>
+Under <strong>Login Methods</strong>, switch on <strong>OIDC Login</strong> to start using Authentik</p>
 <ul>
-<li>When enabled, users will see a "Login with Authentik" button on the Trove login page</li>
+<li>When enabled, users see a sign-in button for Authentik below the username and password on the Trove login page</li>
 <li>The standard username/password login will still be available unless specifically disabled</li>
 </ul>
 </li>
@@ -269,11 +259,11 @@ Toggle <strong>"OIDC Enabled"</strong> to ON to activate Authentik authenticatio
 <ol>
 <li>
 <p><strong>Navigate to Authentication Settings</strong><br/>
-Go to <strong>Trove → Settings → Authentication</strong></p>
+Go to <strong>Trove → Settings › OIDC</strong></p>
 </li>
 <li>
 <p><strong>Disable OIDC</strong><br/>
-Toggle <strong>"OIDC Enabled"</strong> to OFF</p>
+Under <strong>Login Methods</strong>, switch off <strong>OIDC Login</strong></p>
 <ul>
 <li>This immediately disables Authentik authentication</li>
 <li>Active sessions remain valid until they expire</li>
@@ -298,14 +288,14 @@ You'll be redirected to the standard Trove login page with username/password fie
 <p><strong>Authentication Fails:</strong></p>
 <ul>
 <li>✓ Verify usernames match exactly between Authentik and Trove (case-sensitive)</li>
-<li>✓ Check redirect URIs include trailing slashes</li>
+<li>✓ Check the redirect URI matches Trove's exactly</li>
 <li>✓ Ensure user is bound to the Trove application</li>
 <li>✓ Confirm all required OAuth scopes are enabled</li>
 <li>✓ Check browser console for errors (F12)</li>
 </ul>
 <p><strong>Redirect Errors:</strong></p>
 <ul>
-<li>✓ Verify redirect URI: <code>/oauth2-callback</code> (with trailing slash)</li>
+<li>✓ Verify the redirect URI ends in <code>/oauth2-callback</code></li>
 <li>✓ Confirm domain matches exactly in both systems</li>
 <li>✓ Ensure HTTPS is used in production</li>
 <li>✓ Validate regex pattern: <code>https://your-domain/*</code></li>

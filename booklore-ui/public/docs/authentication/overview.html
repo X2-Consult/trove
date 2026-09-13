@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Authentication Overview · Trove Help</title>
+<title>Single sign-on (OIDC) · Trove Help</title>
 <link rel="stylesheet" href="../docs.css">
 <script src="../docs.js" defer></script>
 </head>
@@ -15,117 +15,57 @@
 <div class="layout">
 <nav class="sidebar" id="docs-nav" aria-label="Help topics"></nav>
 <main class="doc">
-<h1>Authentication Overview</h1>
-<p>Trove offers flexible authentication to secure your library while keeping things simple. Out of the box, it works with built-in username and password authentication, no setup required. If you're already running an identity provider like Authentik or Pocket ID for your other self-hosted apps, Trove can integrate seamlessly via OpenID Connect (OIDC), giving you single sign-on across your entire stack.</p>
-<p>Both methods can run side-by-side, so you can keep local authentication as a backup while using OIDC for daily access. This guide will help you understand your options and get started with the authentication method that fits your setup.</p>
+<h1>Single sign-on (OIDC)</h1>
+<p class="lede">Trove works out of the box with its own usernames and passwords. If you already run an identity provider such as Authentik, Authelia, Pocket ID or Keycloak for your other self-hosted apps, Trove can use it for sign-in too (OpenID Connect, or OIDC), so your household signs in once for everything.</p>
 
-<h2 id="authentication-methods">Authentication Methods</h2>
-<h3 id="local-authentication-built-in">Local Authentication (Built-in)</h3>
-<p>Trove includes built-in username and password authentication that works immediately after installation:</p>
-<ul>
-<li><strong>Self-Contained</strong> - No external dependencies required</li>
-<li><strong>Quick Setup</strong> - Ready to use with zero configuration</li>
-<li><strong>Always Available</strong> - Works as a fallback even when OIDC is enabled</li>
-</ul>
-<p><strong>Perfect for:</strong></p>
-<ul>
-<li>Getting started without extra dependencies</li>
-<li>Keeping authentication simple and self-contained</li>
-<li>Running Trove as a standalone service</li>
-</ul>
+<h2 id="two-ways-to-sign-in">Two ways to sign in</h2>
+<div class="table-wrap"><table>
+<thead><tr><th></th><th>Local login</th><th>OIDC login</th></tr></thead>
+<tbody>
+<tr><td>Setup</td><td>None</td><td>An application in your identity provider, and its details in Trove</td></tr>
+<tr><td>Passwords</td><td>Kept by Trove</td><td>Kept by your identity provider, with its two-factor sign-in and other protections</td></tr>
+<tr><td>New users</td><td>Created by an admin</td><td>Created by an admin, or automatically on first sign-in</td></tr>
+<tr><td>Permissions</td><td>Set per user</td><td>Set per user, or from the user's groups in your identity provider</td></tr>
+</tbody>
+</table></div>
+<p>Both can be on at once. Local login is always available to admins, so you can't lock yourself out if the identity provider is down.</p>
 
-<h3 id="oidc-authentication-optional">OIDC Authentication (Optional)</h3>
-<p>Integrate with OpenID Connect (OIDC) providers for centralized authentication:</p>
-<ul>
-<li><strong>Single Sign-On (SSO)</strong> - Authenticate once across multiple applications</li>
-<li><strong>Centralized Management</strong> - Control users from your identity provider</li>
-<li><strong>Enhanced Security</strong> - MFA, audit logs, and additional security features</li>
-<li><strong>Standard Compliant</strong> - Works with any OAuth2/OIDC provider</li>
-</ul>
-<p><strong>Supported Identity Providers:</strong></p>
-<ul>
-<li>✅ Authelia  (detailed setup guide available)</li>
-<li>✅ Authentik (detailed setup guide available)</li>
-<li>✅ Pocket ID (detailed setup guide available)</li>
-</ul>
-<p><strong>Perfect for:</strong></p>
-<ul>
-<li>Already running an identity provider for other apps</li>
-<li>Want single login across all your services</li>
-<li>Need MFA or advanced security features</li>
-</ul>
-
-<h2 id="getting-started">Getting Started</h2>
-<h3 id="using-local-authentication">Using Local Authentication</h3>
-<p>No setup needed! Just:</p>
+<h2 id="setting-up-oidc">Setting up OIDC</h2>
 <ol>
-<li>Access your Trove instance</li>
-<li>Log in with your username and password</li>
-<li>You're done!</li>
+<li><strong>Create an application in your identity provider.</strong> Trove's <strong>Settings › OIDC</strong> tab shows the values it needs under <strong>Provider Configuration Reference</strong>: the redirect URI (<code>https://your-trove/oauth2-callback</code>), the post-logout redirect URI, the back-channel logout URI, and the scopes. Trove uses the authorization code flow with PKCE.</li>
+<li><strong>Enter the provider's details in Trove</strong> under <strong>OIDC Provider Configuration</strong>: a provider name (shown on the sign-in button), the client ID and secret, and the issuer URI. Check the claim mappings match what your provider sends (usually <code>preferred_username</code>, <code>email</code>, <code>name</code> and <code>groups</code>).</li>
+<li>Click <strong>Test Connection</strong>. Trove checks it can reach the provider and read its configuration, and lists each check.</li>
+<li><strong>Save</strong>, then switch on <strong>OIDC Login</strong> under Login Methods.</li>
+<li>Sign out and try the new button on the sign-in page.</li>
 </ol>
-<h3 id="setting-up-oidc">Setting Up OIDC</h3>
-<ol>
-<li>Choose your identity provider</li>
-<li>Create an OAuth2/OIDC application in your provider</li>
-<li>Add the credentials to Trove's authentication settings</li>
-<li>Test the login flow</li>
-</ol>
-<p><strong>📚 Setup Guides:</strong></p>
-<ul>
-<li><a href="../authentication/authelia.html"><strong>Authelia Integration Guide</strong></a> - Complete step-by-step tutorial with screenshots</li>
-<li><a href="../authentication/authentik.html"><strong>Authentik Integration Guide</strong></a> - Complete step-by-step tutorial with screenshots</li>
-<li><a href="../authentication/pocket-id.html"><strong>Pocket ID Integration Guide</strong></a> - Complete step-by-step tutorial with screenshots</li>
-</ul>
-<blockquote>
-<p>📝 <strong>Note:</strong> These guides can be adapted for most OIDC providers. Additional guides coming soon.</p>
-</blockquote>
+<figure><img alt="The OIDC provider configuration filled in for Authentik with example values" loading="lazy" src="../images/authentication/authentik/authentik-10.jpg"></figure>
+<p>Step-by-step guides with screenshots of each provider's side: <a href="authentik.html">Authentik</a> and <a href="authelia.html">Authelia</a>. Other providers work the same way.</p>
 
-<h2 id="configuration">Configuration</h2>
-<p>Access authentication settings: <strong>Settings → Authentication</strong></p>
-<h3 id="running-both-methods">Running Both Methods</h3>
-<p>You can enable both local and OIDC authentication at the same time:</p>
-<ul>
-<li>Users can choose how they want to log in</li>
-<li>Local auth always works as a fallback</li>
-<li>The login page shows available options automatically</li>
-</ul>
+<h2 id="more-options">More options</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>Setting</th><th>What it does</th></tr></thead>
+<tbody>
+<tr><td><strong>Session Duration</strong></td><td>How many hours OIDC users stay signed in (blank for the default)</td></tr>
+<tr><td><strong>Automatic User Provisioning</strong></td><td>Creates a Trove account the first time someone signs in through OIDC, with the default permissions and libraries you choose. Off means an admin creates accounts first.</td></tr>
+<tr><td><strong>Link Existing Local Accounts</strong></td><td>Links an existing Trove account to an OIDC identity with the same username on its first OIDC sign-in. Turn it off once everyone has signed in through OIDC, so a matching username in the provider can't take over an account.</td></tr>
+<tr><td><strong>Group Mapping</strong></td><td>Grants admin rights, permissions and libraries from the user's groups in the identity provider. <strong>On Login (Replace)</strong> sets them from the groups at every sign-in; <strong>On Login (Additive)</strong> only ever adds.</td></tr>
+<tr><td><strong>OIDC-Only Mode</strong></td><td>Hides local login and sends everyone straight to the identity provider. Admins can still sign in locally at <code>/login?local=true</code>.</td></tr>
+</tbody>
+</table></div>
 
-<h2 id="common-questions">Common Questions</h2>
-<p><strong>Q: Can I use both local and OIDC authentication?</strong><br/>
-A: Yes! Enable both and users can choose their preferred method.</p>
-<p><strong>Q: What if my identity provider goes down?</strong><br/>
-A: Local authentication stays available, so you can always log in.</p>
-<p><strong>Q: Do I need to migrate users when enabling OIDC?</strong><br/>
-A: No. Just create matching usernames in your identity provider when you're ready.</p>
-<p><strong>Q: Does OIDC support MFA?</strong><br/>
-A: Yes! Whatever security features your identity provider has (MFA, hardware keys, etc.) will work automatically.</p>
-<p><strong>Q: Are usernames case-sensitive?</strong><br/>
-A: Yes. Make sure usernames match exactly between Trove and your identity provider.</p>
+<h2 id="turning-oidc-off">Turning OIDC off</h2>
+<p>Switch off <strong>OIDC Login</strong> under Login Methods. The sign-in page goes back to username and password only; OIDC users can't sign in until it's switched on again (or an admin gives them a password).</p>
+<figure><img alt="Login Methods with OIDC switched off" loading="lazy" src="../images/authentication/authentik/authentik-14.jpg"></figure>
 
-<h2 id="which-method-should-i-choose">Which Method Should I Choose?</h2>
-<p><strong>Local Authentication:</strong></p>
-<ul>
-<li>Just want to get started quickly</li>
-<li>Don't run other authentication services</li>
-<li>Prefer keeping everything self-contained</li>
-</ul>
-<p><strong>OIDC Authentication:</strong></p>
-<ul>
-<li>Already running Authentik, Authelia, or similar</li>
-<li>Want to log in once for all your apps</li>
-<li>Need extra security like MFA</li>
-</ul>
-<p><strong>Both Methods:</strong></p>
-<ul>
-<li>Testing OIDC while keeping local as backup</li>
-<li>Want maximum flexibility</li>
-</ul>
-
-<h2 id="next-steps">Next Steps</h2>
-<p><strong>Using Local Auth?</strong> You're all set! Just log in and start using Trove.</p>
-<p><strong>Want to set up OIDC?</strong> Head to the <a href="../authentication/authentik.html">Authentik Setup Guide</a> or <a href="../authentication/pocket-id.html">Pocket ID Setup Guide</a> for a detailed walkthrough.</p>
-
-<p>Choose the authentication method that fits your setup. You can always change it later.</p>
+<h2 id="questions">Questions</h2>
+<h3 id="what-if-my-identity-provider-is-down">What if my identity provider is down?</h3>
+<p>Admins can always sign in locally, at <code>/login?local=true</code> if OIDC-only mode is on.</p>
+<h3 id="do-usernames-have-to-match">Do usernames have to match?</h3>
+<p>Only for linking existing local accounts. Usernames are compared exactly, so check the case matches.</p>
+<h3 id="does-it-support-two-factor-sign-in">Does it support two-factor sign-in?</h3>
+<p>Yes: whatever your identity provider asks for (an authenticator app, a passkey, a hardware key) applies to Trove.</p>
+<h3 id="behind-a-reverse-proxy">Behind a reverse proxy?</h3>
+<p>Make sure the proxy passes <code>X-Forwarded-Proto</code> and <code>X-Forwarded-Host</code>, so Trove builds <code>https://</code> redirect addresses. The native installer's nginx and Caddy setups already do.</p>
 </main>
 </div>
 </body>

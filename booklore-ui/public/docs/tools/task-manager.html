@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>System Task Manager · Trove Help</title>
+<title>Tasks · Trove Help</title>
 <link rel="stylesheet" href="../docs.css">
 <script src="../docs.js" defer></script>
 </head>
@@ -15,14 +15,14 @@
 <div class="layout">
 <nav class="sidebar" id="docs-nav" aria-label="Help topics"></nav>
 <main class="doc">
-<h1>System Task Manager</h1>
-<p>Manage automated system tasks for library maintenance, metadata refreshing, and cleanup. Execute tasks manually, monitor progress in real-time, and configure scheduled automation using cron expressions.</p>
+<h1>Tasks</h1>
+<p class="lede">Manage automated system tasks for library maintenance, metadata refreshing, and cleanup. Execute tasks manually, monitor progress in real-time, and configure scheduled automation using cron expressions.</p>
 <p>Navigate to <strong>Settings &gt; Tasks</strong> to access this page. Requires the <strong>Access Task Manager</strong> permission.</p>
 <figure><img alt="System Task Manager" loading="lazy" src="../images/tools/task-manager/system-task-manager.jpg"/></figure>
 
 <h2 id="system-tasks">System Tasks</h2>
-<p>Trove provides six system tasks. Each can be run manually or on a schedule.</p>
-<h3 id="1-refresh-metadata">1. 🔄 Refresh Metadata</h3>
+<p>Each task can be run by hand or on a schedule.</p>
+<h3 id="1-refresh-metadata">Refresh Metadata</h3>
 <p>Re-reads book information (title, author, cover, etc.) from your files and updates the Trove database.</p>
 <p>This task has a <strong>Metadata Replace Mode</strong> option:</p>
 <div class="table-wrap"><table><thead><tr><th>Mode</th><th>Description</th></tr></thead><tbody><tr><td><strong>Update Missing Metadata Only</strong> (Recommended)</td><td>Only fills in missing metadata fields. Existing metadata is preserved. Safe for routine use.</td></tr><tr><td><strong>Replace All Metadata</strong></td><td>Overwrites all metadata for every book with data from the files, even if metadata already exists. Use with caution.</td></tr></tbody></table></div>
@@ -34,7 +34,7 @@
 <li>To recover metadata from book files after a database issue</li>
 </ul>
 
-<h3 id="2-sync-library-files">2. 🔃 Sync Library Files</h3>
+<h3 id="2-sync-library-files">Sync Library Files</h3>
 <p>Scans your library folders to detect new books and removes entries for files that no longer exist.</p>
 <p><strong>When to use:</strong></p>
 <ul>
@@ -43,16 +43,16 @@
 <li>To reconcile the database with the actual files on the filesystem</li>
 </ul>
 
-<h3 id="3-bookdrop-periodic-scanning">3. 📥 Bookdrop Periodic Scanning</h3>
+<h3 id="3-bookdrop-periodic-scanning">Bookdrop Periodic Scanning</h3>
 <p>Scans the Bookdrop ingest folder for newly added files and queues them for Bookdrop processing.</p>
 <p><strong>When to use:</strong></p>
 <ul>
-<li>When Bookdrop file monitoring isn't detecting new uploads</li>
+<li>When Bookdrop isn't noticing new files, for example when its folder is on a network share</li>
 <li>To process files dropped into the ingest folder while Trove was offline</li>
 <li>As a scheduled fallback alongside real-time Bookdrop monitoring</li>
 </ul>
 
-<h3 id="4-update-book-recommendations">4. ✨ Update Book Recommendations</h3>
+<h3 id="4-update-book-recommendations">Update Book Recommendations</h3>
 <p>Analyzes your library to generate personalized book recommendations based on the books you own. Computes similarity scores between all books using text embeddings and stores the top recommendations for each book.</p>
 <p><strong>When to use:</strong></p>
 <ul>
@@ -61,17 +61,26 @@
 <li>After major metadata updates that change titles, descriptions, or categories</li>
 </ul>
 
-<h3 id="5-cleanup-deleted-books">5. 🗑️ Cleanup Deleted Books</h3>
+<h3 id="5-cleanup-deleted-books">Cleanup Deleted Books</h3>
 <p>Permanently removes database entries for books you previously deleted from your libraries. Deleted books are soft-deleted first and this task handles the final cleanup.</p>
 <p>A badge shows how many books are pending cleanup (e.g., "Books pending cleanup: 5").</p>
 <div class="table-wrap"><table><thead><tr><th>Trigger</th><th>Behavior</th></tr></thead><tbody><tr><td><strong>Manual run</strong></td><td>Deletes all soft-deleted books immediately</td></tr><tr><td><strong>Scheduled run</strong></td><td>Deletes only soft-deleted books older than 7 days</td></tr></tbody></table></div>
 <p><strong>When to use:</strong> Run periodically to keep the database clean, or manually after a large batch deletion.</p>
 
-<h3 id="6-cleanup-temporary-metadata">6. 🧹 Cleanup Temporary Metadata</h3>
+<h3 id="6-cleanup-temporary-metadata">Cleanup Temporary Metadata</h3>
 <p>Removes temporary metadata records created during the Bookdrop and manual metadata review processes. These are intermediate records that are no longer needed after processing completes.</p>
 <p>A badge shows how many records are pending cleanup (e.g., "Metadata rows pending cleanup: 12").</p>
 <div class="table-wrap"><table><thead><tr><th>Trigger</th><th>Behavior</th></tr></thead><tbody><tr><td><strong>Manual run</strong></td><td>Deletes all temporary metadata records immediately</td></tr><tr><td><strong>Scheduled run</strong></td><td>Deletes only records older than 3 days</td></tr></tbody></table></div>
 <p><strong>When to use:</strong> Run periodically to prevent temporary data from accumulating, or manually after heavy Bookdrop or metadata editing sessions.</p>
+
+<h3 id="check-book-file-integrity">Check Book File Integrity</h3>
+<p>Reads every book file and reports those that are damaged: for EPUB and comic archives it checks every entry against its checksum, and for PDFs, M4B/M4A and MP3 files it checks the file's structure, not just its first bytes. Damaged books are listed in the task's result and the server log so you can re-import them from a good copy.</p>
+<p><strong>When to use:</strong></p>
+<ul>
+<li>After moving a library to a new disk or a <a href="../library/network-storage.html">network share</a></li>
+<li>If books fail to open, or a reader shows garbled pages</li>
+<li>Now and then, on a schedule, as a check on your storage</li>
+</ul>
 
 <h2 id="running-tasks">Running Tasks</h2>
 <p>Click the <strong>Run</strong> button on any task to execute it immediately. While a task is running:</p>

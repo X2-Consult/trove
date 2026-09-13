@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>API tokens · Trove Help</title>
+<link rel="stylesheet" href="../docs.css">
+<script src="../docs.js" defer></script>
+</head>
+<body data-root="../">
+<header class="topbar">
+  <a class="brand" href="../index.html">Trove <span>Help</span></a>
+  <a class="back-to-app" href="/">Back to Trove</a>
+</header>
+<div class="layout">
+<nav class="sidebar" id="docs-nav" aria-label="Help topics"></nav>
+<main class="doc">
+<h1>API tokens</h1>
+<p class="lede">An API token lets another app, such as a companion reading app or your own script, use your Trove library without your password. Tokens can only read and update reading progress, whatever your own account is allowed to do.</p>
+
+<h2 id="creating-a-token">Creating a token</h2>
+<ol>
+<li>Go to <strong>Settings › API Tokens</strong> and click <strong>New Token</strong>.</li>
+<li>Give it a name that says where it's used, such as "Reading app on my phone". The name isn't secret.</li>
+<li>Click <strong>Create</strong>, then <strong>Copy</strong> the token and paste it into the app.</li>
+</ol>
+<figure><img alt="A new token, shown once (blurred here)" loading="lazy" src="../images/tools/api-tokens/token-created.jpg"></figure>
+<aside class="note note-warning"><p>The token is shown only once. If you lose it, revoke it and create another.</p></aside>
+
+<h2 id="what-a-token-can-do">What a token can do</h2>
+<figure><img alt="The token list and what a token can and can't do" loading="lazy" src="../images/tools/api-tokens/api-tokens.jpg"></figure>
+<div class="table-wrap"><table>
+<thead><tr><th>Can</th><th>Can't</th></tr></thead>
+<tbody>
+<tr><td>Read your library: books, metadata, shelves, series, authors</td><td>Delete books or libraries</td></tr>
+<tr><td>Download book files, if your account may download</td><td>Edit metadata, upload, or manage libraries</td></tr>
+<tr><td>Read and update reading progress</td><td>Change your password or account settings</td></tr>
+</tbody>
+</table></div>
+<p>A token sees exactly what you see (your libraries, and your content restrictions apply), and this holds even for a token made by an admin.</p>
+
+<h2 id="using-a-token">Using a token</h2>
+<p>Apps send the token in the <code>Authorization</code> header. Tokens start with <code>blt_</code>:</p>
+<pre><code class="language-bash">curl -H "Authorization: Bearer blt_…" https://trove.example.com/api/v1/books</code></pre>
+
+<h2 id="revoking-a-token">Revoking a token</h2>
+<p>Each token shows when it was created and last used. The bin button revokes it; any app using it loses access straight away. Revoke tokens you no longer use, and any you think may have leaked.</p>
+</main>
+</div>
+</body>
+</html>
