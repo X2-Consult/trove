@@ -89,6 +89,18 @@ public class BookEntity {
     @OneToMany(mappedBy = "book", fetch = FetchType.LAZY)
     private List<UserBookProgressEntity> userBookProgress;
 
+    /**
+     * Moves the book's files with it. Each file keeps its own copy of the library folder, and one
+     * that isn't changed alongside the book (the entity hook only runs for files that were edited)
+     * keeps pointing at the old folder, and is deleted with it if that folder or library is removed.
+     */
+    public void setLibraryPath(LibraryPathEntity libraryPath) {
+        this.libraryPath = libraryPath;
+        if (libraryPath != null && bookFiles != null) {
+            bookFiles.forEach(file -> file.setLibraryPathId(libraryPath.getId()));
+        }
+    }
+
     public Path getFullFilePath() {
         BookFileEntity primaryBookFile = getPrimaryBookFile();
         if (primaryBookFile == null || libraryPath == null || libraryPath.getPath() == null || primaryBookFile.getFileSubPath() == null || primaryBookFile.getFileName() == null) {

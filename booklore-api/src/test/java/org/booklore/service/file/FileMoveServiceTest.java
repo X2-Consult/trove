@@ -818,6 +818,8 @@ class FileMoveServiceTest {
 
             verify(fileMoveHelper).commitMove(any(), any());
             verify(bookRepository).updateLibrary(100L, 2L, targetLibraryPath);
+            // Its files move folder with it, or deleting the old library later deletes them too.
+            verify(bookFileRepository).updateLibraryPathIdByBookId(100L, 20L);
             verify(notificationService).sendMessage(eq(Topic.BOOK_UPDATE), any());
         }
 

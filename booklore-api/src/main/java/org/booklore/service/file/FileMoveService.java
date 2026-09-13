@@ -198,6 +198,7 @@ public class FileMoveService {
                     }
 
                     bookRepository.updateLibrary(bookEntity.getId(), targetLibrary.getId(), libraryPathEntity);
+                    bookFileRepository.updateLibraryPathIdByBookId(bookEntity.getId(), libraryPathEntity.getId());
                 });
             } catch (Exception e) {
                 log.error("Database update failed after files were moved. Attempting to rollback file moves for book ID {}", bookId, e);

@@ -19,6 +19,7 @@ import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -193,8 +194,12 @@ public class PendingDeletionPool {
             if (bookOpt.isEmpty()) continue;
             BookEntity book = bookOpt.get();
 
-            long remainingFiles = bookFileRepository.countByBookId(book.getId());
-            if (remainingFiles <= 1) {
+            // Only readable formats keep a book alive: a cover image or sidecar left behind on its
+            // own would otherwise leave a book with no file to open, shown as a physical copy.
+            Set<Long> goneFileIds = bookSnap.files().stream().map(FileSnapshot::bookFileId).collect(Collectors.toSet());
+            boolean otherFormatsRemain = book.getBookFiles().stream()
+                    .anyMatch(bf -> bf.isBook() && !goneFileIds.contains(bf.getId()));
+            if (!otherFormatsRemain) {
                 book.setDeleted(true);
                 book.setDeletedAt(Instant.now());
                 bookRepository.save(book);
@@ -204,11 +209,13 @@ public class PendingDeletionPool {
             } else {
                 for (FileSnapshot fs : bookSnap.files()) {
                     bookFileRepository.findById(fs.bookFileId()).ifPresent(bf -> {
+                        book.getBookFiles().remove(bf);
                         bookFileRepository.delete(bf);
                         log.info("[EXPIRED] BookFile id={} removed from book id={}", fs.bookFileId(), book.getId());
                     });
                 }
-                notificationService.sendMessageToPermissions(Topic.BOOK_UPDATE, Set.of(book.getId()),
+                notificationService.sendMessageToPermissions(Topic.BOOK_UPDATE,
+                        bookMapper.toBookWithDescription(book, false),
                         Set.of(PermissionType.ADMIN, PermissionType.MANAGE_LIBRARY));
             }
         }

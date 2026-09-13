@@ -38,4 +38,13 @@ public interface BookAdditionalFileRepository extends JpaRepository<BookFileEnti
             @Param("bookFileId") Long bookFileId,
             @Param("fileName") String fileName,
             @Param("fileSubPath") String fileSubPath);
+
+    /**
+     * Keeps the files' copy of the library folder in step with a bulk move of their book: the
+     * entity hook that normally does it doesn't run for query updates, and a file left pointing at
+     * the old folder is deleted along with it if that folder or its library is removed.
+     */
+    @Modifying
+    @Query("UPDATE BookFileEntity bf SET bf.libraryPathId = :libraryPathId WHERE bf.book.id = :bookId")
+    void updateLibraryPathIdByBookId(@Param("bookId") Long bookId, @Param("libraryPathId") Long libraryPathId);
 }

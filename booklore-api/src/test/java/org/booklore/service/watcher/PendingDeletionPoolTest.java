@@ -152,8 +152,8 @@ class PendingDeletionPoolTest {
         ScheduledFuture<?> timer = mock(ScheduledFuture.class);
         pool.addFileDeletion(Path.of("/library/subfolder/test.epub"), 1L, bookFile, book, timer);
 
+        book.setBookFiles(new ArrayList<>(List.of(bookFile)));
         when(bookRepository.findById(10L)).thenReturn(Optional.of(book));
-        when(bookFileRepository.countByBookId(10L)).thenReturn(1L);
 
         pool.expireFileDeletion(Path.of("/library/subfolder/test.epub"));
 
@@ -163,18 +163,41 @@ class PendingDeletionPoolTest {
     }
 
     @Test
-    void expireFileDeletion_deletesFileWhenMultipleRemain() {
+    void expireFileDeletion_deletesTheBookWhenOnlyNonBookFilesRemain() {
+        BookFileEntity cover = BookFileEntity.builder()
+                .id(102L).book(book).fileName("cover.jpg").fileSubPath("subfolder")
+                .isBookFormat(false).folderBased(false).build();
+        book.setBookFiles(new ArrayList<>(List.of(bookFile, cover)));
         ScheduledFuture<?> timer = mock(ScheduledFuture.class);
         pool.addFileDeletion(Path.of("/library/subfolder/test.epub"), 1L, bookFile, book, timer);
 
         when(bookRepository.findById(10L)).thenReturn(Optional.of(book));
-        when(bookFileRepository.countByBookId(10L)).thenReturn(3L);
+
+        pool.expireFileDeletion(Path.of("/library/subfolder/test.epub"));
+
+        // Left with just the cover it would have no file to open, and show as a physical copy.
+        assertThat(book.getDeleted()).isTrue();
+        verify(bookFileRepository, never()).delete(any());
+    }
+
+    @Test
+    void expireFileDeletion_deletesFileWhenMultipleRemain() {
+        ScheduledFuture<?> timer = mock(ScheduledFuture.class);
+        pool.addFileDeletion(Path.of("/library/subfolder/test.epub"), 1L, bookFile, book, timer);
+
+        BookFileEntity pdf = BookFileEntity.builder()
+                .id(101L).book(book).fileName("test.pdf").fileSubPath("subfolder")
+                .isBookFormat(true).folderBased(false).bookType(BookFileType.PDF).build();
+        book.setBookFiles(new ArrayList<>(List.of(bookFile, pdf)));
+        when(bookRepository.findById(10L)).thenReturn(Optional.of(book));
         when(bookFileRepository.findById(100L)).thenReturn(Optional.of(bookFile));
 
         pool.expireFileDeletion(Path.of("/library/subfolder/test.epub"));
 
         verify(bookFileRepository).delete(bookFile);
         assertThat(book.getDeleted()).isFalse();
+        assertThat(book.getBookFiles()).containsExactly(pdf);
+        verify(bookMapper).toBookWithDescription(book, false);
     }
 
     @Test
