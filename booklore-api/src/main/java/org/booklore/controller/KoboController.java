@@ -47,6 +47,7 @@ public class KoboController {
     private final KoboThumbnailService koboThumbnailService;
     private final ShelfService shelfService;
     private final BookDownloadService bookDownloadService;
+    private final KoboBookAccessService koboBookAccessService;
 
     @ModelAttribute
     public void captureToken(@PathVariable("token") String token) {
@@ -135,6 +136,7 @@ public class KoboController {
     @GetMapping("/v1/library/{bookId}/metadata")
     public ResponseEntity<?> getBookMetadata(@Parameter(description = "Book ID") @PathVariable String bookId) {
         if (StringUtils.isNumeric(bookId)) {
+            koboBookAccessService.assertCanSync(Long.parseLong(bookId));
             return ResponseEntity.ok(List.of(koboEntitlementService.getMetadataForBook(Long.parseLong(bookId), token)));
         } else {
             return koboServerProxy.proxyCurrentRequest(null, false);
@@ -146,6 +148,7 @@ public class KoboController {
     @GetMapping("/v1/library/{bookId}/state")
     public ResponseEntity<?> getState(@Parameter(description = "Book ID") @PathVariable String bookId) {
         if (StringUtils.isNumeric(bookId)) {
+            koboBookAccessService.assertCanRead(Long.parseLong(bookId));
             return ResponseEntity.ok(new KoboReadingStateList(koboReadingStateService.getReadingState(bookId)));
         } else {
             return koboServerProxy.proxyCurrentRequest(null, false);
@@ -159,6 +162,14 @@ public class KoboController {
             @Parameter(description = "Book ID") @PathVariable String bookId,
             @Parameter(description = "Reading state update body") @RequestBody KoboReadingStateRequest body) {
         if (StringUtils.isNumeric(bookId)) {
+            // The body names the books it updates; each must be one the user can read, not just the one in the path.
+            koboBookAccessService.assertCanRead(Long.parseLong(bookId));
+            if (body.getReadingStates() != null) {
+                body.getReadingStates().stream()
+                        .map(KoboReadingState::getEntitlementId)
+                        .filter(StringUtils::isNumeric)
+                        .forEach(id -> koboBookAccessService.assertCanRead(Long.parseLong(id)));
+            }
             return ResponseEntity.ok(koboReadingStateService.saveReadingState(body.getReadingStates()));
         } else {
             return koboServerProxy.proxyCurrentRequest(body, false);
@@ -180,6 +191,7 @@ public class KoboController {
     @GetMapping("/v1/books/{bookId}/download")
     public void downloadBook(@Parameter(description = "Book ID") @PathVariable String bookId, HttpServletResponse response) {
         if (StringUtils.isNumeric(bookId)) {
+            koboBookAccessService.assertCanSync(Long.parseLong(bookId));
             bookDownloadService.downloadKoboBook(Long.parseLong(bookId), response);
         } else {
             koboServerProxy.proxyCurrentRequest(null, false);
