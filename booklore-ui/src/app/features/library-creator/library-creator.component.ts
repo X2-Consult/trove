@@ -201,7 +201,16 @@ export class LibraryCreatorComponent implements OnInit {
     ref?.onClose.subscribe((selectedFolders: string[] | null) => {
       if (selectedFolders && selectedFolders.length > 0) {
         selectedFolders.forEach(folder => {
-          if (!this.folders.includes(folder)) {
+          if (this.folders.includes(folder)) return;
+          const overlap = this.findFolderOverlap(folder);
+          if (overlap) {
+            this.messageService.add({
+              severity: 'warn',
+              summary: this.t.translate('libraryCreator.creator.toast.folderOverlapSummary'),
+              detail: overlap,
+              life: 10000
+            });
+          } else {
             this.addFolder(folder);
           }
         });
@@ -215,6 +224,37 @@ export class LibraryCreatorComponent implements OnInit {
         this.selectedIcon = icon;
       }
     });
+  }
+
+  /**
+   * Why a folder can't be added: it is, contains or is inside a folder of another library (or one
+   * already in this one), so both would import the same books. The server makes the same check,
+   * also following links; this one names the problem before the library is saved.
+   */
+  private findFolderOverlap(folder: string): string | null {
+    const normalize = (path: string) => path.replace(/\\/g, '/').replace(/\/+$/, '') || '/';
+    const isWithin = (child: string, parent: string) =>
+      child === parent || child.startsWith(parent === '/' ? '/' : parent + '/');
+
+    const candidate = normalize(folder);
+    const claimed = [
+      ...this.folders.map(path => ({path, owner: this.t.translate('libraryCreator.creator.toast.folderOwnerThis')})),
+      ...this.libraryService.getLibrariesFromState()
+        .filter(library => library.id !== this.library?.id)
+        .flatMap(library => (library.paths ?? []).map(p => ({
+          path: p.path,
+          owner: this.t.translate('libraryCreator.creator.toast.folderOwnerLibrary', {name: library.name})
+        })))
+    ];
+
+    for (const {path, owner} of claimed) {
+      const other = normalize(path);
+      const params = {folder, other: path, owner};
+      if (candidate === other) return this.t.translate('libraryCreator.creator.toast.folderSameDetail', params);
+      if (isWithin(candidate, other)) return this.t.translate('libraryCreator.creator.toast.folderInsideDetail', params);
+      if (isWithin(other, candidate)) return this.t.translate('libraryCreator.creator.toast.folderContainsDetail', params);
+    }
+    return null;
   }
 
   addFolder(folder: string): void {
@@ -275,7 +315,7 @@ export class LibraryCreatorComponent implements OnInit {
           this.dynamicDialogRef.close();
         },
         error: (e) => {
-          this.messageService.add({severity: 'error', summary: this.t.translate('libraryCreator.creator.toast.updateFailedSummary'), detail: this.t.translate('libraryCreator.creator.toast.updateFailedDetail')});
+          this.messageService.add({severity: 'error', summary: this.t.translate('libraryCreator.creator.toast.updateFailedSummary'), detail: this.explainFailure(e, 'libraryCreator.creator.toast.updateFailedDetail')});
           console.error(e);
         }
       });
@@ -310,11 +350,17 @@ export class LibraryCreatorComponent implements OnInit {
         },
         error: (e) => {
           this.libraryService.setLargeLibraryLoading(false, 0);
-          this.messageService.add({severity: 'error', summary: this.t.translate('libraryCreator.creator.toast.createFailedSummary'), detail: this.t.translate('libraryCreator.creator.toast.createFailedDetail')});
+          this.messageService.add({severity: 'error', summary: this.t.translate('libraryCreator.creator.toast.createFailedSummary'), detail: this.explainFailure(e, 'libraryCreator.creator.toast.createFailedDetail')});
           console.error(e);
         }
       });
     }
+  }
+
+  /** The server's reason when it refused the library (a folder clash, say), else the generic message. */
+  private explainFailure(error: {status?: number, error?: {message?: string}}, fallbackKey: string): string {
+    const reason = error?.status === 400 ? error.error?.message : undefined;
+    return reason || this.t.translate(fallbackKey);
   }
 
   onFormatPriorityDrop(event: CdkDragDrop<{type: BookType, label: string}[]>): void {

@@ -79,6 +79,7 @@ public class LibraryService {
     private final BookRepository bookRepository;
     private final LibraryProcessingService libraryProcessingService;
     private final ExactFileDeduplicator exactFileDeduplicator;
+    private final LibraryFolderOverlapCheck libraryFolderOverlapCheck;
     private final BookMapper bookMapper;
     private final LibraryMapper libraryMapper;
     private final NotificationService notificationService;
@@ -99,6 +100,16 @@ public class LibraryService {
     public Library updateLibrary(CreateLibraryRequest request, Long libraryId) {
         LibraryEntity library = libraryRepository.findById(libraryId)
                 .orElseThrow(() -> ApiError.LIBRARY_NOT_FOUND.createException(libraryId));
+
+        Set<String> requestedPaths = request.getPaths().stream()
+                .map(LibraryPath::getPath)
+                .collect(Collectors.toSet());
+        Set<String> keptPaths = library.getLibraryPaths().stream()
+                .map(LibraryPathEntity::getPath)
+                .filter(requestedPaths::contains)
+                .collect(Collectors.toSet());
+        libraryFolderOverlapCheck.assertNoOverlap(libraryId, keptPaths,
+                requestedPaths.stream().filter(path -> !keptPaths.contains(path)).toList());
 
         library.setName(request.getName());
         library.setIcon(request.getIcon());
@@ -185,6 +196,10 @@ public class LibraryService {
     public Library createLibrary(CreateLibraryRequest request) {
         BookLoreUser bookLoreUser = authenticationService.getAuthenticatedUser();
         Optional<BookLoreUserEntity> user = userRepository.findById(bookLoreUser.getId());
+        if (request.getPaths() != null) {
+            libraryFolderOverlapCheck.assertNoOverlap(null, List.of(),
+                    request.getPaths().stream().map(LibraryPath::getPath).distinct().toList());
+        }
 
         LibraryEntity libraryEntity = LibraryEntity.builder()
                 .name(request.getName())

@@ -59,7 +59,13 @@
       "createdDetail": "The library was created successfully.",
       "createdLargeDetail": "Library created with {{count}} files. Loading in progress...",
       "createFailedSummary": "Creation Failed",
-      "createFailedDetail": "An error occurred while creating the library. Please try again."
+      "createFailedDetail": "An error occurred while creating the library. Please try again.",
+      "folderOverlapSummary": "Folder Already in a Library",
+      "folderOwnerLibrary": "the library \"{{name}}\"",
+      "folderOwnerThis": "this library",
+      "folderSameDetail": "{{folder}} is already a folder of {{owner}}.",
+      "folderInsideDetail": "{{folder}} is inside {{other}}, a folder of {{owner}}. A folder can only belong to one library, or its books are imported twice.",
+      "folderContainsDetail": "{{folder}} contains {{other}}, a folder of {{owner}}. A folder can only belong to one library, or its books are imported twice. Add its other sub-folders one by one instead."
     }
   },
   "loading": {

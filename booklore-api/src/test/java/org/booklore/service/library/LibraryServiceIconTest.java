@@ -63,6 +63,8 @@ class LibraryServiceIconTest {
     private UserRepository userRepository;
     @Mock
     private AuditService auditService;
+    @Mock
+    private LibraryFolderOverlapCheck libraryFolderOverlapCheck;
 
     @InjectMocks
     private LibraryService libraryService;

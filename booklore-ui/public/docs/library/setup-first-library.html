@@ -28,6 +28,7 @@
 
 <h3 id="book-folders">Book folders</h3>
 <p>Click <strong>Add folder</strong> and tick the folders that hold your books. A library can have several folders, but each folder belongs to one library. In Docker, you'll see the folders you mounted into the container, such as <code>/books</code>.</p>
+<p>Folders can't overlap: Trove won't add a folder that's inside another library's folder, or that contains one, and says which library has it. Two libraries reading the same files would list each book twice, and renaming files into one library's layout would move them out from under the other. If you keep everyone's books under one parent folder, such as <code>/books/Mike</code> and <code>/books/Hayden</code>, make a library of each subfolder rather than of <code>/books</code>.</p>
 <figure><img alt="The folder picker with the books folder ticked" loading="lazy" src="../images/library/setup-first-library/library-folder-picker.jpg"></figure>
 <p>A folder on an NFS or SMB share gets a <strong>Network share</strong> badge. Trove checks such folders for new books every minute instead of waiting to be told, and writes to them with verified copies. See <a href="network-storage.html">Network storage</a>.</p>
 <aside class="note note-warning"><p class="note-title">Folder not listed, or empty?</p><p>Trove can only see folders it has permission to read. With Docker, check the volume in <code>docker-compose.yml</code> and that <code>APP_USER_ID</code> and <code>APP_GROUP_ID</code> match the folder's owner.</p></aside>
