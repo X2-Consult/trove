@@ -193,7 +193,7 @@ You'll need two pieces of information from this screen:
 <h2 class="anchor anchorWithStickyNavbar_LWe7" id="️-configuring-booklore">⚙️ Configuring Trove<a href="#️-configuring-booklore" class="hash-link" aria-label="Direct link to ⚙️ Configuring Trove" title="Direct link to ⚙️ Configuring Trove">​</a></h2>
 <h3 class="anchor anchorWithStickyNavbar_LWe7" id="step-3-connect-booklore-to-authentik">Step 3: Connect Trove to Authentik<a href="#step-3-connect-booklore-to-authentik" class="hash-link" aria-label="Direct link to Step 3: Connect Trove to Authentik" title="Direct link to Step 3: Connect Trove to Authentik">​</a></h3>
 <p>Now configure Trove to use Authentik as the authentication provider. This is the final configuration step:</p>
-<p><img decoding="async" loading="lazy" alt="Trove OIDC Settings" src="https://web.archive.org/web/20260216110411im_/https://booklore.org/assets/images/authentik-10-65704dc16d80e4223de9a8d7043cacf1.jpg" width="1500" height="895" class="img_ev3q"></p>
+<p><img decoding="async" loading="lazy" alt="Trove OIDC Settings" src="../images/authentication/authentik/authentik-10.jpg" width="1500" height="895" class="img_ev3q"></p>
 <ol>
 <li>
 <p><strong>Open Trove Settings</strong><br>
@@ -265,7 +265,7 @@ Toggle <strong>"OIDC Enabled"</strong> to ON to activate Authentik authenticatio
 </ul>
 </li>
 </ol>
-<p><img decoding="async" loading="lazy" alt="Trove Homepage" src="https://web.archive.org/web/20260216110411im_/https://booklore.org/assets/images/authentik-13-9c7bb66303053a541a09386108f9dcfd.jpg" width="1500" height="895" class="img_ev3q"></p>
+<p><img decoding="async" loading="lazy" alt="Trove Homepage" src="../images/authentication/authentik/authentik-13.jpg" width="1500" height="895" class="img_ev3q"></p>
 <ol start="3">
 <li><strong>Verify User Information</strong>
 <ul>
@@ -280,7 +280,7 @@ Toggle <strong>"OIDC Enabled"</strong> to ON to activate Authentik authenticatio
 <h2 class="anchor anchorWithStickyNavbar_LWe7" id="-managing-authentication">🔄 Managing Authentication<a href="#-managing-authentication" class="hash-link" aria-label="Direct link to 🔄 Managing Authentication" title="Direct link to 🔄 Managing Authentication">​</a></h2>
 <h3 class="anchor anchorWithStickyNavbar_LWe7" id="disabling-authentik-authentication">Disabling Authentik Authentication<a href="#disabling-authentik-authentication" class="hash-link" aria-label="Direct link to Disabling Authentik Authentication" title="Direct link to Disabling Authentik Authentication">​</a></h3>
 <p>If you need to temporarily disable or switch authentication methods (for maintenance or troubleshooting):</p>
-<p><img decoding="async" loading="lazy" alt="Disable OIDC" src="https://web.archive.org/web/20260216110411im_/https://booklore.org/assets/images/authentik-14-a4a099e5151de9dabd18f0ccfbbe2171.jpg" width="1500" height="895" class="img_ev3q"></p>
+<p><img decoding="async" loading="lazy" alt="Disable OIDC" src="../images/authentication/authentik/authentik-14.jpg" width="1500" height="895" class="img_ev3q"></p>
 <ol>
 <li>
 <p><strong>Navigate to Authentication Settings</strong><br>
@@ -304,7 +304,7 @@ Click <strong>Logout</strong> to end your current session and verify the change<
 You'll be redirected to the standard Trove login page with username/password fields</p>
 </li>
 </ol>
-<p><img decoding="async" loading="lazy" alt="Trove Login" src="https://web.archive.org/web/20260216110411im_/https://booklore.org/assets/images/authentik-15-f984bddedfb4a1d48e0389d318704268.jpg" width="1500" height="895" class="img_ev3q"></p>
+<p><img decoding="async" loading="lazy" alt="Trove Login" src="../images/authentication/authentik/authentik-15.jpg" width="1500" height="895" class="img_ev3q"></p>
 <div class="theme-admonition theme-admonition-note admonition_xJq3 alert alert--secondary"><div class="admonitionHeading_Gvgb"><span class="admonitionIcon_Rf37"><svg viewbox="0 0 14 16"><path fill-rule="evenodd" d="M6.3 5.69a.942.942 0 0 1-.28-.7c0-.28.09-.52.28-.7.19-.18.42-.28.7-.28.28 0 .52.09.7.28.18.19.28.42.28.7 0 .28-.09.52-.28.7a1 1 0 0 1-.7.3c-.28 0-.52-.11-.7-.3zM8 7.99c-.02-.25-.11-.48-.31-.69-.2-.19-.42-.3-.69-.31H6c-.27.02-.48.13-.69.31-.2.2-.3.44-.31.69h1v3c.02.27.11.5.31.69.2.2.42.31.69.31h1c.27 0 .48-.11.69-.31.2-.19.3-.42.31-.69H8V7.98v.01zM7 2.3c-3.14 0-5.7 2.54-5.7 5.68 0 3.14 2.56 5.7 5.7 5.7s5.7-2.55 5.7-5.7c0-3.15-2.56-5.69-5.7-5.69v.01zM7 .98c3.86 0 7 3.14 7 7s-3.14 7-7 7-7-3.12-7-7 3.14-7 7-7z"></path></svg></span>Configuration Persistence</div><div class="admonitionContent_BuS1"><p>Disabling OIDC doesn't delete your Authentik configuration. All settings (Client ID, Issuer URI) are preserved. You can re-enable it anytime by toggling the switch back on. Users who were authenticated via Authentik can still log in with standard credentials if they have them configured.</p></div></div>
 <div class="theme-admonition theme-admonition-info admonition_xJq3 alert alert--info"><div class="admonitionHeading_Gvgb"><span class="admonitionIcon_Rf37"><svg viewbox="0 0 14 16"><path fill-rule="evenodd" d="M7 2.3c3.14 0 5.7 2.56 5.7 5.7s-2.56 5.7-5.7 5.7A5.71 5.71 0 0 1 1.3 8c0-3.14 2.56-5.7 5.7-5.7zM7 1C3.14 1 0 4.14 0 8s3.14 7 7 7 7-3.14 7-7-3.14-7-7-7zm1 3H6v5h2V4zm0 6H6v2h2v-2z"></path></svg></span>Configuration Scope</div><div class="admonitionContent_BuS1"><p>This guide covered the essential configuration required to integrate Authentik with Trove. Once the basic integration is functional, you may customize Authentik settings to align with your advanced and specific needs.</p></div></div>
 <hr>

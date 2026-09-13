@@ -18,6 +18,9 @@ const require = createRequire(path.join(process.cwd(), 'noop.js'));
 const {chromium} = require('playwright');
 
 const BASE = (process.env.TROVE_DOCS_URL || 'http://localhost:6061').replace(/\/$/, '');
+// The address the browser uses, which is what Trove shows wherever it prints its own URL (KOReader and
+// OPDS addresses, for example). The browser resolves it to BASE, so screenshots never show localhost.
+const SITE = (process.env.TROVE_DOCS_SITE || 'http://trove.example.com').replace(/\/$/, '');
 const PASSWORD = process.env.TROVE_DOCS_PASSWORD;
 const OUT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../booklore-ui/public/docs/images');
 // A public-domain persona for the admin account shown in screenshots.
@@ -52,7 +55,7 @@ async function shot(page, pageSlug, name, {element, clip, fullPage = false, keep
 const LOGIN_PASSWORD = '#password input, input#password';
 
 async function login(page) {
-  await page.goto(`${BASE}/login`, {waitUntil: 'networkidle'});
+  await page.goto(`${SITE}/login`, {waitUntil: 'networkidle'});
   await page.fill('#username', ADMIN.username);
   await page.fill(LOGIN_PASSWORD, PASSWORD);
   await page.click('button[type=submit]');
@@ -61,7 +64,7 @@ async function login(page) {
 }
 
 async function open(page, route) {
-  await page.goto(`${BASE}${route}`, {waitUntil: 'networkidle'});
+  await page.goto(`${SITE}${route}`, {waitUntil: 'networkidle'});
   await page.addStyleTag({content: '.docs-hide-toasts .p-toast { display: none !important; }'});
   await page.waitForTimeout(800);
 }
@@ -533,7 +536,8 @@ Object.assign(scenes, {
   },
 });
 
-// Settings screenshots: [tab, section heading or null for the top of the tab, help page, image name].
+// Settings screenshots: [tab, section heading or null for the top of the tab, help page, image name,
+// optionally the heading's selector].
 const SETTINGS_SHOTS = [
   ['reader', 'Settings Application Mode', 'reader-preferences', 'settings-application-mode'],
   ['reader', 'Appearance', 'reader-preferences', 'ebook-appearance'],
@@ -553,24 +557,32 @@ const SETTINGS_SHOTS = [
   ['user', null, 'tools/user-management', 'user-management'],
   ['task', null, 'tools/task-manager', 'system-task-manager'],
   ['audit-logs', null, 'tools/audit-logs', 'audit-logs'],
-  ['opds', null, 'integration/opds', 'opds'],
   ['device', 'KOReader Sync Configuration', 'tools/devices', 'koreader-sync'],
   ['device', 'Hardcover Integration', 'tools/devices', 'hardcover-integration'],
   ['device', 'Kobo Integration Configuration', 'tools/devices', 'kobo-integration'],
   ['device', 'Administrator Settings', 'tools/devices', 'kobo-admin-settings'],
   ['reader', 'Custom Font Library', 'tools/custom-fonts', 'font-00'],
+  // Sections the old site showed as small inline pictures.
+  ['reader', 'Layout', 'reader-preferences', 'ebook-layout'],
+  ['reader', 'PDF Reader: Default Settings', 'reader-preferences', 'pdf-reader-settings'],
+  ['reader', 'Custom Font Library', 'reader-preferences', 'custom-font-library'],
+  ['view', 'View Preferences', 'view-preferences', 'view-preferences-section', 'h3'], // not the page title (h2)
+  ['view', 'Layout', 'view-preferences', 'layout'],
+  ['metadata', 'Sidecar JSON Files', 'metadata/metadata-settings', 'sidecar-json-files'],
 ];
 
 Object.assign(scenes, {
   async settings(page) {
     let currentTab = null;
-    for (const [tab, heading, pageSlug, name] of SETTINGS_SHOTS) {
+    const only = process.env.TROVE_DOCS_SETTINGS_ONLY?.split(',');
+    for (const [tab, heading, pageSlug, name, selector = 'h2, h3, h4, .section-title'] of SETTINGS_SHOTS) {
+      if (only && !only.includes(name)) continue;
       if (tab !== currentTab || !heading) {
         await open(page, `/settings?tab=${tab}`);
         await page.waitForTimeout(1200);
         currentTab = tab;
       }
-      if (heading) await scrollToHeading(page, heading, 'h2, h3, h4, .section-title');
+      if (heading) await scrollToHeading(page, heading, selector);
       await shot(page, pageSlug, name);
     }
   },
@@ -962,6 +974,293 @@ Object.assign(scenes, {
   },
 });
 
+// Simple line icons drawn for these screenshots (24x24, stroked in the current colour).
+const svg = body => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${body}</svg>`;
+const SAMPLE_ICONS = {
+  'book-stack': svg('<rect x="4" y="4" width="16" height="4" rx="1"/><rect x="3" y="10" width="18" height="4" rx="1"/><rect x="5" y="16" width="14" height="4" rx="1"/>'),
+  'anchor': svg('<circle cx="12" cy="5" r="2"/><path d="M12 7v14"/><path d="M8 11h8"/><path d="M4 14a8 8 0 0 0 16 0"/>'),
+  'crescent-moon': svg('<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/>'),
+  'magnifier': svg('<circle cx="10" cy="10" r="6"/><path d="M14.5 14.5L20 20"/>'),
+  'lantern': svg('<path d="M9 3h6"/><path d="M12 3v2"/><rect x="7" y="5" width="10" height="13" rx="2"/><path d="M12 9v5"/><path d="M8 21h8"/>'),
+  'castle': svg('<path d="M4 21V9h3V6h3v3h4V6h3v3h3v12z"/><path d="M10 21v-5h4v5"/>'),
+};
+const ICON_ADDED_IN_UI = 'castle';
+
+Object.assign(scenes, {
+  // The icon picker, from the library dialog: built-in icons, your SVG icons, and adding one.
+  async customIcons(page) {
+    const token = await page.evaluate(() => localStorage.getItem('accessToken_Internal'));
+    const headers = {Authorization: `Bearer ${token}`};
+    for (const name of Object.keys(SAMPLE_ICONS)) {
+      await page.request.delete(`${BASE}/api/v1/icons/${name}`, {headers});
+    }
+    const preloaded = Object.entries(SAMPLE_ICONS).filter(([name]) => name !== ICON_ADDED_IN_UI);
+    const saved = await page.request.post(`${BASE}/api/v1/icons/batch`, {
+      headers, data: {icons: preloaded.map(([svgName, svgData]) => ({svgName, svgData}))},
+    });
+    if (!saved.ok()) throw new Error(`Couldn't add the sample icons: HTTP ${saved.status()}`);
+
+    const library = (await apiGet(page, '/libraries')).find(l => l.name === 'Classics');
+    await open(page, `/library/${library.id}/books`);
+    await page.locator('.entity-menu-wrapper').locator('button, a, i').first().click();
+    await page.waitForTimeout(700);
+    await page.locator('[role=menuitem]', {hasText: 'Edit Library'}).first().click();
+    await page.waitForTimeout(1200);
+    await page.locator('.icon-picker-trigger').hover();
+    await shot(page, 'tools/custom-icons', '0-icons--library-creator', {hover: true});
+
+    await page.locator('.icon-picker-trigger').click();
+    await page.waitForSelector('.icon-picker');
+    await page.waitForTimeout(800);
+    await shot(page, 'tools/custom-icons', '1-icons--prime');
+    await page.locator('.icon-picker p-tab[value="1"]').click();
+    await page.waitForTimeout(1200);
+    await shot(page, 'tools/custom-icons', '2-icons--custom');
+    await page.locator('.icon-picker p-tab[value="2"]').click();
+    await page.waitForTimeout(800);
+    const add = page.locator('.icon-picker p-tabpanel[value="2"]');
+    await add.locator('input.input-full').fill(ICON_ADDED_IN_UI);
+    await add.locator('textarea.code-textarea').fill(SAMPLE_ICONS[ICON_ADDED_IN_UI]);
+    await page.waitForTimeout(800);
+    await shot(page, 'tools/custom-icons', '3-icons--add-custom');
+    await page.keyboard.press('Escape'); // not saved: the library keeps its icon
+  },
+});
+
+// An OFL-licensed reading typeface (Literata, from Google Fonts) for the custom fonts screenshots.
+const SAMPLE_FONT = process.env.TROVE_DOCS_FONT || '/srv/trove/docs-staging/fonts/Literata.ttf';
+
+Object.assign(scenes, {
+  // Uploading a font, the font collection, and choosing the font as the default and in the reader.
+  async customFonts(page) {
+    const token = await page.evaluate(() => localStorage.getItem('accessToken_Internal'));
+    const headers = {Authorization: `Bearer ${token}`};
+    for (const font of await apiGet(page, '/custom-fonts')) {
+      await page.request.delete(`${BASE}/api/v1/custom-fonts/${font.id}`, {headers});
+    }
+    await open(page, '/settings?tab=reader');
+    await scrollToHeading(page, 'Custom Font Library', 'h2, h3, h4, .section-title');
+    await page.locator('.float-top-right p-button').click();
+    await page.waitForSelector('.font-upload-dialog');
+    await page.waitForTimeout(600);
+    await shot(page, 'tools/custom-fonts', 'font-01');
+    await page.locator('.font-upload-dialog input[type=file]').setInputFiles(SAMPLE_FONT);
+    await page.waitForTimeout(1500);
+    await page.locator('#fontName').fill('Literata');
+    await shot(page, 'tools/custom-fonts', 'font-02');
+    await page.locator('.font-upload-dialog .dialog-footer p-button').last().click();
+    await page.waitForTimeout(2500);
+    await scrollToHeading(page, 'Custom Font Library', 'h2, h3, h4, .section-title');
+    await shot(page, 'tools/custom-fonts', 'font-03');
+
+    // The default font for EPUBs, in the reader settings.
+    await open(page, '/settings?tab=reader');
+    await scrollToHeading(page, 'Typography', 'h2, h3, h4, .section-title');
+    // Uploaded fonts join the Font Family choices (shown, not chosen: the default stays as it is).
+    await page.getByText('Literata', {exact: true}).first().hover();
+    await page.waitForTimeout(500);
+    await shot(page, 'tools/custom-fonts', 'font-04', {hover: true});
+
+    // And for one book, from the reader's own settings.
+    const id = await bookId(page, 'Emma');
+    await open(page, `/ebook-reader/book/${id}`);
+    await page.waitForTimeout(2500);
+    await readerToolbar(page, 'Location', 'bottom'); // into the story, so there's text in the new font
+    await page.locator('.location-popover input[type=number]').fill('20');
+    await page.keyboard.press('Enter');
+    await page.waitForTimeout(2500);
+    await readerToolbar(page, 'Location', 'bottom');
+    await readerToolbar(page, 'Settings');
+    await page.locator('.more-settings-btn').click();
+    await page.waitForTimeout(1000);
+    await page.getByText('Typography', {exact: true}).first().click();
+    await page.waitForTimeout(800);
+    const literata = page.getByText('Literata', {exact: true}).first();
+    if (await literata.count()) await literata.click();
+    await page.waitForTimeout(1500);
+    await shot(page, 'tools/custom-fonts', 'font-05', {hover: true});
+  },
+});
+
+// A second, non-admin account (another public-domain persona) for the user permission screenshots.
+const SECOND_USER = {username: 'marianne', name: 'Marianne Dashwood', email: 'marianne@example.com'};
+// Example KOReader sync credentials (the docs instance only).
+const KOREADER = {username: 'elinor', password: 'example-sync-password'};
+// Books near the top of the library (the grid only draws the cards in view), and one it reports progress in.
+const KOBO_SHELF_BOOKS = ['Dracula', 'Emma', 'Frankenstein', 'Jane Eyre'];
+
+Object.assign(scenes, {
+  // Trove's side of KOReader and Kobo sync: permissions, settings, the Kobo shelf, and synced progress.
+  // The progress shown was sent through Trove's own KOReader and Kobo sync endpoints, as a device would.
+  async devices(page) {
+    const token = await page.evaluate(() => localStorage.getItem('accessToken_Internal'));
+    const headers = {Authorization: `Bearer ${token}`};
+    const library = (await apiGet(page, '/libraries')).find(l => l.name === 'Classics');
+    if (!(await apiGet(page, '/users')).some(u => u.username === SECOND_USER.username)) {
+      const response = await page.request.post(`${BASE}/api/v1/auth/register`, {headers, data: {
+        ...SECOND_USER, password: `${PASSWORD}-${Date.now()}`, selectedLibraries: [library.id],
+        permissionDownload: true, permissionEmailBook: true, permissionAccessOpds: true,
+        permissionSyncKoreader: true, permissionSyncKobo: true, permissionAccessUserStats: true,
+      }});
+      if (!response.ok()) throw new Error(`Couldn't create ${SECOND_USER.username}: HTTP ${response.status()}`);
+    }
+
+    // Permissions, on the Users tab.
+    await open(page, '/settings?tab=user');
+    await page.locator('.user-card', {hasText: SECOND_USER.username}).locator('.expand-btn').click();
+    await page.waitForTimeout(1000);
+    await page.locator('label', {hasText: 'KOReader Sync'}).first().evaluate(el => el.scrollIntoView({block: 'center'}));
+    await page.waitForTimeout(600);
+    await shot(page, 'integration/koreader', 'user-permissions');
+    await shot(page, 'integration/kobo', 'user-permissions');
+
+    // KOReader: the settings before and while entering credentials, then sync switched on.
+    await open(page, '/settings?tab=device');
+    const koreader = page.locator('app-koreader-settings-component');
+    await shot(page, 'integration/koreader', 'device-settings');
+    const editSave = koreader.locator('.setting-item', {hasText: 'Settings Management'}).locator('p-button');
+    if ((await editSave.innerText()).includes('Edit')) await editSave.click();
+    await page.waitForTimeout(500);
+    await koreader.locator('#username').fill(KOREADER.username);
+    await koreader.locator('#password input, input#password').first().fill(KOREADER.password);
+    await shot(page, 'integration/koreader', 'credentials-setup');
+    await editSave.click();
+    await page.waitForTimeout(1200);
+    const koreaderToggle = koreader.locator('p-toggle-switch[name=syncEnabled]');
+    if (!await koreaderToggle.locator('input').isChecked()) await koreaderToggle.click();
+    await page.waitForTimeout(1000);
+
+    // A KOReader device reports its position in Treasure Island (books are matched by file hash).
+    const treasure = await apiGet(page, `/books/${await bookId(page, 'Treasure Island')}`);
+    const {createHash} = await import('node:crypto');
+    const sync = await page.request.put(`${BASE}/api/koreader/syncs/progress`, {
+      headers: {'x-auth-user': KOREADER.username, 'x-auth-key': createHash('md5').update(KOREADER.password).digest('hex')},
+      data: {document: treasure.primaryFile.currentHash, percentage: 0.4172, progress: '/body/DocFragment[14]/body/div/p[12]/text().0',
+        device: 'KOReader', device_id: 'docs-sample-device'},
+    });
+    if (!sync.ok()) throw new Error(`KOReader progress sync failed: HTTP ${sync.status()}`);
+
+    // Kobo: sync switched on, which gives the device its address.
+    const kobo = page.locator('app-kobo-sync-setting-component');
+    const koboToggle = kobo.locator('p-toggle-switch#syncEnabled');
+    if (!await koboToggle.locator('input').isChecked()) await koboToggle.click();
+    await page.waitForTimeout(1500);
+    await kobo.evaluate(el => el.scrollIntoView({block: 'start'}));
+    await scrollBy(page, -80);
+    await shot(page, 'integration/kobo', 'device-settings');
+    const koboToken = (await kobo.locator('#koboToken').inputValue()).split('/').filter(Boolean).pop();
+
+    // Books go onto the Kobo shelf; start from an empty shelf so the scene can be run again.
+    const koboShelf = (await apiGet(page, '/shelves')).find(s => s.name === 'Kobo');
+    const allBooks = await apiGet(page, '/books?stripForListView=true');
+    await page.request.post(`${BASE}/api/v1/books/shelves`, {headers, data: {
+      bookIds: allBooks.map(b => b.id), shelvesToAssign: [], shelvesToUnassign: [koboShelf.id]}});
+    // The first book through the book menu, as the help describes; the others through the API.
+    const [first, ...others] = KOBO_SHELF_BOOKS;
+    const otherIds = [];
+    for (const title of others) otherIds.push(await bookId(page, title));
+    await page.request.post(`${BASE}/api/v1/books/shelves`, {headers, data: {
+      bookIds: otherIds, shelvesToAssign: [koboShelf.id], shelvesToUnassign: []}});
+    await open(page, '/all-books');
+    await page.locator('app-book-card', {hasText: first}).first().getByRole('button', {name: 'Book actions menu'}).click();
+    await page.waitForTimeout(600);
+    await page.locator('[role=menuitem]', {hasText: 'Assign Shelf'}).first().click();
+    await page.waitForTimeout(1000);
+    const dialog = page.locator('.p-dialog').last();
+    await dialog.getByText('Kobo', {exact: true}).first().click();
+    await shot(page, 'integration/kobo', 'assign-shelf');
+    await dialog.getByRole('button', {name: 'Save Changes'}).click();
+    await page.waitForTimeout(1200);
+    await open(page, `/shelf/${koboShelf.id}/books`);
+    await shot(page, 'integration/kobo', 'shelf-with-books');
+
+    // A Kobo reports its position in Frankenstein.
+    const koboBook = await bookId(page, 'Frankenstein');
+    const now = new Date().toISOString();
+    const state = await page.request.put(`${BASE}/api/kobo/${koboToken}/v1/library/${koboBook}/state`, {data: {ReadingStates: [{
+      EntitlementId: String(koboBook), Created: now, LastModified: now, PriorityTimestamp: now,
+      StatusInfo: {LastModified: now, Status: 'Reading', TimesStartedReading: 1},
+      Statistics: {LastModified: now, SpentReadingMinutes: 48, RemainingTimeMinutes: 71},
+      CurrentBookmark: {LastModified: now, ProgressPercent: 63, ContentSourceProgressPercent: 40,
+        Location: {Value: 'kobo.1.1', Type: 'KoboSpan', Source: 'OEBPS/letter-4.xhtml'}},
+    }]}});
+    if (!state.ok()) throw new Error(`Kobo reading state sync failed: HTTP ${state.status()}`);
+
+    // Removing a book on the Kobo takes it off the Kobo shelf at the next sync.
+    await page.request.post(`${BASE}/api/v1/books/shelves`, {headers, data: {
+      bookIds: [await bookId(page, 'Dracula')], shelvesToAssign: [], shelvesToUnassign: [koboShelf.id]}});
+    await open(page, `/shelf/${koboShelf.id}/books`);
+    await shot(page, 'integration/kobo', 'shelf-after-removal');
+
+    await open(page, `/book/${koboBook}`);
+    await shot(page, 'integration/kobo', 'synced-progress');
+    await open(page, `/book/${treasure.id}`);
+    await shot(page, 'integration/koreader', 'synced-progress');
+  },
+});
+
+// Example OIDC provider settings (typed in for the screenshots, never saved).
+const OIDC_EXAMPLES = {
+  authentik: {page: 'authentication/authentik', settings: 'authentik-10', disable: 'authentik-14', home: 'authentik-13', login: 'authentik-15',
+    providerName: 'Authentik', issuerUri: 'https://auth.example.com/application/o/trove/', clientId: 'hV3pQ8bT2mX7wK4nZ9cR1sY6dF0gJ5aL'},
+  authelia: {page: 'authentication/authelia', settings: 'authelia-01', disable: 'authelia-03', home: 'authelia-02', login: 'authelia-04',
+    providerName: 'Authelia', issuerUri: 'https://auth.example.com', clientId: 'trove'},
+};
+
+Object.assign(scenes, {
+  // Trove's side of single sign-on: the OIDC settings filled in for Authentik and Authelia, the login
+  // methods (where OIDC is switched off again), the dashboard after signing in, and the login page.
+  async oidc(page) {
+    for (const example of Object.values(OIDC_EXAMPLES)) {
+      await open(page, '/settings?tab=authentication');
+      await page.waitForTimeout(800);
+      await shot(page, example.page, example.disable);
+      await page.locator('#providerName').fill(example.providerName);
+      await page.locator('#clientId').fill(example.clientId);
+      await page.locator('#clientSecret input, input#clientSecret').first().fill('example-client-secret-not-real');
+      await page.locator('#issuerUri').fill(example.issuerUri);
+      for (const [id, claim] of [['claimUsername', 'preferred_username'], ['claimEmail', 'email'], ['claimName', 'name'], ['claimGroups', 'groups']]) {
+        const field = page.locator(`#${id}`);
+        if (!await field.inputValue()) await field.fill(claim);
+      }
+      await scrollToHeading(page, 'OIDC Provider Configuration', 'h3');
+      await shot(page, example.page, example.settings);
+      await open(page, '/dashboard');
+      await shot(page, example.page, example.home);
+    }
+    // Signed out: the ordinary login page.
+    await page.evaluate(() => localStorage.clear());
+    await page.context().clearCookies();
+    await page.goto(`${SITE}/login`, {waitUntil: 'networkidle'});
+    await page.waitForTimeout(800);
+    for (const example of Object.values(OIDC_EXAMPLES)) await shot(page, example.page, example.login);
+  },
+});
+
+Object.assign(scenes, {
+  // OPDS: the server and the Komga-compatible API switched on, their addresses, and an OPDS account.
+  async opds(page) {
+    await open(page, '/settings?tab=opds');
+    await page.waitForTimeout(800);
+    for (const item of await page.locator('.toggle-item:not(.sub-item)').all()) {
+      if (!await item.locator('p-toggleswitch input').isChecked()) {
+        await item.locator('p-toggleswitch').click();
+        await page.waitForTimeout(1000);
+      }
+    }
+    if (!await page.locator('text=elinor-ereader').count()) {
+      await page.getByRole('button', {name: 'Add User'}).click();
+      await page.waitForTimeout(800);
+      const dialog = page.locator('.p-dialog:visible').last();
+      await dialog.locator('#username').fill('elinor-ereader');
+      await dialog.locator('#password').fill('example-opds-password');
+      await dialog.locator('p-button').last().click();
+      await page.waitForTimeout(1200);
+    }
+    await shot(page, 'integration/opds', 'opds', {fullPage: true});
+  },
+});
+
 /** The id of the book with this title, from the API. */
 async function bookId(page, title) {
   const book = (await apiGet(page, '/books?stripForListView=true')).find(b => b.metadata?.title === title);
@@ -1000,7 +1299,8 @@ async function bookCount(page) {
 const wanted = process.argv.slice(2);
 const order = wanted.length ? wanted : Object.keys(scenes);
 process.umask(0o022);
-const browser = await chromium.launch();
+const siteHost = new URL(SITE).host.includes(':') ? new URL(SITE).host : `${new URL(SITE).hostname}:80`;
+const browser = await chromium.launch({args: [`--host-resolver-rules=MAP ${siteHost} ${new URL(BASE).host}`]});
 try {
   for (const name of order) {
     if (!scenes[name]) throw new Error(`No scene "${name}". Scenes: ${Object.keys(scenes).join(', ')}`);
