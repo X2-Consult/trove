@@ -1,63 +1,46 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>⚙️ Metadata Settings | Trove Docs</title>
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<style>
-  :root { color-scheme: light dark; }
-  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-          max-width: 860px; margin: 0 auto; padding: 2rem 1.5rem 4rem; line-height: 1.65; }
-  .archive-notice { background: #fef3c7; color: #78350f; border: 1px solid #f59e0b; border-radius: 6px;
-                      padding: 0.75rem 1rem; margin-bottom: 2rem; font-size: 0.9rem; }
-  @media (prefers-color-scheme: dark) {
-    body { background: #1a1a1a; color: #e5e5e5; }
-    a { color: #7dd3fc; }
-    .archive-notice { background: #422006; color: #fde68a; border-color: #92400e; }
-  }
-  pre { overflow-x: auto; padding: 1rem; border-radius: 6px; background: #f3f4f6; }
-  code { background: #f3f4f6; padding: 0.15em 0.4em; border-radius: 4px; }
-  pre code { padding: 0; background: none; }
-  @media (prefers-color-scheme: dark) { pre, code { background: #262626; } }
-  img { max-width: 100%; height: auto; border-radius: 6px; }
-  h1, h2, h3 { line-height: 1.3; }
-  table { border-collapse: collapse; width: 100%; }
-  th, td { border: 1px solid #d1d5db; padding: 0.5rem 0.75rem; text-align: left; }
-  .hash-link { margin-left: 0.4rem; opacity: 0.4; text-decoration: none; }
-</style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Metadata Settings · Trove Help</title>
+<link rel="stylesheet" href="../docs.css">
+<script src="../docs.js" defer></script>
 </head>
-<body>
-<div class="archive-notice">
-  📦 Trove started as BookLore. These pages are adapted from the BookLore documentation (booklore.org/docs), captured
-  20260305164130 via the Wayback Machine after the original site went offline.
-  <a href="../index.html">Back to docs index</a>
-</div>
-<header><h1>⚙️ Metadata Settings</h1></header>
+<body data-root="../">
+<header class="topbar">
+  <a class="brand" href="../index.html">Trove <span>Help</span></a>
+  <a class="back-to-app" href="/">Back to Trove</a>
+</header>
+<div class="layout">
+<nav class="sidebar" id="docs-nav" aria-label="Help topics"></nav>
+<main class="doc">
+<h1>Metadata Settings</h1>
 <p>Configure how metadata is retrieved, stored, and matched for your books, including provider settings, file persistence, sidecar backups, and field preferences.</p>
-<p>Navigate to <strong>Settings > Metadata 1</strong> to access this page. Requires the <strong>Manage Metadata Configuration</strong> permission.</p>
-<hr>
-<h2 class="anchor anchorWithStickyNavbar_LWe7" id="-metadata-persistence">💾 Metadata Persistence<a href="#-metadata-persistence" class="hash-link" aria-label="Direct link to 💾 Metadata Persistence" title="Direct link to 💾 Metadata Persistence">​</a></h2>
+<p>Navigate to <strong>Settings &gt; Metadata 1</strong> to access this page. Requires the <strong>Manage Metadata Configuration</strong> permission.</p>
+
+<h2 id="metadata-persistence">Metadata Persistence</h2>
 <p>Configure how metadata is written back to original book files and how files are moved or renamed when metadata changes.</p>
-<p><img decoding="async" loading="lazy" alt="Metadata Persistence" src="../images/metadata/metadata-settings/metadata-persistence.jpg" width="800" height="449" class="img_ev3q"></p>
-<div class="theme-admonition theme-admonition-danger admonition_xJq3 alert alert--danger"><div class="admonitionHeading_Gvgb"><span class="admonitionIcon_Rf37"><svg viewbox="0 0 12 16"><path fill-rule="evenodd" d="M5.05.31c.81 2.17.41 3.38-.52 4.31C3.55 5.67 1.98 6.45.9 7.98c-1.45 2.05-1.7 6.53 3.53 7.7-2.2-1.16-2.67-4.52-.3-6.61-.61 2.03.53 3.33 1.94 2.86 1.39-.47 2.3.53 2.27 1.67-.02.78-.31 1.44-1.13 1.81 3.42-.59 4.78-3.42 4.78-5.56 0-2.84-2.53-3.22-1.25-5.61-1.52.13-2.03 1.13-1.89 2.75.09 1.08-1.02 1.8-1.86 1.33-.67-.41-.66-1.19-.06-1.78C8.18 5.31 8.68 2.45 5.05.32L5.03.3l.02.01z"></path></svg></span>Network Storage Warning</div><div class="admonitionContent_BuS1"><p>These features directly modify and move book files on disk (including rewriting metadata and renaming files). They are designed for <strong>local file systems only</strong>. Using them on NAS or cloud-backed storage is untested and may lead to file corruption, incomplete writes, or permanent data loss.</p></div></div>
-<div class="theme-admonition theme-admonition-info admonition_xJq3 alert alert--info"><div class="admonitionHeading_Gvgb"><span class="admonitionIcon_Rf37"><svg viewbox="0 0 14 16"><path fill-rule="evenodd" d="M7 2.3c3.14 0 5.7 2.56 5.7 5.7s-2.56 5.7-5.7 5.7A5.71 5.71 0 0 1 1.3 8c0-3.14 2.56-5.7 5.7-5.7zM7 1C3.14 1 0 4.14 0 8s3.14 7 7 7 7-3.14 7-7-3.14-7-7-7zm1 3H6v5h2V4zm0 6H6v2h2v-2z"></path></svg></span>Format Limitations</div><div class="admonitionContent_BuS1"><p>Writing metadata is <strong>not supported</strong> for FB2, AZW3, and MOBI formats. Books in these formats will be skipped during metadata write operations.</p></div></div>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="write-metadata-to-epub">Write Metadata to EPUB<a href="#write-metadata-to-epub" class="hash-link" aria-label="Direct link to Write Metadata to EPUB" title="Direct link to Write Metadata to EPUB">​</a></h3>
+<figure><img alt="Metadata Persistence" loading="lazy" src="../images/metadata/metadata-settings/metadata-persistence.jpg"/></figure>
+<aside class="note note-danger"><p class="note-title">Network Storage Warning</p><p>These features directly modify and move book files on disk (including rewriting metadata and renaming files). They are designed for <strong>local file systems only</strong>. Using them on NAS or cloud-backed storage is untested and may lead to file corruption, incomplete writes, or permanent data loss.</p></aside>
+<aside class="note note-info"><p class="note-title">Format Limitations</p><p>Writing metadata is <strong>not supported</strong> for FB2, AZW3, and MOBI formats. Books in these formats will be skipped during metadata write operations.</p></aside>
+<h3 id="write-metadata-to-epub">Write Metadata to EPUB</h3>
 <p>When enabled, Trove writes metadata directly into EPUB files whenever you edit book information. All standard metadata fields are supported, including title, authors, description, publisher, series, ISBN, language, genres, and cover image.</p>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="write-metadata-to-cbx">Write Metadata to CBX<a href="#write-metadata-to-cbx" class="hash-link" aria-label="Direct link to Write Metadata to CBX" title="Direct link to Write Metadata to CBX">​</a></h3>
+<h3 id="write-metadata-to-cbx">Write Metadata to CBX</h3>
 <p>When enabled, writes metadata directly into CBX files (CBZ, CBR, CB7) when editing book information. Useful for keeping comic book archives self-contained with their metadata.</p>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="write-metadata-to-pdf">Write Metadata to PDF<a href="#write-metadata-to-pdf" class="hash-link" aria-label="Direct link to Write Metadata to PDF" title="Direct link to Write Metadata to PDF">​</a></h3>
+<h3 id="write-metadata-to-pdf">Write Metadata to PDF</h3>
 <p>When enabled, writes metadata into PDF files. PDFs have limited metadata support compared to EPUB. Only the following fields can be updated: <strong>Title</strong>, <strong>Authors</strong>, <strong>Publisher</strong>, <strong>Categories</strong>, <strong>Description</strong>, <strong>Language</strong>, and <strong>Published Date</strong>. PDFs do not support embedded covers.</p>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="write-metadata-to-audiobooks">Write Metadata to Audiobooks<a href="#write-metadata-to-audiobooks" class="hash-link" aria-label="Direct link to Write Metadata to Audiobooks" title="Direct link to Write Metadata to Audiobooks">​</a></h3>
+<h3 id="write-metadata-to-audiobooks">Write Metadata to Audiobooks</h3>
 <p>When enabled, writes metadata directly into audiobook files (M4B, M4A, MP3, etc.) when editing book information. Supports title, authors, narrator, description, publisher, categories, series, language, and cover art. For folder-based audiobooks, the cover is saved as <code>cover.jpg</code> in the folder.</p>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="auto-move-files-on-metadata-update">Auto-Move Files on Metadata Update<a href="#auto-move-files-on-metadata-update" class="hash-link" aria-label="Direct link to Auto-Move Files on Metadata Update" title="Direct link to Auto-Move Files on Metadata Update">​</a></h3>
+<h3 id="auto-move-files-on-metadata-update">Auto-Move Files on Metadata Update</h3>
 <p>When enabled, Trove automatically moves and renames files according to their library's <a href="../metadata/file-naming-patterns.html">file naming pattern</a> whenever metadata is updated. For example, if your naming pattern includes the author and title, renaming a book or correcting an author will cause the file to be relocated to match the new metadata.</p>
-<div class="theme-admonition theme-admonition-tip admonition_xJq3 alert alert--success"><div class="admonitionHeading_Gvgb"><span class="admonitionIcon_Rf37"><svg viewbox="0 0 12 16"><path fill-rule="evenodd" d="M6.5 0C3.48 0 1 2.19 1 5c0 .92.55 2.25 1 3 1.34 2.25 1.78 2.78 2 4v1h5v-1c.22-1.22.66-1.75 2-4 .45-.75 1-2.08 1-3 0-2.81-2.48-5-5.5-5zm3.64 7.48c-.25.44-.47.8-.67 1.11-.86 1.41-1.25 2.06-1.45 3.23-.02.05-.02.11-.02.17H5c0-.06 0-.13-.02-.17-.2-1.17-.59-1.83-1.45-3.23-.2-.31-.42-.67-.67-1.11C2.44 6.78 2 5.65 2 5c0-2.2 2.02-4 4.5-4 1.22 0 2.36.42 3.22 1.19C10.55 2.94 11 3.94 11 5c0 .66-.44 1.78-.86 2.48zM4 14h5c-.23 1.14-1.3 2-2.5 2s-2.27-.86-2.5-2z"></path></svg></span>Best Practice</div><div class="admonitionContent_BuS1"><p>Enable this alongside a well-defined file naming pattern to keep your library organized automatically. Changes to author names, titles, or series information will keep your folder structure in sync.</p></div></div>
-<hr>
-<h2 class="anchor anchorWithStickyNavbar_LWe7" id="-sidecar-json-files">📄 Sidecar JSON Files<a href="#-sidecar-json-files" class="hash-link" aria-label="Direct link to 📄 Sidecar JSON Files" title="Direct link to 📄 Sidecar JSON Files">​</a></h2>
+<aside class="note note-tip"><p class="note-title">Best Practice</p><p>Enable this alongside a well-defined file naming pattern to keep your library organized automatically. Changes to author names, titles, or series information will keep your folder structure in sync.</p></aside>
+
+<h2 id="sidecar-json-files">Sidecar JSON Files</h2>
 <p>Create external metadata files alongside your books for portable metadata storage and backup.</p>
-<p><img decoding="async" loading="lazy" alt="Sidecar JSON Files" src="../images/metadata/metadata-settings/sidecar-json-files.jpg" class="img_ev3q"></p>
+<figure><img alt="Sidecar JSON Files" loading="lazy" src="../images/metadata/metadata-settings/sidecar-json-files.jpg"/></figure>
 <p>When enabled, Trove writes a <code>BookName.metadata.json</code> file next to each book file containing all of its metadata in a structured JSON format. This provides a portable, human-readable backup of your metadata that lives alongside the book files themselves.</p>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="whats-included-in-sidecar-files">What's Included in Sidecar Files<a href="#whats-included-in-sidecar-files" class="hash-link" aria-label="Direct link to What's Included in Sidecar Files" title="Direct link to What's Included in Sidecar Files">​</a></h3>
+<h3 id="what-s-included-in-sidecar-files">What's Included in Sidecar Files</h3>
 <p>Sidecar JSON files contain comprehensive metadata:</p>
 <ul>
 <li><strong>Standard fields</strong>: Title, subtitle, authors, publisher, published date, description, ISBN-10, ISBN-13, language, page count, categories, series information</li>
@@ -66,48 +49,48 @@
 <li><strong>Additional fields</strong>: Moods, tags, age rating, content rating, narrator, abridged status, comic-specific metadata</li>
 <li><strong>File metadata</strong>: Version number, generation timestamp, and source identifier</li>
 </ul>
-<div class="theme-admonition theme-admonition-info admonition_xJq3 alert alert--info"><div class="admonitionHeading_Gvgb"><span class="admonitionIcon_Rf37"><svg viewbox="0 0 14 16"><path fill-rule="evenodd" d="M7 2.3c3.14 0 5.7 2.56 5.7 5.7s-2.56 5.7-5.7 5.7A5.71 5.71 0 0 1 1.3 8c0-3.14 2.56-5.7 5.7-5.7zM7 1C3.14 1 0 4.14 0 8s3.14 7 7 7 7-3.14 7-7-3.14-7-7-7zm1 3H6v5h2V4zm0 6H6v2h2v-2z"></path></svg></span>Sidecar Import & Export</div><div class="admonitionContent_BuS1"><p>You can also bulk export and import sidecar files per library from the <a href="../metadata/metadata-fetch-configuration.html#-sidecar-export--import">Fetch Configuration</a> page.</p></div></div>
-<hr>
-<h2 class="anchor anchorWithStickyNavbar_LWe7" id="-automatic-metadata-download">📥 Automatic Metadata Download<a href="#-automatic-metadata-download" class="hash-link" aria-label="Direct link to 📥 Automatic Metadata Download" title="Direct link to 📥 Automatic Metadata Download">​</a></h2>
+<aside class="note note-info"><p class="note-title">Sidecar Import &amp; Export</p><p>You can also bulk export and import sidecar files per library from the <a href="../metadata/metadata-fetch-configuration.html#-sidecar-export--import">Fetch Configuration</a> page.</p></aside>
+
+<h2 id="automatic-metadata-download">Automatic Metadata Download</h2>
 <p>Configure whether metadata is automatically fetched from your configured providers when new books arrive through Bookdrop.</p>
-<p><img decoding="async" loading="lazy" alt="Automatic Metadata Download" src="../images/metadata/metadata-settings/auto-metadata-download.jpg" width="800" height="135" class="img_ev3q"></p>
+<figure><img alt="Automatic Metadata Download" loading="lazy" src="../images/metadata/metadata-settings/auto-metadata-download.jpg"/></figure>
 <p>When enabled, Trove will automatically retrieve metadata from your configured sources whenever new files are added to the Bookdrop folder. The metadata fetch uses the provider priority configuration set in the <a href="../metadata/metadata-fetch-configuration.html">Fetch Configuration</a> page.</p>
-<div class="theme-admonition theme-admonition-warning admonition_xJq3 alert alert--warning"><div class="admonitionHeading_Gvgb"><span class="admonitionIcon_Rf37"><svg viewbox="0 0 16 16"><path fill-rule="evenodd" d="M8.893 1.5c-.183-.31-.52-.5-.887-.5s-.703.19-.886.5L.138 13.499a.98.98 0 0 0 0 1.001c.193.31.53.501.886.501h13.964c.367 0 .704-.19.877-.5a1.03 1.03 0 0 0 .01-1.002L8.893 1.5zm.133 11.497H6.987v-2.003h2.039v2.003zm0-3.004H6.987V5.987h2.039v4.006z"></path></svg></span>Performance Note</div><div class="admonitionContent_BuS1"><p>Processing a large number of files simultaneously may increase the time required for metadata fetching. If you regularly drop many files at once, consider leaving this disabled and running metadata fetches manually or on a schedule.</p></div></div>
-<hr>
-<h2 class="anchor anchorWithStickyNavbar_LWe7" id="-metadata-providers">🔌 Metadata Providers<a href="#-metadata-providers" class="hash-link" aria-label="Direct link to 🔌 Metadata Providers" title="Direct link to 🔌 Metadata Providers">​</a></h2>
+<aside class="note note-warning"><p class="note-title">Performance Note</p><p>Processing a large number of files simultaneously may increase the time required for metadata fetching. If you regularly drop many files at once, consider leaving this disabled and running metadata fetches manually or on a schedule.</p></aside>
+
+<h2 id="metadata-providers">Metadata Providers</h2>
 <p>Configure which online sources to use for fetching book metadata. Enable providers and set up their API tokens or cookies to access richer book information.</p>
-<p><img decoding="async" loading="lazy" alt="Metadata Providers" src="../images/metadata/metadata-settings/metadata-providers.jpg" width="1200" height="916" class="img_ev3q"></p>
+<figure><img alt="Metadata Providers" loading="lazy" src="../images/metadata/metadata-settings/metadata-providers.jpg"/></figure>
 <p>Providers are split into two groups:</p>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="providers-with-configuration">Providers with Configuration<a href="#providers-with-configuration" class="hash-link" aria-label="Direct link to Providers with Configuration" title="Direct link to Providers with Configuration">​</a></h3>
+<h3 id="providers-with-configuration">Providers with Configuration</h3>
 <p>These providers require additional setup (API keys, region selection, or cookies) before they can be used effectively.</p>
-<table><thead><tr><th>Provider</th><th>Configuration</th><th>Details</th></tr></thead><tbody><tr><td><strong>Amazon</strong></td><td>Region, Cookie</td><td>Select your Amazon region from 19 available domains (amazon.com, amazon.de, amazon.co.uk, etc.). Providing your Amazon session cookie is optional but <strong>highly recommended</strong> as it unlocks richer book metadata and bypasses rate limits. See the <a href="../metadata/amazon-cookie.html">Amazon Cookie</a> guide.</td></tr><tr><td><strong>Google Books</strong></td><td>Language Restriction, API Key</td><td>Optionally restrict results to a specific language (Dutch, English, French, German, Italian, Japanese, Polish, Portuguese, Spanish, Swedish). Providing a Google Books API key increases rate limits and improves reliability.</td></tr><tr><td><strong>Hardcover</strong></td><td>API Token</td><td>Requires an API token from <a href="https://web.archive.org/web/20260303063104/https://hardcover.app/account/api" target="_blank" rel="noopener noreferrer">hardcover.app/account/api</a>. See the <a href="../metadata/hardcover-token.html">Hardcover API</a> guide for setup instructions.</td></tr><tr><td><strong>Comic Vine</strong></td><td>API Key</td><td>Requires a Comic Vine API key for accessing comic book and graphic novel metadata.</td></tr><tr><td><strong>Audible</strong></td><td>Region</td><td>Select your Audible region from 10 available domains (audible.com, audible.co.uk, audible.de, etc.) for audiobook-specific metadata.</td></tr></tbody></table>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="ready-to-use-providers">Ready-to-Use Providers<a href="#ready-to-use-providers" class="hash-link" aria-label="Direct link to Ready-to-Use Providers" title="Direct link to Ready-to-Use Providers">​</a></h3>
+<div class="table-wrap"><table><thead><tr><th>Provider</th><th>Configuration</th><th>Details</th></tr></thead><tbody><tr><td><strong>Amazon</strong></td><td>Region, Cookie</td><td>Select your Amazon region from 19 available domains (amazon.com, amazon.de, amazon.co.uk, etc.). Providing your Amazon session cookie is optional but <strong>highly recommended</strong> as it unlocks richer book metadata and bypasses rate limits. See the <a href="../metadata/amazon-cookie.html">Amazon Cookie</a> guide.</td></tr><tr><td><strong>Google Books</strong></td><td>Language Restriction, API Key</td><td>Optionally restrict results to a specific language (Dutch, English, French, German, Italian, Japanese, Polish, Portuguese, Spanish, Swedish). Providing a Google Books API key increases rate limits and improves reliability.</td></tr><tr><td><strong>Hardcover</strong></td><td>API Token</td><td>Requires an API token from <a href="https://web.archive.org/web/20260303063104/https://hardcover.app/account/api">hardcover.app/account/api</a>. See the <a href="../metadata/hardcover-token.html">Hardcover API</a> guide for setup instructions.</td></tr><tr><td><strong>Comic Vine</strong></td><td>API Key</td><td>Requires a Comic Vine API key for accessing comic book and graphic novel metadata.</td></tr><tr><td><strong>Audible</strong></td><td>Region</td><td>Select your Audible region from 10 available domains (audible.com, audible.co.uk, audible.de, etc.) for audiobook-specific metadata.</td></tr></tbody></table></div>
+<h3 id="ready-to-use-providers">Ready-to-Use Providers</h3>
 <p>These providers work out of the box with no additional configuration. Simply toggle them on or off.</p>
-<table><thead><tr><th>Provider</th><th>Specialty</th></tr></thead><tbody><tr><td><strong>Goodreads</strong></td><td>Community ratings, series data, comprehensive genres</td></tr><tr><td><strong>Douban</strong></td><td>Asian literature (Chinese, Japanese, Korean titles)</td></tr><tr><td><strong>Lubimyczytac</strong></td><td>Polish literature and book ratings. See the <a href="../metadata/lubimyczytac.html">LubimyCzytac</a> guide.</td></tr><tr><td><strong>Ranobedb</strong></td><td>Light novels and web novel metadata. See the <a href="../metadata/ranobedb.html">RanobeDB</a> guide.</td></tr></tbody></table>
-<div class="theme-admonition theme-admonition-tip admonition_xJq3 alert alert--success"><div class="admonitionHeading_Gvgb"><span class="admonitionIcon_Rf37"><svg viewbox="0 0 12 16"><path fill-rule="evenodd" d="M6.5 0C3.48 0 1 2.19 1 5c0 .92.55 2.25 1 3 1.34 2.25 1.78 2.78 2 4v1h5v-1c.22-1.22.66-1.75 2-4 .45-.75 1-2.08 1-3 0-2.81-2.48-5-5.5-5zm3.64 7.48c-.25.44-.47.8-.67 1.11-.86 1.41-1.25 2.06-1.45 3.23-.02.05-.02.11-.02.17H5c0-.06 0-.13-.02-.17-.2-1.17-.59-1.83-1.45-3.23-.2-.31-.42-.67-.67-1.11C2.44 6.78 2 5.65 2 5c0-2.2 2.02-4 4.5-4 1.22 0 2.36.42 3.22 1.19C10.55 2.94 11 3.94 11 5c0 .66-.44 1.78-.86 2.48zM4 14h5c-.23 1.14-1.3 2-2.5 2s-2.27-.86-2.5-2z"></path></svg></span>Provider Availability</div><div class="admonitionContent_BuS1"><p>Enabling a provider here makes it available in the priority dropdowns on the <a href="../metadata/metadata-fetch-configuration.html">Fetch Configuration</a> page. After enabling a new provider, go to Metadata 2 to assign it a priority for the fields you want it to supply.</p></div></div>
-<hr>
-<h2 class="anchor anchorWithStickyNavbar_LWe7" id="-enabled-fields-in-metadata-editor--picker">📋 Enabled Fields in Metadata Editor & Picker<a href="#-enabled-fields-in-metadata-editor--picker" class="hash-link" aria-label="Direct link to 📋 Enabled Fields in Metadata Editor & Picker" title="Direct link to 📋 Enabled Fields in Metadata Editor & Picker">​</a></h2>
+<div class="table-wrap"><table><thead><tr><th>Provider</th><th>Specialty</th></tr></thead><tbody><tr><td><strong>Goodreads</strong></td><td>Community ratings, series data, comprehensive genres</td></tr><tr><td><strong>Douban</strong></td><td>Asian literature (Chinese, Japanese, Korean titles)</td></tr><tr><td><strong>Lubimyczytac</strong></td><td>Polish literature and book ratings. See the <a href="../metadata/lubimyczytac.html">LubimyCzytac</a> guide.</td></tr><tr><td><strong>Ranobedb</strong></td><td>Light novels and web novel metadata. See the <a href="../metadata/ranobedb.html">RanobeDB</a> guide.</td></tr></tbody></table></div>
+<aside class="note note-tip"><p class="note-title">Provider Availability</p><p>Enabling a provider here makes it available in the priority dropdowns on the <a href="../metadata/metadata-fetch-configuration.html">Fetch Configuration</a> page. After enabling a new provider, go to Metadata 2 to assign it a priority for the fields you want it to supply.</p></aside>
+
+<h2 id="enabled-fields-in-metadata-editor-picker">Enabled Fields in Metadata Editor &amp; Picker</h2>
 <p>Select which provider-specific metadata fields to display when editing book information or picking metadata from providers. Disabled fields are hidden from the interface entirely.</p>
-<p><img decoding="async" loading="lazy" alt="Enabled Fields in Metadata Editor &amp; Picker" src="../images/metadata/metadata-settings/enabled-fields.jpg" width="800" height="310" class="img_ev3q"></p>
+<figure><img alt="Enabled Fields in Metadata Editor &amp; Picker" loading="lazy" src="../images/metadata/metadata-settings/enabled-fields.jpg"/></figure>
 <p>Each provider has its own set of unique fields that can be toggled individually:</p>
-<table><thead><tr><th>Provider</th><th>Available Fields</th></tr></thead><tbody><tr><td><strong>Amazon</strong></td><td>Amazon ASIN, Amazon Rating, Amazon Review Count</td></tr><tr><td><strong>Google Books</strong></td><td>Google Books ID</td></tr><tr><td><strong>Goodreads</strong></td><td>Goodreads ID, Goodreads Rating, Goodreads Review Count</td></tr><tr><td><strong>Hardcover</strong></td><td>Hardcover ID, Hardcover Book ID, Hardcover Rating, Hardcover Review Count</td></tr><tr><td><strong>Comicvine</strong></td><td>Comicvine ID</td></tr><tr><td><strong>Lubimyczytac</strong></td><td>Lubimyczytac ID, Lubimyczytac Rating</td></tr><tr><td><strong>Ranobedb</strong></td><td>Ranobedb ID, Ranobedb Rating</td></tr><tr><td><strong>Audible</strong></td><td>Audible ID, Audible Rating, Audible Review Count</td></tr></tbody></table>
-<div class="theme-admonition theme-admonition-tip admonition_xJq3 alert alert--success"><div class="admonitionHeading_Gvgb"><span class="admonitionIcon_Rf37"><svg viewbox="0 0 12 16"><path fill-rule="evenodd" d="M6.5 0C3.48 0 1 2.19 1 5c0 .92.55 2.25 1 3 1.34 2.25 1.78 2.78 2 4v1h5v-1c.22-1.22.66-1.75 2-4 .45-.75 1-2.08 1-3 0-2.81-2.48-5-5.5-5zm3.64 7.48c-.25.44-.47.8-.67 1.11-.86 1.41-1.25 2.06-1.45 3.23-.02.05-.02.11-.02.17H5c0-.06 0-.13-.02-.17-.2-1.17-.59-1.83-1.45-3.23-.2-.31-.42-.67-.67-1.11C2.44 6.78 2 5.65 2 5c0-2.2 2.02-4 4.5-4 1.22 0 2.36.42 3.22 1.19C10.55 2.94 11 3.94 11 5c0 .66-.44 1.78-.86 2.48zM4 14h5c-.23 1.14-1.3 2-2.5 2s-2.27-.86-2.5-2z"></path></svg></span>Decluttering the UI</div><div class="admonitionContent_BuS1"><p>If you only use a few providers, disable the fields for providers you don't use. This keeps the metadata editor clean and focused on the information that matters to you.</p></div></div>
-<hr>
-<h2 class="anchor anchorWithStickyNavbar_LWe7" id="-public-reviews">⭐ Public Reviews<a href="#-public-reviews" class="hash-link" aria-label="Direct link to ⭐ Public Reviews" title="Direct link to ⭐ Public Reviews">​</a></h2>
+<div class="table-wrap"><table><thead><tr><th>Provider</th><th>Available Fields</th></tr></thead><tbody><tr><td><strong>Amazon</strong></td><td>Amazon ASIN, Amazon Rating, Amazon Review Count</td></tr><tr><td><strong>Google Books</strong></td><td>Google Books ID</td></tr><tr><td><strong>Goodreads</strong></td><td>Goodreads ID, Goodreads Rating, Goodreads Review Count</td></tr><tr><td><strong>Hardcover</strong></td><td>Hardcover ID, Hardcover Book ID, Hardcover Rating, Hardcover Review Count</td></tr><tr><td><strong>Comicvine</strong></td><td>Comicvine ID</td></tr><tr><td><strong>Lubimyczytac</strong></td><td>Lubimyczytac ID, Lubimyczytac Rating</td></tr><tr><td><strong>Ranobedb</strong></td><td>Ranobedb ID, Ranobedb Rating</td></tr><tr><td><strong>Audible</strong></td><td>Audible ID, Audible Rating, Audible Review Count</td></tr></tbody></table></div>
+<aside class="note note-tip"><p class="note-title">Decluttering the UI</p><p>If you only use a few providers, disable the fields for providers you don't use. This keeps the metadata editor clean and focused on the information that matters to you.</p></aside>
+
+<h2 id="public-reviews">Public Reviews</h2>
 <p>Configure automatic downloading of user reviews from external platforms. Reviews can be fetched from Amazon, Goodreads, and Hardcover for offline access within Trove.</p>
-<p><img decoding="async" loading="lazy" alt="Public Reviews" src="../images/metadata/metadata-settings/public-reviews.jpg" width="800" height="176" class="img_ev3q"></p>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="download-public-reviews">Download Public Reviews<a href="#download-public-reviews" class="hash-link" aria-label="Direct link to Download Public Reviews" title="Direct link to Download Public Reviews">​</a></h3>
+<figure><img alt="Public Reviews" loading="lazy" src="../images/metadata/metadata-settings/public-reviews.jpg"/></figure>
+<h3 id="download-public-reviews">Download Public Reviews</h3>
 <p>The master toggle that enables or disables review downloading across all providers. When disabled, the entire reviews section is hidden from book detail views.</p>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="auto-download-on-book-open">Auto Download on Book Open<a href="#auto-download-on-book-open" class="hash-link" aria-label="Direct link to Auto Download on Book Open" title="Direct link to Auto Download on Book Open">​</a></h3>
+<h3 id="auto-download-on-book-open">Auto Download on Book Open</h3>
 <p>When enabled, Trove automatically fetches reviews from your configured sources whenever you open a book's details page. When disabled, reviews are only downloaded manually or during a metadata refresh operation.</p>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="review-sources">Review Sources<a href="#review-sources" class="hash-link" aria-label="Direct link to Review Sources" title="Direct link to Review Sources">​</a></h3>
+<h3 id="review-sources">Review Sources</h3>
 <p>Each review provider can be individually enabled or disabled, and you can configure the maximum number of reviews to fetch per provider (1 to 10). The available sources are:</p>
-<table><thead><tr><th>Source</th><th>Default State</th><th>Description</th></tr></thead><tbody><tr><td><strong>Amazon</strong></td><td>Enabled</td><td>User reviews from Amazon, pulled alongside other Amazon metadata</td></tr><tr><td><strong>Goodreads</strong></td><td>Disabled</td><td>Community reviews from Goodreads</td></tr><tr><td><strong>Hardcover</strong></td><td>Disabled</td><td>Reviews from the Hardcover reading community</td></tr></tbody></table>
-<hr>
-<h2 class="anchor anchorWithStickyNavbar_LWe7" id="-saving">💾 Saving<a href="#-saving" class="hash-link" aria-label="Direct link to 💾 Saving" title="Direct link to 💾 Saving">​</a></h2>
+<div class="table-wrap"><table><thead><tr><th>Source</th><th>Default State</th><th>Description</th></tr></thead><tbody><tr><td><strong>Amazon</strong></td><td>Enabled</td><td>User reviews from Amazon, pulled alongside other Amazon metadata</td></tr><tr><td><strong>Goodreads</strong></td><td>Disabled</td><td>Community reviews from Goodreads</td></tr><tr><td><strong>Hardcover</strong></td><td>Disabled</td><td>Reviews from the Hardcover reading community</td></tr></tbody></table></div>
+
+<h2 id="saving">Saving</h2>
 <p>Click <strong>Save Configurations</strong> at the bottom of the page to persist all changes across every section. The button saves metadata persistence settings, provider configurations, field visibility, and review settings in a single operation.</p>
-<hr>
-<h2 class="anchor anchorWithStickyNavbar_LWe7" id="-notes">📋 Notes<a href="#-notes" class="hash-link" aria-label="Direct link to 📋 Notes" title="Direct link to 📋 Notes">​</a></h2>
+
+<h2 id="notes">Notes</h2>
 <ul>
 <li>All configuration changes are recorded in the <a href="../tools/audit-logs.html">Audit Log</a>.</li>
 <li>Provider settings on this page (Metadata 1) control <strong>which providers are available</strong>. The <a href="../metadata/metadata-fetch-configuration.html">Fetch Configuration</a> page (Metadata 2) controls <strong>which providers are used for each field</strong> and in what priority order.</li>
@@ -116,5 +99,7 @@
 <li>Enabling a provider here does not automatically assign it to any metadata fields. You must configure provider priorities on the Fetch Configuration page separately.</li>
 <li>The Manage Metadata Configuration permission is required to access and modify all settings on this page.</li>
 </ul>
+</main>
+</div>
 </body>
 </html>

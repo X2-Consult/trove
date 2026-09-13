@@ -1,43 +1,26 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>📖 Metadata Center | Trove Docs</title>
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<style>
-  :root { color-scheme: light dark; }
-  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-          max-width: 860px; margin: 0 auto; padding: 2rem 1.5rem 4rem; line-height: 1.65; }
-  .archive-notice { background: #fef3c7; color: #78350f; border: 1px solid #f59e0b; border-radius: 6px;
-                      padding: 0.75rem 1rem; margin-bottom: 2rem; font-size: 0.9rem; }
-  @media (prefers-color-scheme: dark) {
-    body { background: #1a1a1a; color: #e5e5e5; }
-    a { color: #7dd3fc; }
-    .archive-notice { background: #422006; color: #fde68a; border-color: #92400e; }
-  }
-  pre { overflow-x: auto; padding: 1rem; border-radius: 6px; background: #f3f4f6; }
-  code { background: #f3f4f6; padding: 0.15em 0.4em; border-radius: 4px; }
-  pre code { padding: 0; background: none; }
-  @media (prefers-color-scheme: dark) { pre, code { background: #262626; } }
-  img { max-width: 100%; height: auto; border-radius: 6px; }
-  h1, h2, h3 { line-height: 1.3; }
-  table { border-collapse: collapse; width: 100%; }
-  th, td { border: 1px solid #d1d5db; padding: 0.5rem 0.75rem; text-align: left; }
-  .hash-link { margin-left: 0.4rem; opacity: 0.4; text-decoration: none; }
-</style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Metadata Center · Trove Help</title>
+<link rel="stylesheet" href="../docs.css">
+<script src="../docs.js" defer></script>
 </head>
-<body>
-<div class="archive-notice">
-  📦 Trove started as BookLore. These pages are adapted from the BookLore documentation (booklore.org/docs), captured
-  20260305164130 via the Wayback Machine after the original site went offline.
-  <a href="../index.html">Back to docs index</a>
-</div>
-<header><h1>📖 Metadata Center</h1></header>
+<body data-root="../">
+<header class="topbar">
+  <a class="brand" href="../index.html">Trove <span>Help</span></a>
+  <a class="back-to-app" href="/">Back to Trove</a>
+</header>
+<div class="layout">
+<nav class="sidebar" id="docs-nav" aria-label="Help topics"></nav>
+<main class="doc">
+<h1>Metadata Center</h1>
 <p>The Metadata Center is the central hub for viewing and managing everything about a book. Access it by clicking any book cover or title in the book browser. It has four top-level tabs (Book Details, Edit Metadata, Search Metadata, Sidecar). The Book Details tab includes a row of content tabs at the bottom (Similar Books, Files, Notes, Reading Sessions, Reviews).</p>
-<p><img decoding="async" loading="lazy" alt="Metadata Center" src="../images/metadata/metadata-center/book-details.jpg" width="1200" height="817" class="img_ev3q"></p>
-<div class="theme-admonition theme-admonition-tip admonition_xJq3 alert alert--success"><div class="admonitionHeading_Gvgb"><span class="admonitionIcon_Rf37"><svg viewbox="0 0 12 16"><path fill-rule="evenodd" d="M6.5 0C3.48 0 1 2.19 1 5c0 .92.55 2.25 1 3 1.34 2.25 1.78 2.78 2 4v1h5v-1c.22-1.22.66-1.75 2-4 .45-.75 1-2.08 1-3 0-2.81-2.48-5-5.5-5zm3.64 7.48c-.25.44-.47.8-.67 1.11-.86 1.41-1.25 2.06-1.45 3.23-.02.05-.02.11-.02.17H5c0-.06 0-.13-.02-.17-.2-1.17-.59-1.83-1.45-3.23-.2-.31-.42-.67-.67-1.11C2.44 6.78 2 5.65 2 5c0-2.2 2.02-4 4.5-4 1.22 0 2.36.42 3.22 1.19C10.55 2.94 11 3.94 11 5c0 .66-.44 1.78-.86 2.48zM4 14h5c-.23 1.14-1.3 2-2.5 2s-2.27-.86-2.5-2z"></path></svg></span>Display Mode</div><div class="admonitionContent_BuS1"><p>The Metadata Center can open as a full page or a popup dialog. Configure this in <a href="../view-preferences.html">View Preferences</a> under Metadata Center Display Mode.</p></div></div>
-<hr>
-<h2 class="anchor anchorWithStickyNavbar_LWe7" id="️-book-details">🏷️ Book Details<a href="#️-book-details" class="hash-link" aria-label="Direct link to 🏷️ Book Details" title="Direct link to 🏷️ Book Details">​</a></h2>
+<figure><img alt="Metadata Center" loading="lazy" src="../images/metadata/metadata-center/book-details.jpg"/></figure>
+<aside class="note note-tip"><p class="note-title">Display Mode</p><p>The Metadata Center can open as a full page or a popup dialog. Configure this in <a href="../view-preferences.html">View Preferences</a> under Metadata Center Display Mode.</p></aside>
+
+<h2 id="book-details">Book Details</h2>
 <p>The default view displaying the book's core metadata at a glance.</p>
 <p><strong>Header area:</strong></p>
 <ul>
@@ -62,38 +45,38 @@
 <li><strong>Fetch Metadata</strong>: Search metadata providers for updated information</li>
 <li><strong>Synopsis</strong>: Toggles the book description</li>
 </ul>
-<hr>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="-similar-books">📚 Similar Books<a href="#-similar-books" class="hash-link" aria-label="Direct link to 📚 Similar Books" title="Direct link to 📚 Similar Books">​</a></h3>
+
+<h3 id="similar-books">Similar Books</h3>
 <p>Displays books from your library that are similar to the current book, based on shared authors, genres, and other metadata. Books in the same series are excluded to keep recommendations useful.</p>
 <p>Recommendations are computed by a similarity algorithm and cached for performance. They update when the <a href="../tools/task-manager.html">Update Book Recommendations</a> task runs.</p>
-<div class="theme-admonition theme-admonition-info admonition_xJq3 alert alert--info"><div class="admonitionHeading_Gvgb"><span class="admonitionIcon_Rf37"><svg viewbox="0 0 14 16"><path fill-rule="evenodd" d="M7 2.3c3.14 0 5.7 2.56 5.7 5.7s-2.56 5.7-5.7 5.7A5.71 5.71 0 0 1 1.3 8c0-3.14 2.56-5.7 5.7-5.7zM7 1C3.14 1 0 4.14 0 8s3.14 7 7 7 7-3.14 7-7-3.14-7-7-7zm1 3H6v5h2V4zm0 6H6v2h2v-2z"></path></svg></span>Enable Recommendations</div><div class="admonitionContent_BuS1"><p>Similar Book Recommendations must be enabled in <a href="../tools/global-preferences.html">Global Preferences</a> for this tab to show results.</p></div></div>
-<hr>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="-files">📁 Files<a href="#-files" class="hash-link" aria-label="Direct link to 📁 Files" title="Direct link to 📁 Files">​</a></h3>
+<aside class="note note-info"><p class="note-title">Enable Recommendations</p><p>Similar Book Recommendations must be enabled in <a href="../tools/global-preferences.html">Global Preferences</a> for this tab to show results.</p></aside>
+
+<h3 id="files">Files</h3>
 <p>Manage all files associated with a book. Files are organized into three categories.</p>
-<p><img decoding="async" loading="lazy" alt="Files Tab" src="../images/metadata/metadata-center/files-tab.jpg" class="img_ev3q"></p>
+<figure><img alt="Files Tab" loading="lazy" src="../images/metadata/metadata-center/files-tab.jpg"/></figure>
 <p><strong>Primary File</strong> is the main book file used for reading. Each file entry shows the format badge, filename, and size.</p>
 <p><strong>Actions per file</strong> (icons on the right):</p>
-<table><thead><tr><th>Icon</th><th>Action</th><th>Description</th></tr></thead><tbody><tr><td>Book</td><td><strong>Read</strong></td><td>Opens the file in the built-in reader</td></tr><tr><td>Play</td><td><strong>Stream</strong></td><td>Opens in the streaming reader (EPUB/PDF only)</td></tr><tr><td>Download</td><td><strong>Download</strong></td><td>Downloads the file to your device</td></tr><tr><td>Trash</td><td><strong>Delete</strong></td><td>Removes the file (disabled if it's the only format)</td></tr></tbody></table>
+<div class="table-wrap"><table><thead><tr><th>Icon</th><th>Action</th><th>Description</th></tr></thead><tbody><tr><td>Book</td><td><strong>Read</strong></td><td>Opens the file in the built-in reader</td></tr><tr><td>Play</td><td><strong>Stream</strong></td><td>Opens in the streaming reader (EPUB/PDF only)</td></tr><tr><td>Download</td><td><strong>Download</strong></td><td>Downloads the file to your device</td></tr><tr><td>Trash</td><td><strong>Delete</strong></td><td>Removes the file (disabled if it's the only format)</td></tr></tbody></table></div>
 <p><strong>Alternative Formats</strong> are additional versions of the same book in different formats (e.g., both EPUB and PDF). Useful for reading on different devices or readers.</p>
 <p><strong>Supplementary Files</strong> are non-book files associated with the book, such as companion guides or bonus content. These can only be downloaded or deleted.</p>
-<div class="theme-admonition theme-admonition-info admonition_xJq3 alert alert--info"><div class="admonitionHeading_Gvgb"><span class="admonitionIcon_Rf37"><svg viewbox="0 0 14 16"><path fill-rule="evenodd" d="M7 2.3c3.14 0 5.7 2.56 5.7 5.7s-2.56 5.7-5.7 5.7A5.71 5.71 0 0 1 1.3 8c0-3.14 2.56-5.7 5.7-5.7zM7 1C3.14 1 0 4.14 0 8s3.14 7 7 7 7-3.14 7-7-3.14-7-7-7zm1 3H6v5h2V4zm0 6H6v2h2v-2z"></path></svg></span>Adding Files</div><div class="admonitionContent_BuS1"><p>Upload additional formats or supplementary files through the file uploader on the Edit Metadata tab. Supported formats: EPUB, PDF, CBZ, CBR, CB7, FB2, MOBI, AZW, AZW3, M4B, M4A, MP3.</p></div></div>
-<hr>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="-notes">📝 Notes<a href="#-notes" class="hash-link" aria-label="Direct link to 📝 Notes" title="Direct link to 📝 Notes">​</a></h3>
+<aside class="note note-info"><p class="note-title">Adding Files</p><p>Upload additional formats or supplementary files through the file uploader on the Edit Metadata tab. Supported formats: EPUB, PDF, CBZ, CBR, CB7, FB2, MOBI, AZW, AZW3, M4B, M4A, MP3.</p></aside>
+
+<h3 id="notes">Notes</h3>
 <p>Attach personal notes to any book. Notes are private to your user account.</p>
-<p><img decoding="async" loading="lazy" alt="Notes Tab" src="../images/metadata/metadata-center/notes-tab.jpg" class="img_ev3q"></p>
+<figure><img alt="Notes Tab" loading="lazy" src="../images/metadata/metadata-center/notes-tab.jpg"/></figure>
 <p>Each note has a <strong>title</strong> (max 255 characters) and free-form <strong>content</strong> body. Notes display as cards showing the title, last updated timestamp, and a content preview.</p>
-<table><thead><tr><th>Action</th><th>How</th></tr></thead><tbody><tr><td><strong>Create</strong></td><td>Click the <strong>+</strong> button on the right</td></tr><tr><td><strong>Edit</strong></td><td>Click the pencil icon on any note card</td></tr><tr><td><strong>Delete</strong></td><td>Click the trash icon (with confirmation)</td></tr></tbody></table>
+<div class="table-wrap"><table><thead><tr><th>Action</th><th>How</th></tr></thead><tbody><tr><td><strong>Create</strong></td><td>Click the <strong>+</strong> button on the right</td></tr><tr><td><strong>Edit</strong></td><td>Click the pencil icon on any note card</td></tr><tr><td><strong>Delete</strong></td><td>Click the trash icon (with confirmation)</td></tr></tbody></table></div>
 <p>Notes are sorted by most recently updated first.</p>
-<hr>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="️-reading-sessions">⏱️ Reading Sessions<a href="#️-reading-sessions" class="hash-link" aria-label="Direct link to ⏱️ Reading Sessions" title="Direct link to ⏱️ Reading Sessions">​</a></h3>
+
+<h3 id="reading-sessions">Reading Sessions</h3>
 <p>Tracks your reading activity automatically. Every time you open and read a book, a session is recorded with precise timing and progress data.</p>
-<p><img decoding="async" loading="lazy" alt="Reading Sessions Tab" src="../images/metadata/metadata-center/reading-sessions-tab.jpg" width="500" height="135" class="img_ev3q"></p>
-<table><thead><tr><th>Column</th><th>Description</th></tr></thead><tbody><tr><td><strong>Session</strong></td><td>Date and time range (e.g., "Feb 20, 2026 / 3:51 AM → 3:52 AM")</td></tr><tr><td><strong>Type</strong></td><td>File format used for reading (EPUB, PDF, CBX, etc.)</td></tr><tr><td><strong>Duration</strong></td><td>How long the session lasted</td></tr><tr><td><strong>Progress</strong></td><td>Start and end reading position as percentages (e.g., "71.84% → 73.5%")</td></tr><tr><td><strong>Progress Delta</strong></td><td>Net change in reading progress, color-coded: green (↑ forward), red (↓ backward), gray (no change)</td></tr><tr><td><strong>Location</strong></td><td>Page number or reading position, if available</td></tr></tbody></table>
+<figure><img alt="Reading Sessions Tab" loading="lazy" src="../images/metadata/metadata-center/reading-sessions-tab.jpg"/></figure>
+<div class="table-wrap"><table><thead><tr><th>Column</th><th>Description</th></tr></thead><tbody><tr><td><strong>Session</strong></td><td>Date and time range (e.g., "Feb 20, 2026 / 3:51 AM → 3:52 AM")</td></tr><tr><td><strong>Type</strong></td><td>File format used for reading (EPUB, PDF, CBX, etc.)</td></tr><tr><td><strong>Duration</strong></td><td>How long the session lasted</td></tr><tr><td><strong>Progress</strong></td><td>Start and end reading position as percentages (e.g., "71.84% → 73.5%")</td></tr><tr><td><strong>Progress Delta</strong></td><td>Net change in reading progress, color-coded: green (↑ forward), red (↓ backward), gray (no change)</td></tr><tr><td><strong>Location</strong></td><td>Page number or reading position, if available</td></tr></tbody></table></div>
 <p>Sessions are paginated and sorted most recent first. They are created automatically by the built-in readers and cannot be manually added or edited through the UI.</p>
-<hr>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="-reviews">⭐ Reviews<a href="#-reviews" class="hash-link" aria-label="Direct link to ⭐ Reviews" title="Direct link to ⭐ Reviews">​</a></h3>
+
+<h3 id="reviews">Reviews</h3>
 <p>Displays reader reviews fetched from external metadata providers like Amazon and Goodreads.</p>
-<p><img decoding="async" loading="lazy" alt="Reviews Tab" src="../images/metadata/metadata-center/reviews-tab.jpg" width="500" height="125" class="img_ev3q"></p>
+<figure><img alt="Reviews Tab" loading="lazy" src="../images/metadata/metadata-center/reviews-tab.jpg"/></figure>
 <p>Each review card shows:</p>
 <ul>
 <li><strong>Reviewer name</strong>, <strong>source provider</strong> (e.g., Amazon), and <strong>country</strong></li>
@@ -102,25 +85,25 @@
 </ul>
 <p>Reviews marked as spoilers are blurred until you choose to reveal them. Use the <strong>Reveal All</strong> / <strong>Hide All</strong> buttons to manage spoiler visibility in bulk.</p>
 <p>Reviews are fetched alongside book metadata and cannot be manually created. Users with metadata editing permissions can delete individual reviews or refresh them from providers.</p>
-<hr>
-<h2 class="anchor anchorWithStickyNavbar_LWe7" id="️-edit-metadata">✏️ Edit Metadata<a href="#️-edit-metadata" class="hash-link" aria-label="Direct link to ✏️ Edit Metadata" title="Direct link to ✏️ Edit Metadata">​</a></h2>
+
+<h2 id="edit-metadata">Edit Metadata</h2>
 <p>Directly edit any metadata field for the book. Changes are saved when you click the <strong>Save</strong> button at the bottom right.</p>
-<p><img decoding="async" loading="lazy" alt="Edit Metadata" src="../images/metadata/metadata-center/edit-metadata.jpg" width="1200" height="872" class="img_ev3q"></p>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="fields">Fields<a href="#fields" class="hash-link" aria-label="Direct link to Fields" title="Direct link to Fields">​</a></h3>
-<table><thead><tr><th>Section</th><th>Fields</th></tr></thead><tbody><tr><td><strong>Basic Information</strong></td><td>Title, Subtitle, Language, Authors, Publisher, Publish Date, Description</td></tr><tr><td><strong>Genres & Tags</strong></td><td>Genres/Categories, Moods, Tags (all support autocomplete from existing values)</td></tr><tr><td><strong>Series</strong></td><td>Series Name, Series #, Series Total</td></tr><tr><td><strong>Identifiers</strong></td><td>ISBN 10, ISBN 13</td></tr><tr><td><strong>Classification</strong></td><td>Age Rating (All Ages through 21+), Content Rating (Everyone through Explicit), Pages, Public Reviews toggle</td></tr><tr><td><strong>Provider Metadata</strong></td><td>Amazon ASIN/Rating/Review Count, Goodreads ID/Rating/Review Count, Google Books ID, Hardcover IDs/Rating/Review Count, LubimyCzytac ID/Rating, RanobeDB ID/Rating, Audible ID/Rating/Review Count, and more</td></tr><tr><td><strong>Audiobook</strong></td><td>Narrator, Abridged (Yes/No/Unknown) — only shown for audiobook files</td></tr><tr><td><strong>Comic</strong></td><td>Publishers, Pencillers, Inkers, Colorists, Letterers, Characters, Volume, Issue — only shown for comic archives</td></tr></tbody></table>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="field-locking">Field Locking<a href="#field-locking" class="hash-link" aria-label="Direct link to Field Locking" title="Direct link to Field Locking">​</a></h3>
+<figure><img alt="Edit Metadata" loading="lazy" src="../images/metadata/metadata-center/edit-metadata.jpg"/></figure>
+<h3 id="fields">Fields</h3>
+<div class="table-wrap"><table><thead><tr><th>Section</th><th>Fields</th></tr></thead><tbody><tr><td><strong>Basic Information</strong></td><td>Title, Subtitle, Language, Authors, Publisher, Publish Date, Description</td></tr><tr><td><strong>Genres &amp; Tags</strong></td><td>Genres/Categories, Moods, Tags (all support autocomplete from existing values)</td></tr><tr><td><strong>Series</strong></td><td>Series Name, Series #, Series Total</td></tr><tr><td><strong>Identifiers</strong></td><td>ISBN 10, ISBN 13</td></tr><tr><td><strong>Classification</strong></td><td>Age Rating (All Ages through 21+), Content Rating (Everyone through Explicit), Pages, Public Reviews toggle</td></tr><tr><td><strong>Provider Metadata</strong></td><td>Amazon ASIN/Rating/Review Count, Goodreads ID/Rating/Review Count, Google Books ID, Hardcover IDs/Rating/Review Count, LubimyCzytac ID/Rating, RanobeDB ID/Rating, Audible ID/Rating/Review Count, and more</td></tr><tr><td><strong>Audiobook</strong></td><td>Narrator, Abridged (Yes/No/Unknown) — only shown for audiobook files</td></tr><tr><td><strong>Comic</strong></td><td>Publishers, Pencillers, Inkers, Colorists, Letterers, Characters, Volume, Issue — only shown for comic archives</td></tr></tbody></table></div>
+<h3 id="field-locking">Field Locking</h3>
 <p>Every field has an individual lock icon. Locked fields are protected from being overwritten during metadata fetches, keeping your manual edits safe. Use <strong>Lock All</strong> / <strong>Unlock All</strong> at the bottom to toggle all fields at once.</p>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="action-buttons">Action Buttons<a href="#action-buttons" class="hash-link" aria-label="Direct link to Action Buttons" title="Direct link to Action Buttons">​</a></h3>
-<table><thead><tr><th>Button</th><th>Description</th></tr></thead><tbody><tr><td><strong>From File</strong></td><td>Extracts metadata directly from the book file (EPUB, PDF, etc.) and populates the form. Useful for recovering embedded metadata. Not available for physical books.</td></tr><tr><td><strong>Auto Fetch</strong></td><td>Triggers a background metadata refresh task that queries all configured providers and updates the book automatically.</td></tr><tr><td><strong>Unlock All</strong> / <strong>Lock All</strong></td><td>Toggles the lock state of every field at once.</td></tr><tr><td><strong>Save</strong></td><td>Persists all changes to the database.</td></tr></tbody></table>
-<hr>
-<h2 class="anchor anchorWithStickyNavbar_LWe7" id="-search-metadata">🔍 Search Metadata<a href="#-search-metadata" class="hash-link" aria-label="Direct link to 🔍 Search Metadata" title="Direct link to 🔍 Search Metadata">​</a></h2>
+<h3 id="action-buttons">Action Buttons</h3>
+<div class="table-wrap"><table><thead><tr><th>Button</th><th>Description</th></tr></thead><tbody><tr><td><strong>From File</strong></td><td>Extracts metadata directly from the book file (EPUB, PDF, etc.) and populates the form. Useful for recovering embedded metadata. Not available for physical books.</td></tr><tr><td><strong>Auto Fetch</strong></td><td>Triggers a background metadata refresh task that queries all configured providers and updates the book automatically.</td></tr><tr><td><strong>Unlock All</strong> / <strong>Lock All</strong></td><td>Toggles the lock state of every field at once.</td></tr><tr><td><strong>Save</strong></td><td>Persists all changes to the database.</td></tr></tbody></table></div>
+
+<h2 id="search-metadata">Search Metadata</h2>
 <p>Manually search metadata providers and cherry-pick which fields to apply to your book.</p>
-<p><img decoding="async" loading="lazy" alt="Search Metadata" src="../images/metadata/metadata-center/search-metadata.jpg" width="1200" height="872" class="img_ev3q"></p>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="searching">Searching<a href="#searching" class="hash-link" aria-label="Direct link to Searching" title="Direct link to Searching">​</a></h3>
+<figure><img alt="Search Metadata" loading="lazy" src="../images/metadata/metadata-center/search-metadata.jpg"/></figure>
+<h3 id="searching">Searching</h3>
 <p>The search form pre-fills with the book's current title, author, and ISBN. Select which providers to query (Amazon, Audible, Goodreads, Google Books, Hardcover, LubimyCzytac, RanobeDB, and others enabled in your instance). Results stream in as each provider responds, with a count badge on each provider pill.</p>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="comparing-and-applying">Comparing and Applying<a href="#comparing-and-applying" class="hash-link" aria-label="Direct link to Comparing and Applying" title="Direct link to Comparing and Applying">​</a></h3>
+<h3 id="comparing-and-applying">Comparing and Applying</h3>
 <p>Click any result to open the side-by-side comparison view.</p>
-<p><img decoding="async" loading="lazy" alt="Search Metadata Comparison" src="../images/metadata/metadata-center/search-metadata-compare.jpg" width="1200" height="872" class="img_ev3q"></p>
+<figure><img alt="Search Metadata Comparison" loading="lazy" src="../images/metadata/metadata-center/search-metadata-compare.jpg"/></figure>
 <p>The left column shows your <strong>Current</strong> values, the right column shows the <strong>Fetched</strong> result. For each field:</p>
 <ul>
 <li>Click the <strong>arrow button</strong> between columns to copy the fetched value to your current metadata</li>
@@ -129,19 +112,19 @@
 </ul>
 <p>The cover image comparison works the same way: transfer the fetched cover to replace your current one.</p>
 <p>Click <strong>Back to List</strong> to return to search results, or <strong>Save Changes</strong> to persist your selections. Lock controls at the bottom let you protect fields before saving.</p>
-<hr>
-<h2 class="anchor anchorWithStickyNavbar_LWe7" id="-sidecar">📄 Sidecar<a href="#-sidecar" class="hash-link" aria-label="Direct link to 📄 Sidecar" title="Direct link to 📄 Sidecar">​</a></h2>
+
+<h2 id="sidecar">Sidecar</h2>
 <p>Export and import portable metadata files that travel alongside the book file on disk.</p>
-<p><img decoding="async" loading="lazy" alt="Sidecar" src="../images/metadata/metadata-center/sidecar.jpg" width="1200" height="872" class="img_ev3q"></p>
+<figure><img alt="Sidecar" loading="lazy" src="../images/metadata/metadata-center/sidecar.jpg"/></figure>
 <p>A sidecar is a <code>metadata.json</code> file written to the same directory as the book file. It contains a complete snapshot of the book's metadata in a structured JSON format, including title, authors, genres, series info, provider identifiers, ratings, and cover references.</p>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="sync-status">Sync Status<a href="#sync-status" class="hash-link" aria-label="Direct link to Sync Status" title="Direct link to Sync Status">​</a></h3>
-<table><thead><tr><th>Status</th><th>Meaning</th></tr></thead><tbody><tr><td><strong>In Sync</strong></td><td>Sidecar exists and matches the database</td></tr><tr><td><strong>Outdated</strong></td><td>Database metadata has changed since the sidecar was last exported</td></tr><tr><td><strong>Missing</strong></td><td>No sidecar file exists yet</td></tr><tr><td><strong>Conflict</strong></td><td>Sidecar and database differ significantly</td></tr></tbody></table>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="actions">Actions<a href="#actions" class="hash-link" aria-label="Direct link to Actions" title="Direct link to Actions">​</a></h3>
-<table><thead><tr><th>Button</th><th>Description</th></tr></thead><tbody><tr><td><strong>Export to Sidecar</strong></td><td>Writes the current database metadata to a <code>metadata.json</code> file next to the book file. Creates or overwrites the existing sidecar.</td></tr><tr><td><strong>Import from Sidecar</strong></td><td>Reads the sidecar file and updates the database. Only replaces fields that have values in the sidecar, leaving others untouched. Disabled when no sidecar exists.</td></tr></tbody></table>
+<h3 id="sync-status">Sync Status</h3>
+<div class="table-wrap"><table><thead><tr><th>Status</th><th>Meaning</th></tr></thead><tbody><tr><td><strong>In Sync</strong></td><td>Sidecar exists and matches the database</td></tr><tr><td><strong>Outdated</strong></td><td>Database metadata has changed since the sidecar was last exported</td></tr><tr><td><strong>Missing</strong></td><td>No sidecar file exists yet</td></tr><tr><td><strong>Conflict</strong></td><td>Sidecar and database differ significantly</td></tr></tbody></table></div>
+<h3 id="actions">Actions</h3>
+<div class="table-wrap"><table><thead><tr><th>Button</th><th>Description</th></tr></thead><tbody><tr><td><strong>Export to Sidecar</strong></td><td>Writes the current database metadata to a <code>metadata.json</code> file next to the book file. Creates or overwrites the existing sidecar.</td></tr><tr><td><strong>Import from Sidecar</strong></td><td>Reads the sidecar file and updates the database. Only replaces fields that have values in the sidecar, leaving others untouched. Disabled when no sidecar exists.</td></tr></tbody></table></div>
 <p>The viewer displays the full JSON content, along with the generation timestamp, version, and generator info.</p>
-<div class="theme-admonition theme-admonition-info admonition_xJq3 alert alert--info"><div class="admonitionHeading_Gvgb"><span class="admonitionIcon_Rf37"><svg viewbox="0 0 14 16"><path fill-rule="evenodd" d="M7 2.3c3.14 0 5.7 2.56 5.7 5.7s-2.56 5.7-5.7 5.7A5.71 5.71 0 0 1 1.3 8c0-3.14 2.56-5.7 5.7-5.7zM7 1C3.14 1 0 4.14 0 8s3.14 7 7 7 7-3.14 7-7-3.14-7-7-7zm1 3H6v5h2V4zm0 6H6v2h2v-2z"></path></svg></span>When to Use Sidecars</div><div class="admonitionContent_BuS1"><p>Sidecars are useful for preserving metadata when migrating books between Trove instances, sharing curated metadata with others, or as a backup before bulk operations.</p></div></div>
-<hr>
-<h2 class="anchor anchorWithStickyNavbar_LWe7" id="-additional-notes">📋 Additional Notes<a href="#-additional-notes" class="hash-link" aria-label="Direct link to 📋 Additional Notes" title="Direct link to 📋 Additional Notes">​</a></h2>
+<aside class="note note-info"><p class="note-title">When to Use Sidecars</p><p>Sidecars are useful for preserving metadata when migrating books between Trove instances, sharing curated metadata with others, or as a backup before bulk operations.</p></aside>
+
+<h2 id="additional-notes">Additional Notes</h2>
 <ul>
 <li>The tabs shown depend on the book. The <strong>Series</strong> tab only appears if the book belongs to a series with more than one book. <strong>Audiobook</strong> and <strong>Comic</strong> metadata sections in Edit Metadata only appear for the corresponding file types.</li>
 <li>Reading sessions are tracked across all reader types (EPUB, PDF, Comic, Streaming PDF). Progress is recorded as percentages for ebooks and page numbers for PDFs.</li>
@@ -151,5 +134,7 @@
 <li>See <a href="../metadata/metadata-settings.html">Metadata Settings</a> for configuring which provider fields are visible in the Edit Metadata form.</li>
 <li>See <a href="../metadata/metadata-fetch-configuration.html">Fetch Configuration</a> for controlling how automated metadata lookups behave.</li>
 </ul>
+</main>
+</div>
 </body>
 </html>

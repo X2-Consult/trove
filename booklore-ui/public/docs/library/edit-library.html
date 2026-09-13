@@ -1,134 +1,59 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>🏛️ Library Management | Trove Docs</title>
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<style>
-  :root { color-scheme: light dark; }
-  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-          max-width: 860px; margin: 0 auto; padding: 2rem 1.5rem 4rem; line-height: 1.65; }
-  .archive-notice { background: #fef3c7; color: #78350f; border: 1px solid #f59e0b; border-radius: 6px;
-                      padding: 0.75rem 1rem; margin-bottom: 2rem; font-size: 0.9rem; }
-  @media (prefers-color-scheme: dark) {
-    body { background: #1a1a1a; color: #e5e5e5; }
-    a { color: #7dd3fc; }
-    .archive-notice { background: #422006; color: #fde68a; border-color: #92400e; }
-  }
-  pre { overflow-x: auto; padding: 1rem; border-radius: 6px; background: #f3f4f6; }
-  code { background: #f3f4f6; padding: 0.15em 0.4em; border-radius: 4px; }
-  pre code { padding: 0; background: none; }
-  @media (prefers-color-scheme: dark) { pre, code { background: #262626; } }
-  img { max-width: 100%; height: auto; border-radius: 6px; }
-  h1, h2, h3 { line-height: 1.3; }
-  table { border-collapse: collapse; width: 100%; }
-  th, td { border: 1px solid #d1d5db; padding: 0.5rem 0.75rem; text-align: left; }
-  .hash-link { margin-left: 0.4rem; opacity: 0.4; text-decoration: none; }
-</style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Managing libraries · Trove Help</title>
+<link rel="stylesheet" href="../docs.css">
+<script src="../docs.js" defer></script>
 </head>
-<body>
-<div class="archive-notice">
-  📦 Trove started as BookLore. These pages are adapted from the BookLore documentation (booklore.org/docs), captured
-  20260305164130 via the Wayback Machine after the original site went offline.
-  <a href="../index.html">Back to docs index</a>
+<body data-root="../">
+<header class="topbar">
+  <a class="brand" href="../index.html">Trove <span>Help</span></a>
+  <a class="back-to-app" href="/">Back to Trove</a>
+</header>
+<div class="layout">
+<nav class="sidebar" id="docs-nav" aria-label="Help topics"></nav>
+<main class="doc">
+<h1>Managing libraries</h1>
+<p class="lede">Each library has a menu for changing its settings, re-scanning its folders, fetching metadata, finding duplicates, adding books without files, or deleting it.</p>
+
+<h2 id="the-library-menu">The library menu</h2>
+<p>Open a library and click the <strong>⋮</strong> beside its name in the header.</p>
+<figure><img alt="The library menu open on the Classics library" loading="lazy" src="../images/library/duplicate-detection/library-menu.jpg"></figure>
+<div class="table-wrap"><table>
+<thead><tr><th>Item</th><th>What it does</th></tr></thead>
+<tbody>
+<tr><td><strong>Add Physical Book</strong></td><td>Adds a book you own on paper, with no file. See <a href="physical-books.html">Physical books</a>.</td></tr>
+<tr><td><strong>Import ISBNs from File</strong></td><td>Adds physical books in bulk from a list of ISBNs.</td></tr>
+<tr><td><strong>Edit Library</strong></td><td>Opens the library's settings (below).</td></tr>
+<tr><td><strong>Re-scan Library</strong></td><td>Checks every folder again for new, changed and removed books.</td></tr>
+<tr><td><strong>Custom Fetch Metadata</strong></td><td>Looks up details for every book, with a choice of sources and fields.</td></tr>
+<tr><td><strong>Auto Fetch Metadata</strong></td><td>Looks up details for every book using your usual settings.</td></tr>
+<tr><td><strong>Find Duplicates</strong></td><td>Looks for the same book more than once. See <a href="duplicate-detection.html">Duplicate detection</a>.</td></tr>
+<tr><td><strong>Delete Library</strong></td><td>Removes the library from Trove (see below).</td></tr>
+</tbody>
+</table></div>
+<p>Which items you see depends on your <a href="../tools/user-management.html">permissions</a>.</p>
+
+<h2 id="edit-library">Edit Library</h2>
+<p>The same dialog you created the library with. You can rename it, change its icon, add or remove folders, and change the options. The organization mode is fixed once the library exists.</p>
+<figure><img alt="Edit Library: name, icon and folders" loading="lazy" src="../images/library/edit-library/edit-library-1.jpg"></figure>
+<figure><img alt="Edit Library: watch folders, metadata source and organization mode" loading="lazy" src="../images/library/edit-library/edit-library-2.jpg"></figure>
+<figure><img alt="Edit Library: format priority and allowed formats" loading="lazy" src="../images/library/edit-library/edit-library-3.jpg"></figure>
+<p>Unticking a format under <strong>Allowed formats</strong> stops Trove picking those files up in later scans; the dialog tells you how many books that affects.</p>
+
+<h2 id="re-scan-library">Re-scan Library</h2>
+<p>After you confirm, Trove goes through the library's folders and brings the library up to date: new books are added, changed files are read again, and books whose files have gone are removed. You'll want this when <strong>Watch folders</strong> is off, or after changing a lot of files at once. Progress shows in the activity panel.</p>
+<aside class="note note-info"><p>A folder on a network share is re-checked every minute anyway, and fully re-scanned every tenth check, so books added there from another computer turn up without a manual re-scan.</p></aside>
+
+<h2 id="fetching-metadata-for-a-whole-library">Fetching metadata for a whole library</h2>
+<p><strong>Auto Fetch Metadata</strong> looks every book up with the sources and field rules from <a href="../metadata/metadata-settings.html">Metadata settings</a> and <a href="../metadata/metadata-fetch-configuration.html">Library metadata</a>. <strong>Custom Fetch Metadata</strong> asks first which sources and fields to use and whether to replace what's there. Both run as background tasks you can follow in the activity panel and in <a href="../tools/task-manager.html">Tasks</a>; on a large library they take a while, as the sources are asked politely one book at a time.</p>
+
+<h2 id="delete-library">Delete Library</h2>
+<p>Removes the library, its books' records, reading progress on them, and their cover images from Trove. <strong>Your book files are not touched</strong>: they stay in their folders, and you can add the folders to a library again later (reading history won't come back).</p>
+<aside class="note note-danger"><p>Deleting a library can't be undone.</p></aside>
+</main>
 </div>
-<header><h1>🏛️ Library Management</h1></header>
-<p>Modify library settings, trigger re-scans, refresh metadata, or remove libraries from your Trove instance.</p>
-<hr>
-<h2 class="anchor anchorWithStickyNavbar_LWe7" id="️-accessing-library-options">🛠️ Accessing Library Options<a href="#️-accessing-library-options" class="hash-link" aria-label="Direct link to 🛠️ Accessing Library Options" title="Direct link to 🛠️ Accessing Library Options">​</a></h2>
-<p>Open the library menu from either location:</p>
-<p><strong>Option 1: Sidebar</strong></p>
-<ul>
-<li>Click the ellipsis (⋯) icon next to the library name</li>
-</ul>
-<p><strong>Option 2: Library Header</strong></p>
-<ul>
-<li>Navigate to the library view</li>
-<li>Click the ellipsis (⋯) icon in the header</li>
-</ul>
-<p><img decoding="async" loading="lazy" alt="Edit Library 1" src="../images/library/edit-library/edit-library-1.jpg" width="1500" height="866" class="img_ev3q">
-<img decoding="async" loading="lazy" alt="Edit Library 2" src="../images/library/edit-library/edit-library-2.jpg" width="1500" height="866" class="img_ev3q"></p>
-<hr>
-<h2 class="anchor anchorWithStickyNavbar_LWe7" id="-available-actions">📋 Available Actions<a href="#-available-actions" class="hash-link" aria-label="Direct link to 📋 Available Actions" title="Direct link to 📋 Available Actions">​</a></h2>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="edit-library">Edit Library<a href="#edit-library" class="hash-link" aria-label="Direct link to Edit Library" title="Direct link to Edit Library">​</a></h3>
-<p>Modify library configuration including name, icon, monitoring settings, and folder associations.</p>
-<p><strong>Editable Settings:</strong></p>
-<ul>
-<li>Library name and icon</li>
-<li>Monitoring enable/disable</li>
-<li>Remove folders from library</li>
-</ul>
-<p><img decoding="async" loading="lazy" alt="Edit Library 3" src="../images/library/edit-library/edit-library-3.jpg" width="1500" height="866" class="img_ev3q"></p>
-<hr>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="re-scan-library">Re-scan Library<a href="#re-scan-library" class="hash-link" aria-label="Direct link to Re-scan Library" title="Direct link to Re-scan Library">​</a></h3>
-<p>Manually trigger a folder scan to detect changes:</p>
-<p><strong>Use Cases:</strong></p>
-<ul>
-<li>Monitoring is disabled</li>
-<li>New books not automatically detected</li>
-<li>Books removed but still appear in library</li>
-<li>File system monitoring failed</li>
-</ul>
-<p><strong>Process:</strong></p>
-<ul>
-<li>Scans all library folders</li>
-<li>Imports newly added books</li>
-<li>Removes deleted books from index</li>
-<li>Updates modified files</li>
-</ul>
-<div class="theme-admonition theme-admonition-info admonition_xJq3 alert alert--info"><div class="admonitionHeading_Gvgb"><span class="admonitionIcon_Rf37"><svg viewbox="0 0 14 16"><path fill-rule="evenodd" d="M7 2.3c3.14 0 5.7 2.56 5.7 5.7s-2.56 5.7-5.7 5.7A5.71 5.71 0 0 1 1.3 8c0-3.14 2.56-5.7 5.7-5.7zM7 1C3.14 1 0 4.14 0 8s3.14 7 7 7 7-3.14 7-7-3.14-7-7-7zm1 3H6v5h2V4zm0 6H6v2h2v-2z"></path></svg></span>Monitoring vs. Manual Scan</div><div class="admonitionContent_BuS1"><p>Re-scanning is unnecessary if monitoring is enabled and working correctly.</p></div></div>
-<hr>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="refresh-book-metadata">Refresh Book Metadata<a href="#refresh-book-metadata" class="hash-link" aria-label="Direct link to Refresh Book Metadata" title="Direct link to Refresh Book Metadata">​</a></h3>
-<p>Download and update metadata for all books in the library using configured providers.</p>
-<p><strong>Configuration Options:</strong></p>
-<ul>
-<li>Select metadata providers</li>
-<li>Choose which fields to update</li>
-<li>Set override behavior for existing data</li>
-</ul>
-<div class="theme-admonition theme-admonition-warning admonition_xJq3 alert alert--warning"><div class="admonitionHeading_Gvgb"><span class="admonitionIcon_Rf37"><svg viewbox="0 0 16 16"><path fill-rule="evenodd" d="M8.893 1.5c-.183-.31-.52-.5-.887-.5s-.703.19-.886.5L.138 13.499a.98.98 0 0 0 0 1.001c.193.31.53.501.886.501h13.964c.367 0 .704-.19.877-.5a1.03 1.03 0 0 0 .01-1.002L8.893 1.5zm.133 11.497H6.987v-2.003h2.039v2.003zm0-3.004H6.987V5.987h2.039v4.006z"></path></svg></span>Large Libraries</div><div class="admonitionContent_BuS1"><p>Metadata fetching is time-consuming for libraries with many books. Consider running during off-hours.</p></div></div>
-<p>See <a href="../metadata/metadata-fetch-configuration.html">Metadata Configuration</a> for detailed provider setup.</p>
-<hr>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="delete-library">Delete Library<a href="#delete-library" class="hash-link" aria-label="Direct link to Delete Library" title="Direct link to Delete Library">​</a></h3>
-<p>Permanently remove the library from Trove.</p>
-<p><strong>What Gets Deleted:</strong></p>
-<ul>
-<li>Library configuration</li>
-<li>Book metadata from database</li>
-<li>Generated thumbnails and cache</li>
-</ul>
-<p><strong>What Remains:</strong></p>
-<ul>
-<li>Original book files (untouched)</li>
-<li>Files remain in their folders</li>
-</ul>
-<div class="theme-admonition theme-admonition-danger admonition_xJq3 alert alert--danger"><div class="admonitionHeading_Gvgb"><span class="admonitionIcon_Rf37"><svg viewbox="0 0 12 16"><path fill-rule="evenodd" d="M5.05.31c.81 2.17.41 3.38-.52 4.31C3.55 5.67 1.98 6.45.9 7.98c-1.45 2.05-1.7 6.53 3.53 7.7-2.2-1.16-2.67-4.52-.3-6.61-.61 2.03.53 3.33 1.94 2.86 1.39-.47 2.3.53 2.27 1.67-.02.78-.31 1.44-1.13 1.81 3.42-.59 4.78-3.42 4.78-5.56 0-2.84-2.53-3.22-1.25-5.61-1.52.13-2.03 1.13-1.89 2.75.09 1.08-1.02 1.8-1.86 1.33-.67-.41-.66-1.19-.06-1.78C8.18 5.31 8.68 2.45 5.05.32L5.03.3l.02.01z"></path></svg></span>Permanent Action</div><div class="admonitionContent_BuS1"><p>Library deletion cannot be undone. All metadata and customizations will be lost.</p></div></div>
-<hr>
-<h2 class="anchor anchorWithStickyNavbar_LWe7" id="-common-workflows">🎯 Common Workflows<a href="#-common-workflows" class="hash-link" aria-label="Direct link to 🎯 Common Workflows" title="Direct link to 🎯 Common Workflows">​</a></h2>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="adding-new-books">Adding New Books<a href="#adding-new-books" class="hash-link" aria-label="Direct link to Adding New Books" title="Direct link to Adding New Books">​</a></h3>
-<p><strong>With Monitoring Enabled:</strong></p>
-<ul>
-<li>Books detected automatically</li>
-<li>No action required</li>
-</ul>
-<p><strong>With Monitoring Disabled:</strong></p>
-<ol>
-<li>Add books to library folder</li>
-<li>Open library menu</li>
-<li>Select "Re-scan Library"</li>
-</ol>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="fixing-missing-metadata">Fixing Missing Metadata<a href="#fixing-missing-metadata" class="hash-link" aria-label="Direct link to Fixing Missing Metadata" title="Direct link to Fixing Missing Metadata">​</a></h3>
-<ol>
-<li>Open library menu</li>
-<li>Select "Refresh Book Metadata"</li>
-<li>Configure providers and options</li>
-<li>Confirm to start batch update</li>
-</ol>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="reorganizing-libraries">Reorganizing Libraries<a href="#reorganizing-libraries" class="hash-link" aria-label="Direct link to Reorganizing Libraries" title="Direct link to Reorganizing Libraries">​</a></h3>
-<ol>
-<li>Create new library with desired structure</li>
-<li>Re-scan to populate</li>
-<li>Delete old library if no longer needed</li>
-</ol>
 </body>
 </html>

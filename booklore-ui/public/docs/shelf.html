@@ -1,66 +1,48 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>📁 Shelves | Trove Docs</title>
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<style>
-  :root { color-scheme: light dark; }
-  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-          max-width: 860px; margin: 0 auto; padding: 2rem 1.5rem 4rem; line-height: 1.65; }
-  .archive-notice { background: #fef3c7; color: #78350f; border: 1px solid #f59e0b; border-radius: 6px;
-                      padding: 0.75rem 1rem; margin-bottom: 2rem; font-size: 0.9rem; }
-  @media (prefers-color-scheme: dark) {
-    body { background: #1a1a1a; color: #e5e5e5; }
-    a { color: #7dd3fc; }
-    .archive-notice { background: #422006; color: #fde68a; border-color: #92400e; }
-  }
-  pre { overflow-x: auto; padding: 1rem; border-radius: 6px; background: #f3f4f6; }
-  code { background: #f3f4f6; padding: 0.15em 0.4em; border-radius: 4px; }
-  pre code { padding: 0; background: none; }
-  @media (prefers-color-scheme: dark) { pre, code { background: #262626; } }
-  img { max-width: 100%; height: auto; border-radius: 6px; }
-  h1, h2, h3 { line-height: 1.3; }
-  table { border-collapse: collapse; width: 100%; }
-  th, td { border: 1px solid #d1d5db; padding: 0.5rem 0.75rem; text-align: left; }
-  .hash-link { margin-left: 0.4rem; opacity: 0.4; text-decoration: none; }
-</style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shelves · Trove Help</title>
+<link rel="stylesheet" href="docs.css">
+<script src="docs.js" defer></script>
 </head>
-<body>
-<div class="archive-notice">
-  📦 Trove started as BookLore. These pages are adapted from the BookLore documentation (booklore.org/docs), captured
-  20260305164130 via the Wayback Machine after the original site went offline.
-  <a href="./index.html">Back to docs index</a>
-</div>
-<header><h1>📁 Shelves</h1></header>
-<p>Shelves let you organize books across libraries by theme, purpose, or preference. A book can belong to multiple shelves, and shelves can contain books from different libraries.</p>
-<p>Trove comes with a built-in <strong>Favorites</strong> shelf and an <strong>Unshelved</strong> section that automatically lists books not assigned to any shelf.</p>
-<hr>
-<h2 class="anchor anchorWithStickyNavbar_LWe7" id="-assigning-books-to-shelves">📚 Assigning Books to Shelves<a href="#-assigning-books-to-shelves" class="hash-link" aria-label="Direct link to 📚 Assigning Books to Shelves" title="Direct link to 📚 Assigning Books to Shelves">​</a></h2>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="from-a-single-book">From a Single Book<a href="#from-a-single-book" class="hash-link" aria-label="Direct link to From a Single Book" title="Direct link to From a Single Book">​</a></h3>
+<body data-root="">
+<header class="topbar">
+  <a class="brand" href="index.html">Trove <span>Help</span></a>
+  <a class="back-to-app" href="/">Back to Trove</a>
+</header>
+<div class="layout">
+<nav class="sidebar" id="docs-nav" aria-label="Help topics"></nav>
+<main class="doc">
+<h1>Shelves</h1>
+<p class="lede">Shelves let you organize books across libraries by theme, purpose, or preference. A book can belong to multiple shelves, and shelves can contain books from different libraries.</p>
+<p>Everyone starts with a <strong>Favorites</strong> shelf, and <strong>Unshelved</strong> lists the books that aren't on any shelf. If you use Kobo sync, a <strong>Kobo</strong> shelf holds the books to send to your Kobo (see <a href="integration/kobo.html">Kobo</a>). Shelves are your own: other users don't see them unless an admin makes one public.</p>
+
+<h2 id="assigning-books-to-shelves">Putting books on shelves</h2>
+<h3 id="from-a-single-book">From a Single Book</h3>
 <p>Click the three-dot menu on any book card and select <strong>Assign Shelf</strong>.</p>
-<p><img decoding="async" loading="lazy" alt="Single Book Menu" src="images/shelf/assign-single-book.jpg" width="1200" height="692" class="img_ev3q"></p>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="from-multiple-books">From Multiple Books<a href="#from-multiple-books" class="hash-link" aria-label="Direct link to From Multiple Books" title="Direct link to From Multiple Books">​</a></h3>
+<figure><img alt="Single Book Menu" loading="lazy" src="images/shelf/assign-single-book.jpg"/></figure>
+<h3 id="from-multiple-books">From Multiple Books</h3>
 <p>Hover over a book card and check the checkbox to select it. A bottom action bar appears. Select more books, then click the <strong>Assign Shelf</strong> button in the action bar.</p>
-<p><img decoding="async" loading="lazy" alt="Multiple Books Selection" src="images/shelf/assign-multiple-books.jpg" width="1200" height="692" class="img_ev3q"></p>
-<hr>
-<h2 class="anchor anchorWithStickyNavbar_LWe7" id="️-the-assign-shelf-dialog">🗂️ The Assign Shelf Dialog<a href="#️-the-assign-shelf-dialog" class="hash-link" aria-label="Direct link to 🗂️ The Assign Shelf Dialog" title="Direct link to 🗂️ The Assign Shelf Dialog">​</a></h2>
-<p>After using either method, the <strong>Update Book's Shelves</strong> dialog opens. Check one or more shelves to assign, or click <strong>Create Shelf</strong> to make a new one.</p>
-<p><img decoding="async" loading="lazy" alt="Assign Dialog" src="images/shelf/assign-dialog.jpg" width="1200" height="692" class="img_ev3q"></p>
-<hr>
-<h2 class="anchor anchorWithStickyNavbar_LWe7" id="️-creating-a-shelf">🛠️ Creating a Shelf<a href="#️-creating-a-shelf" class="hash-link" aria-label="Direct link to 🛠️ Creating a Shelf" title="Direct link to 🛠️ Creating a Shelf">​</a></h2>
-<ol>
-<li>Click <strong>Create Shelf</strong> in the assign dialog</li>
-<li>Enter a name and optionally pick an icon</li>
-<li>Click <strong>Save</strong></li>
-</ol>
-<p><img decoding="async" loading="lazy" alt="Create Shelf" src="images/shelf/create-form.jpg" width="1200" height="692" class="img_ev3q"></p>
-<p>The new shelf is automatically selected in the assign dialog. Click <strong>Save</strong> to confirm.</p>
-<p><img decoding="async" loading="lazy" alt="Shelf Created" src="images/shelf/create-confirm.jpg" width="1200" height="692" class="img_ev3q"></p>
-<hr>
-<h2 class="anchor anchorWithStickyNavbar_LWe7" id="-viewing-shelves">📂 Viewing Shelves<a href="#-viewing-shelves" class="hash-link" aria-label="Direct link to 📂 Viewing Shelves" title="Direct link to 📂 Viewing Shelves">​</a></h2>
+<figure><img alt="Multiple Books Selection" loading="lazy" src="images/shelf/assign-multiple-books.jpg"/></figure>
+
+<h2 id="the-assign-shelf-dialog">The Assign Shelf Dialog</h2>
+<p>After using either method, the <strong>Assign Books to Shelves</strong> dialog opens. Tick the shelves the books should be on (and untick ones they shouldn't), or click <strong>Create Shelf</strong> to make a new one, then <strong>Save Changes</strong>.</p>
+<figure><img alt="Assign Dialog" loading="lazy" src="images/shelf/assign-dialog.jpg"/></figure>
+
+<h2 id="creating-a-shelf">Creating a shelf</h2>
+<p>Click the <strong>+</strong> beside <strong>Shelves</strong> in the sidebar, or <strong>Create Shelf</strong> in the assign dialog. Give the shelf a name, optionally an icon, and click <strong>Create Shelf</strong>.</p>
+<p>Admins also see <strong>Make this shelf public</strong>: a public shelf appears in every user's sidebar, marked read-only for everyone but its owner. It's a way to share a reading list with the household.</p>
+<figure><img alt="Create Shelf" loading="lazy" src="images/shelf/create-form.jpg"/></figure>
+<p>The new shelf appears in the sidebar, and a message confirms it was created.</p>
+<figure><img alt="Shelf Created" loading="lazy" src="images/shelf/create-confirm.jpg"/></figure>
+
+<h2 id="viewing-shelves">Viewing Shelves</h2>
 <p>All shelves appear in the left sidebar under the <strong>Shelves</strong> section. Click any shelf to browse its contents.</p>
-<p><img decoding="async" loading="lazy" alt="Sidebar Listing" src="images/shelf/sidebar-listing.jpg" width="1200" height="692" class="img_ev3q"></p>
-<p>When viewing a shelf, the bottom action bar includes a <strong>Remove from Shelf</strong> option for bulk-removing books.</p>
+<figure><img alt="Sidebar Listing" loading="lazy" src="images/shelf/sidebar-listing.jpg"/></figure>
+<p>When viewing a shelf, the bottom action bar includes <strong>Remove from this shelf</strong> for the selected books. The <strong>⋮</strong> beside the shelf's name has <strong>Edit Shelf</strong> (name, icon, public or not) and <strong>Delete Shelf</strong>; deleting a shelf doesn't delete its books.</p>
+</main>
+</div>
 </body>
 </html>

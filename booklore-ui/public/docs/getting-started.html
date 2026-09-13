@@ -1,104 +1,97 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>🚀 Getting Started | Trove Docs</title>
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<style>
-  :root { color-scheme: light dark; }
-  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-          max-width: 860px; margin: 0 auto; padding: 2rem 1.5rem 4rem; line-height: 1.65; }
-  .archive-notice { background: #fef3c7; color: #78350f; border: 1px solid #f59e0b; border-radius: 6px;
-                      padding: 0.75rem 1rem; margin-bottom: 2rem; font-size: 0.9rem; }
-  @media (prefers-color-scheme: dark) {
-    body { background: #1a1a1a; color: #e5e5e5; }
-    a { color: #7dd3fc; }
-    .archive-notice { background: #422006; color: #fde68a; border-color: #92400e; }
-  }
-  pre { overflow-x: auto; padding: 1rem; border-radius: 6px; background: #f3f4f6; }
-  code { background: #f3f4f6; padding: 0.15em 0.4em; border-radius: 4px; }
-  pre code { padding: 0; background: none; }
-  @media (prefers-color-scheme: dark) { pre, code { background: #262626; } }
-  img { max-width: 100%; height: auto; border-radius: 6px; }
-  h1, h2, h3 { line-height: 1.3; }
-  table { border-collapse: collapse; width: 100%; }
-  th, td { border: 1px solid #d1d5db; padding: 0.5rem 0.75rem; text-align: left; }
-  .hash-link { margin-left: 0.4rem; opacity: 0.4; text-decoration: none; }
-</style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Getting started · Trove Help</title>
+<link rel="stylesheet" href="docs.css">
+<script src="docs.js" defer></script>
 </head>
-<body>
-<div class="archive-notice">
-  📦 Trove started as BookLore. These pages are adapted from the BookLore documentation (booklore.org/docs), captured
-  20260305164130 via the Wayback Machine after the original site went offline.
-  <a href="./index.html">Back to docs index</a>
-</div>
-<header><h1>🚀 Getting Started</h1></header>
-<p>Trove is a self-hosted library management system for ebooks, comics, and audiobooks. Your books and data stay on your server, with no subscription fees or cloud dependency.</p>
-<hr>
-<h2 class="anchor anchorWithStickyNavbar_LWe7" id="-prerequisites">📋 Prerequisites<a href="#-prerequisites" class="hash-link" aria-label="Direct link to 📋 Prerequisites" title="Direct link to 📋 Prerequisites">​</a></h2>
+<body data-root="">
+<header class="topbar">
+  <a class="brand" href="index.html">Trove <span>Help</span></a>
+  <a class="back-to-app" href="/">Back to Trove</a>
+</header>
+<div class="layout">
+<nav class="sidebar" id="docs-nav" aria-label="Help topics"></nav>
+<main class="doc">
+<h1>Getting started</h1>
+<p class="lede">Trove is a self-hosted library for your ebooks, comics and audiobooks. It reads your book folders, fills in metadata, and lets you read in the browser or on your devices. Everything stays on your own server.</p>
+
+<h2 id="what-you-need">What you need</h2>
 <ul>
-<li><strong>Docker & Docker Compose</strong> (v20.10+ / v2.0+), or an Ubuntu/Debian server with systemd</li>
-<li><strong>2GB RAM</strong>, 10GB+ storage</li>
-<li><strong>Port 6060</strong> available</li>
-<li><strong>Internet connection</strong> for metadata fetching</li>
+<li>A server with <strong>Docker and Docker Compose</strong>, or an <strong>Ubuntu or Debian</strong> server with systemd for a native install</li>
+<li>About <strong>2 GB of memory</strong>, plus room for your books</li>
+<li><strong>Port 6060</strong> free (you can put a reverse proxy in front of it)</li>
+<li>An internet connection if you want Trove to look up covers and book details online</li>
 </ul>
-<hr>
-<h2 class="anchor anchorWithStickyNavbar_LWe7" id="-step-1-install">📥 Step 1: Install<a href="#-step-1-install" class="hash-link" aria-label="Direct link to 📥 Step 1: Install" title="Direct link to 📥 Step 1: Install">​</a></h2>
-<p>Run Trove in Docker with PostgreSQL, or install it natively on an Ubuntu or Debian server:</p>
-<pre><code>git clone https://github.com/X2-Consult/trove.git
+
+<h2 id="1-install-trove">1. Install Trove</h2>
+<p>With Docker, Trove runs next to a PostgreSQL container; the <a href="installation.html">installation guide</a> has the complete <code>docker-compose.yml</code>. For a native install:</p>
+<pre><code class="language-bash">git clone https://github.com/X2-Consult/trove.git
 cd trove
 ./install.sh</code></pre>
-<p>The <a href="./installation.html">Installation Guide</a> has the complete <code>docker-compose.yml</code>, the native install, and how to move over from BookLore.</p>
-<hr>
-<h2 class="anchor anchorWithStickyNavbar_LWe7" id="-step-2-create-admin-account">👤 Step 2: Create Admin Account<a href="#-step-2-create-admin-account" class="hash-link" aria-label="Direct link to 👤 Step 2: Create Admin Account" title="Direct link to 👤 Step 2: Create Admin Account">​</a></h2>
-<p>Open <code>http://localhost:6060</code> in your browser. On first launch, Trove shows a setup wizard to create the admin account:</p>
-<table><thead><tr><th>Field</th><th>Required</th><th>Notes</th></tr></thead><tbody><tr><td>Username</td><td>Yes</td><td></td></tr><tr><td>Full Name</td><td>Yes</td><td></td></tr><tr><td>Email</td><td>Yes</td><td>Must be a valid email address</td></tr><tr><td>Password</td><td>Yes</td><td>Minimum 6 characters</td></tr><tr><td>Confirm Password</td><td>Yes</td><td>Must match</td></tr></tbody></table>
-<p>After submitting, you'll be redirected to the login page. See <a href="./initial-setup.html">Initial Setup</a> for details.</p>
-<hr>
-<h2 class="anchor anchorWithStickyNavbar_LWe7" id="-step-3-create-a-library">📚 Step 3: Create a Library<a href="#-step-3-create-a-library" class="hash-link" aria-label="Direct link to 📚 Step 3: Create a Library" title="Direct link to 📚 Step 3: Create a Library">​</a></h2>
-<p>Click <strong>"Add a Library"</strong> from the dashboard to open the library creation dialog.</p>
-<p><strong>Library Details:</strong> Give it a name and optionally pick an icon.</p>
-<p><strong>Book Folders:</strong> Add one or more folders containing your book files. Navigate the directory picker to select them.</p>
-<p><strong>Options:</strong></p>
-<table><thead><tr><th>Option</th><th>Description</th></tr></thead><tbody><tr><td>Watch Folders</td><td>Automatically detects new, changed, or deleted books in your folders</td></tr><tr><td>Metadata Source</td><td>Where to read metadata during scans: embedded file metadata, sidecar files, or both</td></tr><tr><td>Format Priority</td><td>Drag to reorder which format is treated as primary when a book exists in multiple formats</td></tr><tr><td>Allowed Formats</td><td>Restrict which file formats this library will scan</td></tr></tbody></table>
-<p>Trove supports EPUB, PDF, MOBI, AZW3, FB2, CBZ/CBR/CB7, M4B, M4A, and MP3.</p>
-<p>After saving, the library scans your folders automatically. See <a href="./library/setup-first-library.html">Setup First Library</a> for a full walkthrough, and <a href="./library/folder-structure.html">Folder Structure</a> for how to organize your files.</p>
-<hr>
-<h2 class="anchor anchorWithStickyNavbar_LWe7" id="-step-4-add-books">📖 Step 4: Add Books<a href="#-step-4-add-books" class="hash-link" aria-label="Direct link to 📖 Step 4: Add Books" title="Direct link to 📖 Step 4: Add Books">​</a></h2>
-<p><strong>Direct copy:</strong> Place files in your library folder, then rescan from the UI (or let Watch Folders pick them up automatically).</p>
-<div class="language-bash codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#F8F8F2;--prism-background-color:#282A36"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-bash codeBlock_bY9V thin-scrollbar" style="color:#F8F8F2;background-color:#282A36"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#F8F8F2"><span class="token plain">cp /path/to/your/books/* ~/trove/books/</span><br></span></code></pre></div></div>
-<p><strong>Bookdrop:</strong> Drop files into the bookdrop folder. Trove auto-detects them, fetches metadata, and stages them for review. You can edit metadata, assign a destination library, and finalize the import from the UI. See <a href="./bookdrop.html">Bookdrop</a>.</p>
-<p><strong>Web upload:</strong> Use the upload button in the toolbar. You can upload directly to a library or to BookDrop for staging. The default file size limit is 100 MB per file (configurable by admins).</p>
-<div class="theme-admonition theme-admonition-warning admonition_xJq3 alert alert--warning"><div class="admonitionHeading_Gvgb"><span class="admonitionIcon_Rf37"><svg viewbox="0 0 16 16"><path fill-rule="evenodd" d="M8.893 1.5c-.183-.31-.52-.5-.887-.5s-.703.19-.886.5L.138 13.499a.98.98 0 0 0 0 1.001c.193.31.53.501.886.501h13.964c.367 0 .704-.19.877-.5a1.03 1.03 0 0 0 .01-1.002L8.893 1.5zm.133 11.497H6.987v-2.003h2.039v2.003zm0-3.004H6.987V5.987h2.039v4.006z"></path></svg></span>Cloudflare Tunnels</div><div class="admonitionContent_BuS1"><p>If you serve Trove through a Cloudflare Tunnel, the free tier has a <a href="https://web.archive.org/web/20260305164130/https://developers.cloudflare.com/workers/platform/limits/#request-limits" target="_blank" rel="noopener noreferrer">100 MB upload limit</a>.</p></div></div>
-<hr>
-<h2 class="anchor anchorWithStickyNavbar_LWe7" id="-step-5-start-reading">📱 Step 5: Start Reading<a href="#-step-5-start-reading" class="hash-link" aria-label="Direct link to 📱 Step 5: Start Reading" title="Direct link to 📱 Step 5: Start Reading">​</a></h2>
-<p>Click any book cover, then click <strong>"Read"</strong> to open the built-in reader. Trove has dedicated readers for each format:</p>
-<table><thead><tr><th>Reader</th><th>Formats</th><th>Highlights</th></tr></thead><tbody><tr><td>Ebook Reader</td><td>EPUB, MOBI, AZW3, FB2</td><td>Bookmarks, annotations, highlights, search, custom fonts, progress sync</td></tr><tr><td>PDF Reader</td><td>PDF</td><td>Page-level progress sync, zoom, page spread modes, annotations</td></tr><tr><td>Comic Reader</td><td>CBZ, CBR, CB7</td><td>Fit/scroll modes, reading direction (LTR/RTL), slideshow, bookmarks</td></tr><tr><td>Audiobook Player</td><td>M4B, MP3</td><td>Chapters, track listing, playback speed, progress sync</td></tr></tbody></table>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="-e-readers-and-mobile-apps">📲 E-Readers and Mobile Apps<a href="#-e-readers-and-mobile-apps" class="hash-link" aria-label="Direct link to 📲 E-Readers and Mobile Apps" title="Direct link to 📲 E-Readers and Mobile Apps">​</a></h3>
-<p>Connect external reading apps via OPDS:</p>
-<ol>
-<li>Go to <strong>Settings > OPDS Configuration</strong></li>
-<li>Toggle the OPDS server on</li>
-<li>Copy the catalog URL shown in the API Endpoints section</li>
-<li>Add it to your reading app (KOReader, Moon+ Reader, etc.)</li>
-</ol>
-<p>Trove also provides a Komga-compatible API for apps like Tachiyomi and Komelia. OPDS uses its own user accounts, created by admins in the OPDS settings page.</p>
-<p>See <a href="./integration/kobo.html">Kobo Integration</a> and <a href="./integration/opds.html">OPDS</a> for detailed setup guides.</p>
-<hr>
-<h2 class="anchor anchorWithStickyNavbar_LWe7" id="️-what-to-explore-next">⚙️ What to Explore Next<a href="#️-what-to-explore-next" class="hash-link" aria-label="Direct link to ⚙️ What to Explore Next" title="Direct link to ⚙️ What to Explore Next">​</a></h2>
-<table><thead><tr><th>Feature</th><th>Description</th></tr></thead><tbody><tr><td><a href="./metadata/metadata-fetch-configuration.html">Metadata Configuration</a></td><td>Set up automatic metadata enrichment from online sources</td></tr><tr><td><a href="./bookdrop-advanced.html">Bookdrop Advanced Features</a></td><td>Bulk editing, filename pattern extraction, and more</td></tr><tr><td><a href="./magic-shelf.html">Magic Shelf</a></td><td>Dynamic, auto-updating shelves based on filters</td></tr><tr><td><a href="./authentication/overview.html">Authentication</a></td><td>OIDC providers, multi-user setup, and permissions</td></tr></tbody></table>
-<hr>
-<h2 class="anchor anchorWithStickyNavbar_LWe7" id="-common-questions">❓ Common Questions<a href="#-common-questions" class="hash-link" aria-label="Direct link to ❓ Common Questions" title="Direct link to ❓ Common Questions">​</a></h2>
-<p><strong>Can I access Trove remotely?</strong>
-Yes, set up a reverse proxy with HTTPS. See the <a href="./installation.html">Installation Guide</a>.</p>
-<p><strong>How do I backup my library?</strong>
-Back up the database, your <code>data</code> directory (application state) and your books directory regularly.</p>
-<p><strong>What e-readers work with Trove?</strong>
-Any device or app that supports OPDS. Kobo devices have a dedicated integration with deeper sync support.</p>
-<hr>
-<h2 class="anchor anchorWithStickyNavbar_LWe7" id="-get-help">🔗 Get Help<a href="#-get-help" class="hash-link" aria-label="Direct link to 🔗 Get Help" title="Direct link to 🔗 Get Help">​</a></h2>
+<p>Moving from BookLore? The installation guide covers that too: your library, users and reading progress come with you.</p>
+
+<h2 id="2-create-the-admin-account">2. Create the admin account</h2>
+<p>Open Trove in your browser (<code>http://your-server:6060</code>). The first time, it asks you to create the administrator account: a username, your name, an email address and a password of at least 8 characters. Then sign in. See <a href="initial-setup.html">Admin account</a>.</p>
+
+<h2 id="3-add-a-library">3. Add a library</h2>
+<p>On the empty dashboard, click <strong>Create Your Library</strong>. Give the library a name, add the folders that hold your books, and click <strong>Create</strong>. Trove scans the folders straight away and books appear as they're found. <a href="library/setup-first-library.html">Your first library</a> walks through each option, and <a href="library/folder-structure.html">Folder structure</a> explains how Trove groups files into books.</p>
+<p>Trove reads these formats:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Kind</th><th>Formats</th></tr></thead>
+<tbody>
+<tr><td>Ebooks</td><td>EPUB, MOBI, AZW3 (AZW), FB2</td></tr>
+<tr><td>Documents</td><td>PDF</td></tr>
+<tr><td>Comics</td><td>CBZ, CBR, CB7</td></tr>
+<tr><td>Audiobooks</td><td>M4B, M4A, MP3, Opus (a single file or a folder of tracks)</td></tr>
+</tbody>
+</table></div>
+<aside class="note note-info"><p class="note-title">Books on a NAS</p><p>Libraries can live on an NFS or SMB share. Trove notices, and changes how it watches and writes to that folder. See <a href="library/network-storage.html">Network storage</a>.</p></aside>
+
+<h2 id="4-add-more-books">4. Add more books</h2>
 <ul>
-<li><a href="https://github.com/X2-Consult/trove/issues" target="_blank" rel="noopener noreferrer">GitHub Issues</a> for bug reports and questions</li>
+<li><strong>Copy them into a library folder.</strong> With <strong>Watch folders</strong> on, Trove picks them up by itself; otherwise use <strong>Re-scan Library</strong> from the library's menu.</li>
+<li><strong>Drop them into the Bookdrop folder.</strong> Trove reads each file, looks up its details, and holds it for you to review before it goes into a library. See <a href="bookdrop.html">Bookdrop</a>.</li>
+<li><strong>Upload them</strong> with the upload button in the top bar, straight into a library or into Bookdrop. Files can be up to 100 MB each unless an admin changes the limit in <a href="tools/global-preferences.html">Application settings</a>.</li>
 </ul>
+<aside class="note note-warning"><p class="note-title">Behind Cloudflare</p><p>If Trove is reached through a Cloudflare Tunnel or proxy, Cloudflare's free plan rejects uploads over 100 MB whatever Trove allows.</p></aside>
+
+<h2 id="5-read">5. Read</h2>
+<p>Open a book and click <strong>Read</strong> (or <strong>Play</strong> for audiobooks). Trove has a reader for each kind of book, and remembers your place:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Reader</th><th>For</th><th>Highlights</th></tr></thead>
+<tbody>
+<tr><td><a href="readers/epub-reader.html">eBook reader</a></td><td>EPUB, MOBI, AZW3, FB2</td><td>Highlights and notes, bookmarks, search, themes, your own fonts</td></tr>
+<tr><td><a href="readers/pdf-reader.html">PDF reader</a></td><td>PDF</td><td>Search, zoom, page spreads, annotations</td></tr>
+<tr><td><a href="readers/cbx-reader.html">Comic reader</a></td><td>CBZ, CBR, CB7</td><td>Fit modes, two-page spreads, right-to-left reading, slideshow, notes</td></tr>
+<tr><td><a href="readers/audiobook-player.html">Audiobook player</a></td><td>M4B, M4A, MP3, Opus</td><td>Chapters, playback speed, sleep timer, bookmarks</td></tr>
+</tbody>
+</table></div>
+<p>To read elsewhere, connect a <a href="integration/kobo.html">Kobo</a>, sync your place with <a href="integration/koreader.html">KOReader</a>, browse the library from any <a href="integration/opds.html">OPDS</a> reading app, or <a href="email-setup.html">email a book</a> to a Kindle.</p>
+
+<h2 id="where-to-next">Where to next</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>Page</th><th>What it covers</th></tr></thead>
+<tbody>
+<tr><td><a href="metadata/metadata-settings.html">Metadata settings</a></td><td>Which online sources Trove uses for covers and details, and whether it writes them into your files</td></tr>
+<tr><td><a href="magic-shelf.html">Magic shelves</a></td><td>Shelves that fill themselves from rules</td></tr>
+<tr><td><a href="tools/user-management.html">Users and permissions</a></td><td>Accounts for the rest of your household, and what each can do</td></tr>
+<tr><td><a href="authentication/overview.html">Single sign-on</a></td><td>Signing in with Authentik, Authelia or another OIDC provider</td></tr>
+</tbody>
+</table></div>
+
+<h2 id="common-questions">Common questions</h2>
+<h3 id="can-i-use-trove-away-from-home">Can I use Trove away from home?</h3>
+<p>Yes. Put it behind a reverse proxy with HTTPS; the native installer can set up Caddy or nginx with a Let's Encrypt certificate for you. See the <a href="installation.html">installation guide</a>.</p>
+<h3 id="what-should-i-back-up">What should I back up?</h3>
+<p>The PostgreSQL database, Trove's data folder (covers, uploaded fonts and icons, and other files Trove creates) and your book folders.</p>
+<h3 id="which-e-readers-work-with-trove">Which e-readers work with Trove?</h3>
+<p>Kobo devices sync directly. KOReader (on Kobo, Kindle, PocketBook, Android and more) syncs your reading position. Any app that speaks OPDS can browse and download your books.</p>
+<h3 id="where-do-i-report-a-problem">Where do I report a problem?</h3>
+<p>On <a href="https://github.com/X2-Consult/trove/issues">GitHub</a>.</p>
+</main>
+</div>
 </body>
 </html>

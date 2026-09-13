@@ -1,43 +1,26 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>🔐 Authentication Overview | Trove Docs</title>
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<style>
-  :root { color-scheme: light dark; }
-  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-          max-width: 860px; margin: 0 auto; padding: 2rem 1.5rem 4rem; line-height: 1.65; }
-  .archive-notice { background: #fef3c7; color: #78350f; border: 1px solid #f59e0b; border-radius: 6px;
-                      padding: 0.75rem 1rem; margin-bottom: 2rem; font-size: 0.9rem; }
-  @media (prefers-color-scheme: dark) {
-    body { background: #1a1a1a; color: #e5e5e5; }
-    a { color: #7dd3fc; }
-    .archive-notice { background: #422006; color: #fde68a; border-color: #92400e; }
-  }
-  pre { overflow-x: auto; padding: 1rem; border-radius: 6px; background: #f3f4f6; }
-  code { background: #f3f4f6; padding: 0.15em 0.4em; border-radius: 4px; }
-  pre code { padding: 0; background: none; }
-  @media (prefers-color-scheme: dark) { pre, code { background: #262626; } }
-  img { max-width: 100%; height: auto; border-radius: 6px; }
-  h1, h2, h3 { line-height: 1.3; }
-  table { border-collapse: collapse; width: 100%; }
-  th, td { border: 1px solid #d1d5db; padding: 0.5rem 0.75rem; text-align: left; }
-  .hash-link { margin-left: 0.4rem; opacity: 0.4; text-decoration: none; }
-</style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Authentication Overview · Trove Help</title>
+<link rel="stylesheet" href="../docs.css">
+<script src="../docs.js" defer></script>
 </head>
-<body>
-<div class="archive-notice">
-  📦 Trove started as BookLore. These pages are adapted from the BookLore documentation (booklore.org/docs), captured
-  20260305164130 via the Wayback Machine after the original site went offline.
-  <a href="../index.html">Back to docs index</a>
-</div>
-<header><h1>🔐 Authentication Overview</h1></header>
+<body data-root="../">
+<header class="topbar">
+  <a class="brand" href="../index.html">Trove <span>Help</span></a>
+  <a class="back-to-app" href="/">Back to Trove</a>
+</header>
+<div class="layout">
+<nav class="sidebar" id="docs-nav" aria-label="Help topics"></nav>
+<main class="doc">
+<h1>Authentication Overview</h1>
 <p>Trove offers flexible authentication to secure your library while keeping things simple. Out of the box, it works with built-in username and password authentication, no setup required. If you're already running an identity provider like Authentik or Pocket ID for your other self-hosted apps, Trove can integrate seamlessly via OpenID Connect (OIDC), giving you single sign-on across your entire stack.</p>
 <p>Both methods can run side-by-side, so you can keep local authentication as a backup while using OIDC for daily access. This guide will help you understand your options and get started with the authentication method that fits your setup.</p>
-<hr>
-<h2 class="anchor anchorWithStickyNavbar_LWe7" id="-authentication-methods">🎯 Authentication Methods<a href="#-authentication-methods" class="hash-link" aria-label="Direct link to 🎯 Authentication Methods" title="Direct link to 🎯 Authentication Methods">​</a></h2>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="-local-authentication-built-in">🏠 Local Authentication (Built-in)<a href="#-local-authentication-built-in" class="hash-link" aria-label="Direct link to 🏠 Local Authentication (Built-in)" title="Direct link to 🏠 Local Authentication (Built-in)">​</a></h3>
+
+<h2 id="authentication-methods">Authentication Methods</h2>
+<h3 id="local-authentication-built-in">Local Authentication (Built-in)</h3>
 <p>Trove includes built-in username and password authentication that works immediately after installation:</p>
 <ul>
 <li><strong>Self-Contained</strong> - No external dependencies required</li>
@@ -50,8 +33,8 @@
 <li>Keeping authentication simple and self-contained</li>
 <li>Running Trove as a standalone service</li>
 </ul>
-<hr>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="-oidc-authentication-optional">🌐 OIDC Authentication (Optional)<a href="#-oidc-authentication-optional" class="hash-link" aria-label="Direct link to 🌐 OIDC Authentication (Optional)" title="Direct link to 🌐 OIDC Authentication (Optional)">​</a></h3>
+
+<h3 id="oidc-authentication-optional">OIDC Authentication (Optional)</h3>
 <p>Integrate with OpenID Connect (OIDC) providers for centralized authentication:</p>
 <ul>
 <li><strong>Single Sign-On (SSO)</strong> - Authenticate once across multiple applications</li>
@@ -71,16 +54,16 @@
 <li>Want single login across all your services</li>
 <li>Need MFA or advanced security features</li>
 </ul>
-<hr>
-<h2 class="anchor anchorWithStickyNavbar_LWe7" id="-getting-started">🚀 Getting Started<a href="#-getting-started" class="hash-link" aria-label="Direct link to 🚀 Getting Started" title="Direct link to 🚀 Getting Started">​</a></h2>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="using-local-authentication">Using Local Authentication<a href="#using-local-authentication" class="hash-link" aria-label="Direct link to Using Local Authentication" title="Direct link to Using Local Authentication">​</a></h3>
+
+<h2 id="getting-started">Getting Started</h2>
+<h3 id="using-local-authentication">Using Local Authentication</h3>
 <p>No setup needed! Just:</p>
 <ol>
 <li>Access your Trove instance</li>
 <li>Log in with your username and password</li>
 <li>You're done!</li>
 </ol>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="setting-up-oidc">Setting Up OIDC<a href="#setting-up-oidc" class="hash-link" aria-label="Direct link to Setting Up OIDC" title="Direct link to Setting Up OIDC">​</a></h3>
+<h3 id="setting-up-oidc">Setting Up OIDC</h3>
 <ol>
 <li>Choose your identity provider</li>
 <li>Create an OAuth2/OIDC application in your provider</li>
@@ -96,30 +79,30 @@
 <blockquote>
 <p>📝 <strong>Note:</strong> These guides can be adapted for most OIDC providers. Additional guides coming soon.</p>
 </blockquote>
-<hr>
-<h2 class="anchor anchorWithStickyNavbar_LWe7" id="-configuration">🔧 Configuration<a href="#-configuration" class="hash-link" aria-label="Direct link to 🔧 Configuration" title="Direct link to 🔧 Configuration">​</a></h2>
+
+<h2 id="configuration">Configuration</h2>
 <p>Access authentication settings: <strong>Settings → Authentication</strong></p>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="running-both-methods">Running Both Methods<a href="#running-both-methods" class="hash-link" aria-label="Direct link to Running Both Methods" title="Direct link to Running Both Methods">​</a></h3>
+<h3 id="running-both-methods">Running Both Methods</h3>
 <p>You can enable both local and OIDC authentication at the same time:</p>
 <ul>
 <li>Users can choose how they want to log in</li>
 <li>Local auth always works as a fallback</li>
 <li>The login page shows available options automatically</li>
 </ul>
-<hr>
-<h2 class="anchor anchorWithStickyNavbar_LWe7" id="-common-questions">❓ Common Questions<a href="#-common-questions" class="hash-link" aria-label="Direct link to ❓ Common Questions" title="Direct link to ❓ Common Questions">​</a></h2>
-<p><strong>Q: Can I use both local and OIDC authentication?</strong><br>
+
+<h2 id="common-questions">Common Questions</h2>
+<p><strong>Q: Can I use both local and OIDC authentication?</strong><br/>
 A: Yes! Enable both and users can choose their preferred method.</p>
-<p><strong>Q: What if my identity provider goes down?</strong><br>
+<p><strong>Q: What if my identity provider goes down?</strong><br/>
 A: Local authentication stays available, so you can always log in.</p>
-<p><strong>Q: Do I need to migrate users when enabling OIDC?</strong><br>
+<p><strong>Q: Do I need to migrate users when enabling OIDC?</strong><br/>
 A: No. Just create matching usernames in your identity provider when you're ready.</p>
-<p><strong>Q: Does OIDC support MFA?</strong><br>
+<p><strong>Q: Does OIDC support MFA?</strong><br/>
 A: Yes! Whatever security features your identity provider has (MFA, hardware keys, etc.) will work automatically.</p>
-<p><strong>Q: Are usernames case-sensitive?</strong><br>
+<p><strong>Q: Are usernames case-sensitive?</strong><br/>
 A: Yes. Make sure usernames match exactly between Trove and your identity provider.</p>
-<hr>
-<h2 class="anchor anchorWithStickyNavbar_LWe7" id="-which-method-should-i-choose">🎯 Which Method Should I Choose?<a href="#-which-method-should-i-choose" class="hash-link" aria-label="Direct link to 🎯 Which Method Should I Choose?" title="Direct link to 🎯 Which Method Should I Choose?">​</a></h2>
+
+<h2 id="which-method-should-i-choose">Which Method Should I Choose?</h2>
 <p><strong>Local Authentication:</strong></p>
 <ul>
 <li>Just want to get started quickly</li>
@@ -137,11 +120,13 @@ A: Yes. Make sure usernames match exactly between Trove and your identity provid
 <li>Testing OIDC while keeping local as backup</li>
 <li>Want maximum flexibility</li>
 </ul>
-<hr>
-<h2 class="anchor anchorWithStickyNavbar_LWe7" id="-next-steps">📚 Next Steps<a href="#-next-steps" class="hash-link" aria-label="Direct link to 📚 Next Steps" title="Direct link to 📚 Next Steps">​</a></h2>
+
+<h2 id="next-steps">Next Steps</h2>
 <p><strong>Using Local Auth?</strong> You're all set! Just log in and start using Trove.</p>
 <p><strong>Want to set up OIDC?</strong> Head to the <a href="../authentication/authentik.html">Authentik Setup Guide</a> or <a href="../authentication/pocket-id.html">Pocket ID Setup Guide</a> for a detailed walkthrough.</p>
-<hr>
+
 <p>Choose the authentication method that fits your setup. You can always change it later.</p>
+</main>
+</div>
 </body>
 </html>

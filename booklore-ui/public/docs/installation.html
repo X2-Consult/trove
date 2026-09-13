@@ -1,51 +1,35 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>🛠️ Installation Guide | Trove Docs</title>
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<style>
-  :root { color-scheme: light dark; }
-  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-          max-width: 860px; margin: 0 auto; padding: 2rem 1.5rem 4rem; line-height: 1.65; }
-  .archive-notice { background: #fef3c7; color: #78350f; border: 1px solid #f59e0b; border-radius: 6px;
-                      padding: 0.75rem 1rem; margin-bottom: 2rem; font-size: 0.9rem; }
-  @media (prefers-color-scheme: dark) {
-    body { background: #1a1a1a; color: #e5e5e5; }
-    a { color: #7dd3fc; }
-    .archive-notice { background: #422006; color: #fde68a; border-color: #92400e; }
-  }
-  pre { overflow-x: auto; padding: 1rem; border-radius: 6px; background: #f3f4f6; }
-  code { background: #f3f4f6; padding: 0.15em 0.4em; border-radius: 4px; }
-  pre code { padding: 0; background: none; }
-  @media (prefers-color-scheme: dark) { pre, code { background: #262626; } }
-  img { max-width: 100%; height: auto; border-radius: 6px; }
-  h1, h2, h3 { line-height: 1.3; }
-  table { border-collapse: collapse; width: 100%; }
-  th, td { border: 1px solid #d1d5db; padding: 0.5rem 0.75rem; text-align: left; }
-  .hash-link { margin-left: 0.4rem; opacity: 0.4; text-decoration: none; }
-</style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Installation · Trove Help</title>
+<link rel="stylesheet" href="docs.css">
+<script src="docs.js" defer></script>
 </head>
-<body>
-<div class="archive-notice">
-  📦 Trove started as BookLore. This page is written for Trove; most other pages are adapted from the BookLore
-  documentation (booklore.org/docs). <a href="./index.html">Back to docs index</a>
-</div>
-<header><h1>🛠️ Installation Guide</h1></header>
-<p>Trove runs either in Docker with PostgreSQL, or natively on an Ubuntu or Debian server with systemd. Both use port 6060.</p>
-<hr>
-<h2 id="docker">🐳 Docker Compose</h2>
+<body data-root="">
+<header class="topbar">
+  <a class="brand" href="index.html">Trove <span>Help</span></a>
+  <a class="back-to-app" href="/">Back to Trove</a>
+</header>
+<div class="layout">
+<nav class="sidebar" id="docs-nav" aria-label="Help topics"></nav>
+<main class="doc">
+<h1>Installation</h1>
+<p class="lede">Trove runs either in Docker with PostgreSQL, or natively on an Ubuntu or Debian server with systemd. Both use port 6060.</p>
+
+<h2 id="docker-compose">Docker Compose</h2>
 <p>You need Docker (v20.10+) and Docker Compose (v2.0+). Allow 2 GB of RAM, 4 GB or more for large libraries.</p>
-<h3 id="docker-folders">Step 1: Create the folders</h3>
+<h3 id="step-1-create-the-folders">Step 1: Create the folders</h3>
 <pre><code>mkdir -p ~/trove/{data,books,bookdrop,postgres}
 cd ~/trove</code></pre>
-<table><thead><tr><th>Folder</th><th>Purpose</th></tr></thead><tbody>
+<div class="table-wrap"><table><thead><tr><th>Folder</th><th>Purpose</th></tr></thead><tbody>
 <tr><td><code>postgres</code></td><td>Database files. Back this up.</td></tr>
-<tr><td><code>data</code></td><td>Application data: settings, covers, cache</td></tr>
+<tr><td><code>data</code></td><td>Covers, thumbnails, uploaded fonts and icons, and other files Trove creates</td></tr>
 <tr><td><code>books</code></td><td>Your book library</td></tr>
-<tr><td><code>bookdrop</code></td><td>Auto-import folder (see <a href="./bookdrop.html">BookDrop</a>)</td></tr>
-</tbody></table>
-<h3 id="docker-env">Step 2: Create <code>.env</code></h3>
+<tr><td><code>bookdrop</code></td><td>Drop books here to import them (see <a href="bookdrop.html">Bookdrop</a>)</td></tr>
+</tbody></table></div>
+<h3 id="step-2-create-env">Step 2: Create .env</h3>
 <pre><code># Application
 APP_USER_ID=1000
 APP_GROUP_ID=1000
@@ -60,7 +44,7 @@ POSTGRES_DB=trove
 # Storage: LOCAL (default), or NETWORK to stop Trove ever modifying book files
 DISK_TYPE=LOCAL</code></pre>
 <p><strong>Change the password before you start.</strong> Set <code>APP_USER_ID</code> and <code>APP_GROUP_ID</code> to the owner of your folders (<code>id -u</code>, <code>id -g</code>).</p>
-<h3 id="docker-compose">Step 3: Create <code>docker-compose.yml</code></h3>
+<h3 id="step-3-create-docker-compose-yml">Step 3: Create docker-compose.yml</h3>
 <pre><code>services:
   trove:
     image: ghcr.io/x2-consult/trove:latest
@@ -102,13 +86,13 @@ DISK_TYPE=LOCAL</code></pre>
       retries: 10</code></pre>
 <p>For production, pin a release tag instead of <code>latest</code>, for example <code>ghcr.io/x2-consult/trove:v1.2.3</code>.
 Podman Quadlet and Helm examples are in the <code>example-podman</code> and <code>example-chart</code> folders of the repository.</p>
-<h3 id="docker-start">Step 4: Start it</h3>
+<h3 id="step-4-start-it">Step 4: Start it</h3>
 <pre><code>docker compose up -d
 docker compose logs -f trove</code></pre>
 <p>Open <code>http://localhost:6060</code>, or <code>http://YOUR_SERVER_IP:6060</code> from another device, and create your admin account
-(see <a href="./initial-setup.html">Initial Setup</a>).</p>
-<hr>
-<h2 id="native">🖥️ Native install</h2>
+(see <a href="initial-setup.html">Admin account</a>).</p>
+
+<h2 id="native-install">Native install</h2>
 <p>On an Ubuntu or Debian server with systemd:</p>
 <pre><code>git clone https://github.com/X2-Consult/trove.git
 cd trove
@@ -116,15 +100,18 @@ cd trove
 <p>The installer asks whether this is a production or development machine, then sets up Java 25, PostgreSQL, a
 <code>trove</code> database and user, and the <code>trove</code> systemd service. It can also configure Caddy or nginx with a
 Let's Encrypt certificate if you give it a domain name.</p>
-<table><thead><tr><th>What</th><th>Where</th></tr></thead><tbody>
+<div class="table-wrap"><table><thead><tr><th>What</th><th>Where</th></tr></thead><tbody>
 <tr><td>App</td><td><code>/opt/trove</code></td></tr>
-<tr><td>Data (settings, covers, library, BookDrop)</td><td><code>/srv/trove</code></td></tr>
+<tr><td>Data: <code>config</code> (covers and other files Trove creates), <code>library</code> and <code>bookdrop</code></td><td><code>/srv/trove</code></td></tr>
 <tr><td>Settings file (database password, allowed origins, version)</td><td><code>/etc/trove/trove.env</code></td></tr>
 <tr><td>Service</td><td><code>systemctl status trove</code>, logs with <code>journalctl -u trove -f</code></td></tr>
-</tbody></table>
+</tbody></table></div>
 <p>To update, run <code>./deploy.sh</code> in <code>/opt/trove</code>, or use <strong>Update now</strong> in the app (admins only).</p>
-<hr>
-<h2 id="from-booklore">🔁 Moving from BookLore</h2>
+
+<h2 id="books-on-a-network-share">Books on a network share</h2>
+<p>Your book folders can be on a NAS. Mount the share on the host first (NFS or SMB/CIFS), then point Trove at it: in Docker, mount it into the container as a volume like <code>./books</code> above; natively, add the mounted folder when you create the library. Trove recognises network filesystems and adjusts how it watches and writes to them. See <a href="library/network-storage.html">Network storage</a> for the details and the <code>DISK_TYPE</code> and <code>NETWORK_POLL_SECONDS</code> settings.</p>
+
+<h2 id="moving-from-booklore">Moving from BookLore</h2>
 <ul>
 <li><strong>Native installs:</strong> run <code>scripts/migrate-to-trove.sh --dry-run</code> to see what will change, then
 <code>scripts/migrate-to-trove.sh</code>. It keeps your library, users and reading progress, and can roll back.</li>
@@ -133,31 +120,33 @@ If your compose file never set <code>DATABASE_URL</code> or <code>DATABASE_USERN
 <code>DATABASE_USERNAME=booklore</code>, because the defaults are now <code>trove</code>.</li>
 <li>Kobo and KOReader devices keep syncing without re-pairing, and <code>BOOKLORE_*</code> environment variables still work.</li>
 </ul>
-<hr>
-<h2 id="troubleshooting">🐛 Troubleshooting</h2>
-<h3 id="wont-start">Trove won't start</h3>
+
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="trove-won-t-start">Trove won't start</h3>
 <pre><code>docker compose logs trove postgres     # Docker
 journalctl -u trove -n 100             # native</code></pre>
 <p>Common causes: a wrong volume path, port 6060 already in use, a database password that doesn't match, or folder permissions.</p>
-<h3 id="database">Database connection errors</h3>
+<h3 id="database-connection-errors">Database connection errors</h3>
 <p>Check PostgreSQL is healthy with <code>docker compose ps postgres</code>, and that <code>DATABASE_USERNAME</code> and
 <code>DATABASE_PASSWORD</code> match <code>POSTGRES_USER</code> and <code>POSTGRES_PASSWORD</code>.</p>
-<h3 id="permissions">Permission errors</h3>
+<h3 id="permission-errors">Permission errors</h3>
 <p>Set <code>APP_USER_ID</code>/<code>APP_GROUP_ID</code> to the folders' owner, or fix the ownership:</p>
 <pre><code>sudo chown -R $USER:$USER ~/trove/data ~/trove/books ~/trove/bookdrop</code></pre>
-<h3 id="port">Port already in use</h3>
+<h3 id="port-already-in-use">Port already in use</h3>
 <p>Find what's using it with <code>sudo lsof -i :6060</code>, or map another host port, for example <code>"8080:6060"</code>.
 Natively, set <code>TROVE_PORT</code> in <code>/etc/trove/trove.env</code>.</p>
-<h3 id="network">Can't reach it from another device</h3>
+<h3 id="can-t-reach-it-from-another-device">Can't reach it from another device</h3>
 <pre><code>sudo ufw allow 6060/tcp                                                       # UFW
 sudo firewall-cmd --permanent --add-port=6060/tcp &amp;&amp; sudo firewall-cmd --reload  # firewalld</code></pre>
-<hr>
-<h2 id="next-steps">📚 Next steps</h2>
+
+<h2 id="next-steps">Next steps</h2>
 <ul>
-<li><a href="./initial-setup.html">Initial Setup</a>: create your administrator account</li>
-<li><a href="./library/setup-first-library.html">Setup First Library</a>: add your first library</li>
-<li><a href="./bookdrop.html">BookDrop</a>: automatic file imports</li>
-<li><a href="./metadata/metadata-fetch-configuration.html">Metadata Fetch Configuration</a>: choose metadata sources</li>
+<li><a href="initial-setup.html">Admin account</a>: create the administrator account</li>
+<li><a href="library/setup-first-library.html">Your first library</a>: point Trove at your books</li>
+<li><a href="bookdrop.html">Bookdrop</a>: import books by dropping them in a folder</li>
+<li><a href="metadata/metadata-settings.html">Metadata settings</a>: choose where covers and book details come from</li>
 </ul>
+</main>
+</div>
 </body>
 </html>

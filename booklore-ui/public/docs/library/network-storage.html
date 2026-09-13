@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Network storage · Trove Help</title>
+<link rel="stylesheet" href="../docs.css">
+<script src="../docs.js" defer></script>
+</head>
+<body data-root="../">
+<header class="topbar">
+  <a class="brand" href="../index.html">Trove <span>Help</span></a>
+  <a class="back-to-app" href="/">Back to Trove</a>
+</header>
+<div class="layout">
+<nav class="sidebar" id="docs-nav" aria-label="Help topics"></nav>
+<main class="doc">
+<h1>Network storage</h1>
+<p class="lede">Your libraries can live on a NAS, over NFS or SMB. Trove recognises a network share when you add the folder and changes how it treats it, so a flaky connection or another computer adding books doesn't catch it out.</p>
+
+<h2 id="setting-it-up">Setting it up</h2>
+<ol>
+<li><strong>Mount the share on the server</strong> that runs Trove, the usual way for your system (an <code>/etc/fstab</code> entry for NFS or CIFS, for example). Make sure the user Trove runs as can read the folder, and write to it if you want Trove to save metadata into files or organise them.</li>
+<li><strong>With Docker, pass the mounted folder into the container</strong> as a volume, the same way as a local folder:
+<pre><code>volumes:
+  - /mnt/nas/books:/books</code></pre></li>
+<li><strong>Add the folder to a library.</strong> In the library dialog it shows a <strong>Network share</strong> badge with the kind of filesystem, such as <code>nfs4</code> or <code>cifs</code>.</li>
+</ol>
+<aside class="note note-info"><p>Trove decides per folder, so one library can mix local folders and folders on a share. Local union filesystems such as mergerfs count as local.</p></aside>
+
+<h2 id="what-changes-for-a-share">What changes for a share</h2>
+<h3 id="new-books-are-found-by-checking">New books are found by checking</h3>
+<p>A network share doesn't tell the server when another computer adds, renames or removes a file, so <strong>Watch folders</strong> can't rely on being told. For folders on a share, Trove looks for changes every <strong>60 seconds</strong> instead, and does a full re-scan every tenth check. Change the interval with the <code>NETWORK_POLL_SECONDS</code> environment variable.</p>
+<p>It's careful about outages: if the share goes offline, can't be read, or suddenly appears to have lost half its books, Trove leaves the library alone until the folder looks normal again, rather than removing books that are only temporarily out of reach.</p>
+
+<h3 id="files-are-never-written-in-place">Files are never written in place</h3>
+<p>Whenever Trove changes a book file (saving metadata into it, importing from Bookdrop, uploading, or moving and renaming files), it:</p>
+<ol>
+<li>builds the new file on the server's own disk and checks it's a sound EPUB, PDF, comic or audiobook,</li>
+<li>copies it onto the share next to the original, under a hidden temporary name,</li>
+<li>reads the copy back and compares it byte for byte,</li>
+<li>and only then swaps it in for the original.</li>
+</ol>
+<p>If the connection drops part way, the original is untouched and the copy is tried again (up to three times). Leftover temporary files from an interrupted copy are cleaned up later.</p>
+
+<h3 id="file-names-stay-portable">File names stay portable</h3>
+<p>When Trove names files from a <a href="../metadata/file-naming-patterns.html">file naming pattern</a>, it avoids what SMB and Windows reject: the characters <code>: ? * " &lt; &gt; |</code>, names ending in a space or full stop, and reserved names like <code>CON</code> or <code>LPT1</code>. Renames that only change upper or lower case work on case-insensitive shares too.</p>
+
+<h2 id="checking-your-files">Checking your files</h2>
+<p>The <strong>Check Book File Integrity</strong> task in <a href="../tools/task-manager.html">Tasks</a> reads every book and reports any that are damaged, checking each entry's checksum in EPUB and comic archives and the structure of PDFs and audiobooks. It's worth running after moving a library onto a NAS.</p>
+
+<h2 id="keeping-trove-out-of-your-files-entirely">Keeping Trove out of your files entirely</h2>
+<p>If you'd rather Trove didn't change your book files, set <code>DISK_TYPE=NETWORK</code>. Trove then keeps metadata and covers in its own database only: it stops writing them into book files, stops writing <a href="../metadata/sidecar-files.html">sidecar files</a>, and won't rename or move files. Reading, scanning and everything else still work. The default, <code>DISK_TYPE=LOCAL</code>, allows all of these, on a share as well as on local disk.</p>
+<aside class="note note-warning"><p>Deleting a book in Trove still deletes its file, whichever setting you use. Users who shouldn't do that can be denied the <strong>Delete Books</strong> permission.</p></aside>
+
+<h2 id="what-s-been-tested">What's been tested</h2>
+<p>This behaviour has been tested on a real SMB share, including pulling the network in the middle of a large copy. NFS uses the same code but hasn't yet been tried against real hardware; if you use it, keep backups and check with the integrity task.</p>
+</main>
+</div>
+</body>
+</html>

@@ -1,89 +1,74 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>KOReader Sync | Trove Docs</title>
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<style>
-  :root { color-scheme: light dark; }
-  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-          max-width: 860px; margin: 0 auto; padding: 2rem 1.5rem 4rem; line-height: 1.65; }
-  .archive-notice { background: #fef3c7; color: #78350f; border: 1px solid #f59e0b; border-radius: 6px;
-                      padding: 0.75rem 1rem; margin-bottom: 2rem; font-size: 0.9rem; }
-  @media (prefers-color-scheme: dark) {
-    body { background: #1a1a1a; color: #e5e5e5; }
-    a { color: #7dd3fc; }
-    .archive-notice { background: #422006; color: #fde68a; border-color: #92400e; }
-  }
-  pre { overflow-x: auto; padding: 1rem; border-radius: 6px; background: #f3f4f6; }
-  code { background: #f3f4f6; padding: 0.15em 0.4em; border-radius: 4px; }
-  pre code { padding: 0; background: none; }
-  @media (prefers-color-scheme: dark) { pre, code { background: #262626; } }
-  img { max-width: 100%; height: auto; border-radius: 6px; }
-  h1, h2, h3 { line-height: 1.3; }
-  table { border-collapse: collapse; width: 100%; }
-  th, td { border: 1px solid #d1d5db; padding: 0.5rem 0.75rem; text-align: left; }
-  .hash-link { margin-left: 0.4rem; opacity: 0.4; text-decoration: none; }
-</style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KOReader Sync · Trove Help</title>
+<link rel="stylesheet" href="../docs.css">
+<script src="../docs.js" defer></script>
 </head>
-<body>
-<div class="archive-notice">
-  📦 Trove started as BookLore. These pages are adapted from the BookLore documentation (booklore.org/docs), captured
-  20260305164130 via the Wayback Machine after the original site went offline.
-  <a href="../index.html">Back to docs index</a>
-</div>
-<header><h1>KOReader Sync</h1></header>
-<p>KOReader sync lets you push and pull reading progress between <a href="https://web.archive.org/web/20260304100502/https://koreader.rocks/" target="_blank" rel="noopener noreferrer">KOReader</a> and Trove. Read a few chapters on your e-reader, push the progress, and it shows up in Trove. Pick up on another device, pull the latest position, and continue where you left off.</p>
+<body data-root="../">
+<header class="topbar">
+  <a class="brand" href="../index.html">Trove <span>Help</span></a>
+  <a class="back-to-app" href="/">Back to Trove</a>
+</header>
+<div class="layout">
+<nav class="sidebar" id="docs-nav" aria-label="Help topics"></nav>
+<main class="doc">
+<h1>KOReader Sync</h1>
+<p>KOReader sync lets you push and pull reading progress between <a href="https://web.archive.org/web/20260304100502/https://koreader.rocks/">KOReader</a> and Trove. Read a few chapters on your e-reader, push the progress, and it shows up in Trove. Pick up on another device, pull the latest position, and continue where you left off.</p>
 <p>Trove matches books by file content hash, so the same physical file must exist in both places. In practice this means KOReader needs to have downloaded the book from Trove (typically via OPDS) so the file bytes match. A book sideloaded from a different source won't produce the same hash, and progress won't link up.</p>
-<div class="theme-admonition theme-admonition-tip admonition_xJq3 alert alert--success"><div class="admonitionHeading_Gvgb"><span class="admonitionIcon_Rf37"><svg viewbox="0 0 12 16"><path fill-rule="evenodd" d="M6.5 0C3.48 0 1 2.19 1 5c0 .92.55 2.25 1 3 1.34 2.25 1.78 2.78 2 4v1h5v-1c.22-1.22.66-1.75 2-4 .45-.75 1-2.08 1-3 0-2.81-2.48-5-5.5-5zm3.64 7.48c-.25.44-.47.8-.67 1.11-.86 1.41-1.25 2.06-1.45 3.23-.02.05-.02.11-.02.17H5c0-.06 0-.13-.02-.17-.2-1.17-.59-1.83-1.45-3.23-.2-.31-.42-.67-.67-1.11C2.44 6.78 2 5.65 2 5c0-2.2 2.02-4 4.5-4 1.22 0 2.36.42 3.22 1.19C10.55 2.94 11 3.94 11 5c0 .66-.44 1.78-.86 2.48zM4 14h5c-.23 1.14-1.3 2-2.5 2s-2.27-.86-2.5-2z"></path></svg></span>Sync with Trove Reader</div><div class="admonitionContent_BuS1"><p>By default, KOReader progress and the built-in Trove web reader progress are tracked independently (they use different position formats). You can optionally enable <strong>Sync reading progress with Trove eBook Reader</strong> in the KOReader settings on the Devices page, which converts KOReader's XPointer positions to EPUB CFI so your web reader picks up where you left off. This conversion is approximate and may update by chapter rather than exact page.</p></div></div>
-<hr>
-<h2 class="anchor anchorWithStickyNavbar_LWe7" id="step-1-configure-koreader-sync-in-booklore">Step 1: Configure KOReader Sync in Trove<a href="#step-1-configure-koreader-sync-in-booklore" class="hash-link" aria-label="Direct link to Step 1: Configure KOReader Sync in Trove" title="Direct link to Step 1: Configure KOReader Sync in Trove">​</a></h2>
-<p>Go to <strong>Settings > Devices</strong> in Trove. You'll see the <strong>KOReader Settings</strong> section with an enable toggle, an API path, and username/password fields.</p>
+<aside class="note note-tip"><p class="note-title">Sync with Trove Reader</p><p>By default, KOReader progress and the built-in Trove web reader progress are tracked independently (they use different position formats). You can optionally enable <strong>Sync reading progress with Trove eBook Reader</strong> in the KOReader settings on the Devices page, which converts KOReader's XPointer positions to EPUB CFI so your web reader picks up where you left off. This conversion is approximate and may update by chapter rather than exact page.</p></aside>
+
+<h2 id="step-1-configure-koreader-sync-in-trove">Step 1: Configure KOReader Sync in Trove</h2>
+<p>Go to <strong>Settings &gt; Devices</strong> in Trove. You'll see the <strong>KOReader Settings</strong> section with an enable toggle, an API path, and username/password fields.</p>
 <ol>
 <li>Click <strong>Edit</strong> to unlock the credential fields</li>
 </ol>
-<p><img decoding="async" loading="lazy" alt="Trove Settings &gt; Devices page showing KOReader Settings with Enable toggle, API Path, Username, and Password fields with an Edit button" src="../images/integration/koreader/device-settings.jpg" width="1200" height="693" class="img_ev3q"></p>
+<figure><img alt="Trove Settings &gt; Devices page showing KOReader Settings with Enable toggle, API Path, Username, and Password fields with an Edit button" loading="lazy" src="../images/integration/koreader/device-settings.jpg"/></figure>
 <ol start="2">
 <li>Enter a <strong>username</strong> and <strong>password</strong> for KOReader to authenticate with (these are KOReader-specific credentials, separate from your Trove login)</li>
 <li>Click <strong>Save</strong></li>
 <li>Toggle <strong>Enable KOReader Sync</strong> on</li>
 <li>Copy the <strong>KOReader API Path</strong> shown (e.g., <code>http://192.168.0.2:6060/api/koreader</code>). You'll need this in KOReader.</li>
 </ol>
-<p><img decoding="async" loading="lazy" alt="KOReader Settings with sync enabled, API path populated, username and password filled in, and Save button" src="../images/integration/koreader/credentials-setup.jpg" width="1200" height="693" class="img_ev3q"></p>
-<div class="theme-admonition theme-admonition-info admonition_xJq3 alert alert--info"><div class="admonitionHeading_Gvgb"><span class="admonitionIcon_Rf37"><svg viewbox="0 0 14 16"><path fill-rule="evenodd" d="M7 2.3c3.14 0 5.7 2.56 5.7 5.7s-2.56 5.7-5.7 5.7A5.71 5.71 0 0 1 1.3 8c0-3.14 2.56-5.7 5.7-5.7zM7 1C3.14 1 0 4.14 0 8s3.14 7 7 7 7-3.14 7-7-3.14-7-7-7zm1 3H6v5h2V4zm0 6H6v2h2v-2z"></path></svg></span>Permissions</div><div class="admonitionContent_BuS1"><p>Only users with the <strong>KOReader Sync</strong> permission can use this feature. Admins have it by default. To grant it to other users, go to <strong>Settings > Users</strong> and enable the <strong>KOReader Sync</strong> checkbox on their row.</p></div></div>
-<p><img decoding="async" loading="lazy" alt="Settings &gt; Users page showing the user list with permission columns including KOReader Sync" src="../images/integration/koreader/user-permissions.jpg" width="1200" height="693" class="img_ev3q"></p>
-<hr>
-<h2 class="anchor anchorWithStickyNavbar_LWe7" id="step-2-set-up-sync-in-koreader">Step 2: Set Up Sync in KOReader<a href="#step-2-set-up-sync-in-koreader" class="hash-link" aria-label="Direct link to Step 2: Set Up Sync in KOReader" title="Direct link to Step 2: Set Up Sync in KOReader">​</a></h2>
+<figure><img alt="KOReader Settings with sync enabled, API path populated, username and password filled in, and Save button" loading="lazy" src="../images/integration/koreader/credentials-setup.jpg"/></figure>
+<aside class="note note-info"><p class="note-title">Permissions</p><p>Only users with the <strong>KOReader Sync</strong> permission can use this feature. Admins have it by default. To grant it to other users, go to <strong>Settings &gt; Users</strong> and enable the <strong>KOReader Sync</strong> checkbox on their row.</p></aside>
+<figure><img alt="Settings &gt; Users page showing the user list with permission columns including KOReader Sync" loading="lazy" src="../images/integration/koreader/user-permissions.jpg"/></figure>
+
+<h2 id="step-2-set-up-sync-in-koreader">Step 2: Set Up Sync in KOReader</h2>
 <p>Open a book in KOReader to access the tools menu.</p>
 <ol>
 <li>Tap the <strong>tools icon</strong> (wrench) in the top toolbar, then select <strong>Progress sync</strong></li>
 </ol>
-<p><img decoding="async" loading="lazy" alt="KOReader tools menu showing Progress sync option" src="https://web.archive.org/web/20260304100502im_/https://booklore.org/assets/images/settings-menu-5642977e3de3901ce93c9f20d2062a12.jpg" width="412" height="605" class="img_ev3q"></p>
+<figure><img alt="KOReader tools menu showing Progress sync option" loading="lazy" src="https://web.archive.org/web/20260304100502im_/https://booklore.org/assets/images/settings-menu-5642977e3de3901ce93c9f20d2062a12.jpg"/></figure>
 <ol start="2">
 <li>Tap <strong>Custom sync server</strong> and enter the API path you copied from Trove</li>
 </ol>
-<p><img decoding="async" loading="lazy" alt="KOReader Custom sync server dialog with the Trove API URL entered" src="https://web.archive.org/web/20260304100502im_/https://booklore.org/assets/images/custom-sync-server-631284eaae0d0479e55ac0d249c8d642.jpg" width="412" height="605" class="img_ev3q"></p>
+<figure><img alt="KOReader Custom sync server dialog with the Trove API URL entered" loading="lazy" src="https://web.archive.org/web/20260304100502im_/https://booklore.org/assets/images/custom-sync-server-631284eaae0d0479e55ac0d249c8d642.jpg"/></figure>
 <ol start="3">
 <li>Tap <strong>Register / Login</strong>, enter the username and password you set in Trove, and tap <strong>Login</strong></li>
 </ol>
-<p><img decoding="async" loading="lazy" alt="KOReader login dialog with username and password fields and Login button" src="https://web.archive.org/web/20260304100502im_/https://booklore.org/assets/images/login-credentials-b00d93c90ace6d4bcb2b3ed73a7710c8.jpg" width="412" height="605" class="img_ev3q"></p>
+<figure><img alt="KOReader login dialog with username and password fields and Login button" loading="lazy" src="https://web.archive.org/web/20260304100502im_/https://booklore.org/assets/images/login-credentials-b00d93c90ace6d4bcb2b3ed73a7710c8.jpg"/></figure>
 <ol start="4">
 <li>You're connected. Use <strong>Push progress from this device now</strong> to send your current position to Trove, or <strong>Pull progress from other devices now</strong> to retrieve the latest position from Trove.</li>
 </ol>
-<p><img decoding="async" loading="lazy" alt="KOReader Progress sync menu showing Push and Pull options, along with auto-sync settings" src="https://web.archive.org/web/20260304100502im_/https://booklore.org/assets/images/push-pull-options-5ad221bc3f25b54f9f3a46f9fb8f72a6.jpg" width="412" height="605" class="img_ev3q"></p>
+<figure><img alt="KOReader Progress sync menu showing Push and Pull options, along with auto-sync settings" loading="lazy" src="https://web.archive.org/web/20260304100502im_/https://booklore.org/assets/images/push-pull-options-5ad221bc3f25b54f9f3a46f9fb8f72a6.jpg"/></figure>
 <ol start="5">
 <li>One important setting: tap <strong>Document matching method</strong> and make sure <strong>Binary</strong> is selected. This matches books by file content (the same method Trove uses), ensuring the right book gets the right progress.</li>
 </ol>
-<p><img decoding="async" loading="lazy" alt="KOReader Document matching method menu" src="https://web.archive.org/web/20260304100502im_/https://booklore.org/assets/images/matching-method-4f8b28b8bbc0497181e19ff712d64072.jpg" width="412" height="605" class="img_ev3q">
-<img decoding="async" loading="lazy" alt="Binary option selected: &quot;Only identical files will be kept in sync&quot;" src="https://web.archive.org/web/20260304100502im_/https://booklore.org/assets/images/binary-matching-cc29a07527df43fa5ab2c7b50457444b.jpg" width="412" height="605" class="img_ev3q"></p>
-<div class="theme-admonition theme-admonition-tip admonition_xJq3 alert alert--success"><div class="admonitionHeading_Gvgb"><span class="admonitionIcon_Rf37"><svg viewbox="0 0 12 16"><path fill-rule="evenodd" d="M6.5 0C3.48 0 1 2.19 1 5c0 .92.55 2.25 1 3 1.34 2.25 1.78 2.78 2 4v1h5v-1c.22-1.22.66-1.75 2-4 .45-.75 1-2.08 1-3 0-2.81-2.48-5-5.5-5zm3.64 7.48c-.25.44-.47.8-.67 1.11-.86 1.41-1.25 2.06-1.45 3.23-.02.05-.02.11-.02.17H5c0-.06 0-.13-.02-.17-.2-1.17-.59-1.83-1.45-3.23-.2-.31-.42-.67-.67-1.11C2.44 6.78 2 5.65 2 5c0-2.2 2.02-4 4.5-4 1.22 0 2.36.42 3.22 1.19C10.55 2.94 11 3.94 11 5c0 .66-.44 1.78-.86 2.48zM4 14h5c-.23 1.14-1.3 2-2.5 2s-2.27-.86-2.5-2z"></path></svg></span>Auto Sync</div><div class="admonitionContent_BuS1"><p>KOReader can sync automatically. Enable <strong>Automatically keep documents in sync</strong> and optionally set <strong>Periodically sync every # pages</strong> so you don't have to push/pull manually each time.</p></div></div>
-<hr>
-<h2 class="anchor anchorWithStickyNavbar_LWe7" id="viewing-synced-progress">Viewing Synced Progress<a href="#viewing-synced-progress" class="hash-link" aria-label="Direct link to Viewing Synced Progress" title="Direct link to Viewing Synced Progress">​</a></h2>
+<p><img alt="KOReader Document matching method menu" loading="lazy" src="https://web.archive.org/web/20260304100502im_/https://booklore.org/assets/images/matching-method-4f8b28b8bbc0497181e19ff712d64072.jpg"/>
+<img alt='Binary option selected: "Only identical files will be kept in sync"' loading="lazy" src="https://web.archive.org/web/20260304100502im_/https://booklore.org/assets/images/binary-matching-cc29a07527df43fa5ab2c7b50457444b.jpg"/></p>
+<aside class="note note-tip"><p class="note-title">Auto Sync</p><p>KOReader can sync automatically. Enable <strong>Automatically keep documents in sync</strong> and optionally set <strong>Periodically sync every # pages</strong> so you don't have to push/pull manually each time.</p></aside>
+
+<h2 id="viewing-synced-progress">Viewing Synced Progress</h2>
 <p>KOReader progress appears on the book's detail page in Trove as <strong>KOReader Progress</strong> with a percentage and a green progress indicator.</p>
-<p><img decoding="async" loading="lazy" alt="Book detail page for Digital Fortress showing KOReader Progress at 21.1% alongside Trove Progress and other metadata" src="../images/integration/koreader/synced-progress.jpg" width="1200" height="690" class="img_ev3q"></p>
+<figure><img alt="Book detail page for Digital Fortress showing KOReader Progress at 21.1% alongside Trove Progress and other metadata" loading="lazy" src="../images/integration/koreader/synced-progress.jpg"/></figure>
 <p>Click the reset icon next to the KOReader progress to clear it in Trove. This does not affect the reading position stored on your KOReader device.</p>
-<hr>
-<h2 class="anchor anchorWithStickyNavbar_LWe7" id="troubleshooting">Troubleshooting<a href="#troubleshooting" class="hash-link" aria-label="Direct link to Troubleshooting" title="Direct link to Troubleshooting">​</a></h2>
-<table><thead><tr><th>Problem</th><th>What to check</th></tr></thead><tbody><tr><td>Login fails in KOReader</td><td>Make sure the username and password match exactly what you set in Trove's Devices settings. These are case-sensitive. Also verify the API path is reachable from your e-reader's network.</td></tr><tr><td>Progress not appearing in Trove</td><td>Tap <strong>Push progress from this device now</strong> in KOReader after reading. If auto-sync is off, progress doesn't send automatically.</td></tr><tr><td>Wrong book gets the progress</td><td>Make sure <strong>Document matching method</strong> is set to <strong>Binary</strong>, not Filename. Binary matches by file content hash, which is what Trove expects.</td></tr><tr><td>Sideloaded book won't sync</td><td>The book file must be byte-identical to the one in Trove. Download it from Trove via OPDS to ensure the hashes match. A file from a different source (even the same title) will have a different hash.</td></tr><tr><td>API path not accessible</td><td>If Trove is behind a reverse proxy, make sure <code>/api/koreader/**</code> paths are forwarded correctly. If using Docker, the API path shown in settings may use a container IP that isn't reachable from your e-reader's network. Use your external hostname or LAN IP instead.</td></tr></tbody></table>
+
+<h2 id="troubleshooting">Troubleshooting</h2>
+<div class="table-wrap"><table><thead><tr><th>Problem</th><th>What to check</th></tr></thead><tbody><tr><td>Login fails in KOReader</td><td>Make sure the username and password match exactly what you set in Trove's Devices settings. These are case-sensitive. Also verify the API path is reachable from your e-reader's network.</td></tr><tr><td>Progress not appearing in Trove</td><td>Tap <strong>Push progress from this device now</strong> in KOReader after reading. If auto-sync is off, progress doesn't send automatically.</td></tr><tr><td>Wrong book gets the progress</td><td>Make sure <strong>Document matching method</strong> is set to <strong>Binary</strong>, not Filename. Binary matches by file content hash, which is what Trove expects.</td></tr><tr><td>Sideloaded book won't sync</td><td>The book file must be byte-identical to the one in Trove. Download it from Trove via OPDS to ensure the hashes match. A file from a different source (even the same title) will have a different hash.</td></tr><tr><td>API path not accessible</td><td>If Trove is behind a reverse proxy, make sure <code>/api/koreader/**</code> paths are forwarded correctly. If using Docker, the API path shown in settings may use a container IP that isn't reachable from your e-reader's network. Use your external hostname or LAN IP instead.</td></tr></tbody></table></div>
+</main>
+</div>
 </body>
 </html>

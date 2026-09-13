@@ -1,76 +1,96 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>🔳 Grid View | Trove Docs</title>
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<style>
-  :root { color-scheme: light dark; }
-  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-          max-width: 860px; margin: 0 auto; padding: 2rem 1.5rem 4rem; line-height: 1.65; }
-  .archive-notice { background: #fef3c7; color: #78350f; border: 1px solid #f59e0b; border-radius: 6px;
-                      padding: 0.75rem 1rem; margin-bottom: 2rem; font-size: 0.9rem; }
-  @media (prefers-color-scheme: dark) {
-    body { background: #1a1a1a; color: #e5e5e5; }
-    a { color: #7dd3fc; }
-    .archive-notice { background: #422006; color: #fde68a; border-color: #92400e; }
-  }
-  pre { overflow-x: auto; padding: 1rem; border-radius: 6px; background: #f3f4f6; }
-  code { background: #f3f4f6; padding: 0.15em 0.4em; border-radius: 4px; }
-  pre code { padding: 0; background: none; }
-  @media (prefers-color-scheme: dark) { pre, code { background: #262626; } }
-  img { max-width: 100%; height: auto; border-radius: 6px; }
-  h1, h2, h3 { line-height: 1.3; }
-  table { border-collapse: collapse; width: 100%; }
-  th, td { border: 1px solid #d1d5db; padding: 0.5rem 0.75rem; text-align: left; }
-  .hash-link { margin-left: 0.4rem; opacity: 0.4; text-decoration: none; }
-</style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Grid view · Trove Help</title>
+<link rel="stylesheet" href="../docs.css">
+<script src="../docs.js" defer></script>
 </head>
-<body>
-<div class="archive-notice">
-  📦 Trove started as BookLore. These pages are adapted from the BookLore documentation (booklore.org/docs), captured
-  20260305164130 via the Wayback Machine after the original site went offline.
-  <a href="../index.html">Back to docs index</a>
+<body data-root="../">
+<header class="topbar">
+  <a class="brand" href="../index.html">Trove <span>Help</span></a>
+  <a class="back-to-app" href="/">Back to Trove</a>
+</header>
+<div class="layout">
+<nav class="sidebar" id="docs-nav" aria-label="Help topics"></nav>
+<main class="doc">
+<h1>Grid view</h1>
+<p class="lede">The grid shows your books as covers. It's the same view for All Books, a library, a shelf or a magic shelf, with a toolbar across the top and filters down the right.</p>
+<figure><img alt="All Books in the grid view, with filters on the right" loading="lazy" src="../images/book-browser/grid/overview.jpg"></figure>
+
+<h2 id="the-toolbar">The toolbar</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>Button</th><th>What it does</th></tr></thead>
+<tbody>
+<tr><td>Cog</td><td>Display settings (below)</td></tr>
+<tr><td>Up and down arrows</td><td>Sorting</td></tr>
+<tr><td>Grid / table</td><td>Switches to the <a href="table.html">table view</a> and back</td></tr>
+<tr><td>Search box</td><td>Narrows the view as you type</td></tr>
+<tr><td><strong>»</strong></td><td>Shows or hides the filter sidebar</td></tr>
+</tbody>
+</table></div>
+
+<h2 id="display-settings">Display settings</h2>
+<figure><img alt="The display settings: collapse series, grid item size and file format overlay" loading="lazy" src="../images/book-browser/grid/cover-size-slider.jpg"></figure>
+<div class="table-wrap"><table>
+<thead><tr><th>Setting</th><th>What it does</th></tr></thead>
+<tbody>
+<tr><td><strong>Collapse series</strong></td><td>Shows each series as one card with a count, instead of every book</td></tr>
+<tr><td><strong>Grid item size</strong></td><td>Makes the covers bigger or smaller</td></tr>
+<tr><td><strong>File format overlay</strong></td><td>Shows or hides the EPUB, PDF, CBZ… badge on each cover</td></tr>
+</tbody>
+</table></div>
+<p>Your choices are remembered for your account.</p>
+<h3 id="collapsing-series">Collapsing series</h3>
+<p>With series expanded, every book has its own card:</p>
+<figure><img alt="Series expanded: each Sherlock Holmes book has a card" loading="lazy" src="../images/book-browser/grid/series-expanded.jpg"></figure>
+<p>Collapsed, a series takes one card with the number of books on it. Click it to open the series.</p>
+<figure><img alt="Series collapsed into single cards with book counts" loading="lazy" src="../images/book-browser/grid/series-collapsed.jpg"></figure>
+
+<h2 id="sorting">Sorting</h2>
+<p>The sort button opens a list of sort fields. Add more than one to break ties (for example series, then series number), drag them into order, and flip each between ascending and descending.</p>
+<figure><img alt="The sort panel" loading="lazy" src="../images/book-browser/grid/sort-dropdown.jpg"></figure>
+<p>You can sort by title, file name or path, author (or author surname), series name and number, date added, last read, date finished, reading progress, read status, personal rating, publisher, published date, page count, file size, format, whether metadata is locked, ratings and review counts from Amazon, Goodreads, Hardcover and RanobeDB, narrator, or at random. Which fields appear in the list, and the default sort for each library or shelf, are set in <a href="../view-preferences.html">View preferences</a>.</p>
+
+<h2 id="search">Search</h2>
+<p>The search box matches titles, authors, series, genres and ISBNs as you type.</p>
+<figure><img alt="Searching for Holmes" loading="lazy" src="../images/book-browser/grid/search-bar.jpg"></figure>
+<p>The search box in the top bar is different: it searches all your libraries and suggests books as you type.</p>
+
+<h2 id="filters">Filters</h2>
+<p>The sidebar groups your books by author, genre, series, format, read status, rating, library, tag and more, with the number of books beside each value. Click a value to filter by it; click more to combine them.</p>
+<figure><img alt="The filter sidebar with the Genre section open" loading="lazy" src="../images/book-browser/grid/sidebar-filters.jpg"></figure>
+<p>The switch at the top decides how the values you pick combine:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Mode</th><th>Shows books that</th><th>Example: Mystery and Gothic</th></tr></thead>
+<tbody>
+<tr><td><strong>AND</strong></td><td>match every chosen value</td><td>Books that are both mysteries and gothic</td></tr>
+<tr><td><strong>OR</strong></td><td>match any chosen value</td><td>Books that are either</td></tr>
+<tr><td><strong>NOT</strong></td><td>match none of the chosen values</td><td>Everything except mysteries and gothic novels</td></tr>
+<tr><td><strong>1</strong> (single)</td><td>match the one value you last clicked</td><td>Clicking Gothic replaces Mystery</td></tr>
+</tbody>
+</table></div>
+<p>A count beside a section's name shows how many of its values are chosen. Which sections appear, their order, and the mode you start in are set in <a href="../view-preferences.html">View preferences</a>. Filters are part of the page address, so you can bookmark a filtered view.</p>
+
+<h2 id="selecting-books">Selecting books</h2>
+<p>Hover over a cover and tick its box to select it; a bar appears at the bottom with actions for everything selected: assign or remove shelves, fetch or edit metadata, lock or unlock metadata, organise files, attach to another book, set read status or age and content ratings, and delete. What's there depends on your permissions.</p>
+
+<h2 id="the-book-menu">The book menu</h2>
+<p>Each card's <strong>⋮</strong> menu has the actions for that book:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Item</th><th>Contains</th></tr></thead>
+<tbody>
+<tr><td><strong>Assign Shelf</strong></td><td>Choose which shelves the book is on</td></tr>
+<tr><td><strong>View Details</strong></td><td>Opens the <a href="../metadata/metadata-center.html">book page</a></td></tr>
+<tr><td><strong>Download</strong></td><td>Downloads the book (or picks a format)</td></tr>
+<tr><td><strong>Delete</strong></td><td>Deletes the book and its files</td></tr>
+<tr><td><strong>Email Book</strong></td><td>Quick Send to your default recipient, or Custom Send (see <a href="../email-setup.html">Sending by email</a>)</td></tr>
+<tr><td><strong>Metadata</strong></td><td>Search Metadata, Auto Fetch, Custom Fetch, Regenerate Cover (File), Generate Custom Cover</td></tr>
+<tr><td><strong>More Actions</strong></td><td>Organize File, Read Status, Reset Trove Progress, Reset KOReader Progress</td></tr>
+</tbody>
+</table></div>
+</main>
 </div>
-<header><h1>🔳 Grid View</h1></header>
-<p>The grid view displays books as cover cards in a responsive layout. Switch between grid and table view using the toggle buttons in the toolbar.</p>
-<p><img decoding="async" loading="lazy" alt="Grid View" src="../images/book-browser/grid/overview.jpg" width="1200" height="692" class="img_ev3q"></p>
-<hr>
-<h2 class="anchor anchorWithStickyNavbar_LWe7" id="️-display-settings">⚙️ Display Settings<a href="#️-display-settings" class="hash-link" aria-label="Direct link to ⚙️ Display Settings" title="Direct link to ⚙️ Display Settings">​</a></h2>
-<p>Click the gear icon in the toolbar to open the display settings popover.</p>
-<p><img decoding="async" loading="lazy" alt="Display Settings" src="../images/book-browser/grid/cover-size-slider.jpg" width="1200" height="692" class="img_ev3q"></p>
-<table><thead><tr><th>Setting</th><th>Description</th></tr></thead><tbody><tr><td><strong>Collapse Series</strong></td><td>When checked, series are collapsed into a single card showing the count. Uncheck to show every book individually.</td></tr><tr><td><strong>Grid Item Size</strong></td><td>Slider to control the size of book cards. Your preference is saved automatically.</td></tr><tr><td><strong>Sidebar Filter Sort</strong></td><td>Controls how items in the sidebar filters are ordered: alphabetically or by book count.</td></tr></tbody></table>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="-collapse-series">📚 Collapse Series<a href="#-collapse-series" class="hash-link" aria-label="Direct link to 📚 Collapse Series" title="Direct link to 📚 Collapse Series">​</a></h3>
-<p>With collapse off, all books in a series show individually:</p>
-<p><img decoding="async" loading="lazy" alt="Series Expanded" src="../images/book-browser/grid/series-expanded.jpg" width="1200" height="692" class="img_ev3q"></p>
-<p>With collapse on, only one card per series is shown with an overlay count:</p>
-<p><img decoding="async" loading="lazy" alt="Series Collapsed" src="../images/book-browser/grid/series-collapsed.jpg" width="1200" height="692" class="img_ev3q"></p>
-<hr>
-<h2 class="anchor anchorWithStickyNavbar_LWe7" id="-sorting">🔃 Sorting<a href="#-sorting" class="hash-link" aria-label="Direct link to 🔃 Sorting" title="Direct link to 🔃 Sorting">​</a></h2>
-<p>Click the sort icon in the toolbar to open the sort popover. You can sort by multiple criteria, drag to reorder priority, and toggle ascending/descending for each.</p>
-<p><img decoding="async" loading="lazy" alt="Sort Options" src="../images/book-browser/grid/sort-dropdown.jpg" width="1200" height="692" class="img_ev3q"></p>
-<p>Default sort fields include Title, Author, Series Name, Added On, Last Read, Personal Rating, File Size, Published Date, Pages, and more. Additional fields (Amazon Rating, Goodreads Rating, Narrator, etc.) can be enabled from user settings.</p>
-<hr>
-<h2 class="anchor anchorWithStickyNavbar_LWe7" id="-search">🔍 Search<a href="#-search" class="hash-link" aria-label="Direct link to 🔍 Search" title="Direct link to 🔍 Search">​</a></h2>
-<p>The search bar filters books in real time as you type. It matches across titles, series names, and author names.</p>
-<p><img decoding="async" loading="lazy" alt="Search" src="../images/book-browser/grid/search-bar.jpg" width="1200" height="692" class="img_ev3q"></p>
-<hr>
-<h2 class="anchor anchorWithStickyNavbar_LWe7" id="️-sidebar-filters">🗂️ Sidebar Filters<a href="#️-sidebar-filters" class="hash-link" aria-label="Direct link to 🗂️ Sidebar Filters" title="Direct link to 🗂️ Sidebar Filters">​</a></h2>
-<p>The right sidebar provides filter categories to narrow down your view. Click any value within a category to filter by it.</p>
-<p><img decoding="async" loading="lazy" alt="Sidebar Filters" src="../images/book-browser/grid/sidebar-filters.jpg" width="1200" height="692" class="img_ev3q"></p>
-<p>Available filter categories include Author, Category, Series, Publisher, Read Status, Personal Rating, Published Year, File Size, Language, Page Count, and more. You can customize which filters are visible from user settings.</p>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="filter-mode">Filter Mode<a href="#filter-mode" class="hash-link" aria-label="Direct link to Filter Mode" title="Direct link to Filter Mode">​</a></h3>
-<p>The <strong>AND / OR</strong> toggle at the top of the sidebar controls how multiple filters combine:</p>
-<table><thead><tr><th>Mode</th><th>Behavior</th></tr></thead><tbody><tr><td><strong>AND</strong></td><td>Books must match all selected filter values</td></tr><tr><td><strong>OR</strong></td><td>Books match if they fit any selected filter value</td></tr></tbody></table>
-<p>Switching between the sort options changes how items within each filter section are listed:</p>
-<p><img decoding="async" loading="lazy" alt="Sidebar Sort Options" src="https://web.archive.org/web/20260228151432im_/https://booklore.org/assets/images/sidebar-sort-options-a93564fb1981e048e11dd625aee97a0a.jpg" width="1200" height="692" class="img_ev3q"></p>
-<hr>
-<h2 class="anchor anchorWithStickyNavbar_LWe7" id="-book-card-menu">📖 Book Card Menu<a href="#-book-card-menu" class="hash-link" aria-label="Direct link to 📖 Book Card Menu" title="Direct link to 📖 Book Card Menu">​</a></h2>
-<p>Right-click or click the three-dot menu on a book card for quick actions:</p>
-<ul>
-<li><strong>Assign Shelf</strong> and <strong>View Details</strong> are always available</li>
-<li><strong>Download</strong>, <strong>Delete</strong>, <strong>Send Book</strong>, and <strong>Metadata</strong> appear based on your permissions</li>
-<li><strong>More Actions</strong> contains: Set Read Status, Organize File, Reset Progress</li>
-</ul>
 </body>
 </html>

@@ -1,54 +1,48 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>👤 Setup Admin User | Trove Docs</title>
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<style>
-  :root { color-scheme: light dark; }
-  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-          max-width: 860px; margin: 0 auto; padding: 2rem 1.5rem 4rem; line-height: 1.65; }
-  .archive-notice { background: #fef3c7; color: #78350f; border: 1px solid #f59e0b; border-radius: 6px;
-                      padding: 0.75rem 1rem; margin-bottom: 2rem; font-size: 0.9rem; }
-  @media (prefers-color-scheme: dark) {
-    body { background: #1a1a1a; color: #e5e5e5; }
-    a { color: #7dd3fc; }
-    .archive-notice { background: #422006; color: #fde68a; border-color: #92400e; }
-  }
-  pre { overflow-x: auto; padding: 1rem; border-radius: 6px; background: #f3f4f6; }
-  code { background: #f3f4f6; padding: 0.15em 0.4em; border-radius: 4px; }
-  pre code { padding: 0; background: none; }
-  @media (prefers-color-scheme: dark) { pre, code { background: #262626; } }
-  img { max-width: 100%; height: auto; border-radius: 6px; }
-  h1, h2, h3 { line-height: 1.3; }
-  table { border-collapse: collapse; width: 100%; }
-  th, td { border: 1px solid #d1d5db; padding: 0.5rem 0.75rem; text-align: left; }
-  .hash-link { margin-left: 0.4rem; opacity: 0.4; text-decoration: none; }
-</style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin account · Trove Help</title>
+<link rel="stylesheet" href="docs.css">
+<script src="docs.js" defer></script>
 </head>
-<body>
-<div class="archive-notice">
-  📦 Trove started as BookLore. These pages are adapted from the BookLore documentation (booklore.org/docs), captured
-  20260305164130 via the Wayback Machine after the original site went offline.
-  <a href="./index.html">Back to docs index</a>
+<body data-root="">
+<header class="topbar">
+  <a class="brand" href="index.html">Trove <span>Help</span></a>
+  <a class="back-to-app" href="/">Back to Trove</a>
+</header>
+<div class="layout">
+<nav class="sidebar" id="docs-nav" aria-label="Help topics"></nav>
+<main class="doc">
+<h1>Admin account</h1>
+<p class="lede">The first time you open Trove, it asks you to create the administrator account. This only happens once.</p>
+
+<h2 id="create-the-account">Create the account</h2>
+<p>Open Trove in your browser (<code>http://your-server:6060</code>) and fill in the form:</p>
+<figure><img alt="The first-run form for the administrator account" loading="lazy" src="images/initial-setup/admin-user.jpg"></figure>
+<div class="table-wrap"><table>
+<thead><tr><th>Field</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td><strong>Username</strong></td><td>What you'll sign in with</td></tr>
+<tr><td><strong>Full name</strong></td><td>Shown in the app</td></tr>
+<tr><td><strong>Email</strong></td><td>Must be a valid address</td></tr>
+<tr><td><strong>Password</strong></td><td>At least 8 characters</td></tr>
+<tr><td><strong>Confirm password</strong></td><td>Must match</td></tr>
+</tbody>
+</table></div>
+<p>Click <strong>Create Admin Account</strong>.</p>
+<aside class="note note-warning"><p class="note-title">Keep the password safe</p><p>Trove doesn't send password reset emails. An administrator can set a new password for any user from <a href="tools/user-management.html">Users</a>, so consider creating a second admin account, and keep your passwords in a password manager.</p></aside>
+
+<h2 id="sign-in">Sign in</h2>
+<p>Trove takes you to the sign-in page. Use the username and password you just chose.</p>
+<figure><img alt="The Trove sign-in page" loading="lazy" src="images/initial-setup/login.jpg"></figure>
+
+<h2 id="the-empty-dashboard">The empty dashboard</h2>
+<p>With no libraries yet, the dashboard invites you to create one.</p>
+<figure><img alt="The dashboard before any library exists" loading="lazy" src="images/initial-setup/empty-dashboard.jpg"></figure>
+<p>Click <strong>Create Your Library</strong> and carry on with <a href="library/setup-first-library.html">Your first library</a>.</p>
+</main>
 </div>
-<header><h1>👤 Setup Admin User</h1></header>
-<p>On first launch, Trove shows a setup screen to create the initial administrator account. This is a one-time step.</p>
-<hr>
-<h2 class="anchor anchorWithStickyNavbar_LWe7" id="️-create-your-account">🛠️ Create Your Account<a href="#️-create-your-account" class="hash-link" aria-label="Direct link to 🛠️ Create Your Account" title="Direct link to 🛠️ Create Your Account">​</a></h2>
-<p>Open <code>http://localhost:6060</code> in your browser and fill in the setup form:</p>
-<p><img decoding="async" loading="lazy" alt="Admin User Setup" src="images/initial-setup/admin-user.jpg" width="1200" height="703" class="img_ev3q"></p>
-<table><thead><tr><th>Field</th><th>Notes</th></tr></thead><tbody><tr><td><strong>Username</strong></td><td>Your login identifier</td></tr><tr><td><strong>Full Name</strong></td><td>Display name shown in the UI</td></tr><tr><td><strong>Email Address</strong></td><td>Used for account-related features</td></tr><tr><td><strong>Password</strong></td><td>Minimum 6 characters</td></tr><tr><td><strong>Confirm Password</strong></td><td>Must match the password above</td></tr></tbody></table>
-<p>All fields are required. Click <strong>"Create Admin Account"</strong> when done.</p>
-<div class="theme-admonition theme-admonition-warning admonition_xJq3 alert alert--warning"><div class="admonitionHeading_Gvgb"><span class="admonitionIcon_Rf37"><svg viewbox="0 0 16 16"><path fill-rule="evenodd" d="M8.893 1.5c-.183-.31-.52-.5-.887-.5s-.703.19-.886.5L.138 13.499a.98.98 0 0 0 0 1.001c.193.31.53.501.886.501h13.964c.367 0 .704-.19.877-.5a1.03 1.03 0 0 0 .01-1.002L8.893 1.5zm.133 11.497H6.987v-2.003h2.039v2.003zm0-3.004H6.987V5.987h2.039v4.006z"></path></svg></span>Save Your Credentials</div><div class="admonitionContent_BuS1"><p>There is no password recovery flow yet. If you lose your password, you'll need to reset it directly in the database. Use a password manager.</p></div></div>
-<hr>
-<h2 class="anchor anchorWithStickyNavbar_LWe7" id="-login">🔑 Login<a href="#-login" class="hash-link" aria-label="Direct link to 🔑 Login" title="Direct link to 🔑 Login">​</a></h2>
-<p>After creating the account, you'll be redirected to the login page. Sign in with the username and password you just created.</p>
-<p><img decoding="async" loading="lazy" alt="Login Page" src="images/initial-setup/login.jpg" width="500" height="288" class="img_ev3q"></p>
-<hr>
-<h2 class="anchor anchorWithStickyNavbar_LWe7" id="-dashboard">🏠 Dashboard<a href="#-dashboard" class="hash-link" aria-label="Direct link to 🏠 Dashboard" title="Direct link to 🏠 Dashboard">​</a></h2>
-<p>After logging in, you'll see an empty dashboard prompting you to create your first library.</p>
-<p><img decoding="async" loading="lazy" alt="Empty Dashboard" src="images/initial-setup/empty-dashboard.jpg" width="1200" height="692" class="img_ev3q"></p>
-<p>Click <strong>"Add a Library"</strong> to get started. See <a href="./library/setup-first-library.html">Setup First Library</a> for a walkthrough.</p>
 </body>
 </html>
