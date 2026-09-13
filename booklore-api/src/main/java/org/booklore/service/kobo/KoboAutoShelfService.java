@@ -10,6 +10,7 @@ import org.booklore.repository.BookRepository;
 import org.booklore.repository.KoboUserSettingsRepository;
 import org.booklore.repository.ShelfRepository;
 import org.booklore.repository.UserRepository;
+import org.booklore.service.restriction.ContentRestrictionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,7 @@ public class KoboAutoShelfService {
     private final UserRepository userRepository;
     private final BookRepository bookRepository;
     private final KoboCompatibilityService koboCompatibilityService;
+    private final ContentRestrictionService contentRestrictionService;
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void autoAddBookToKoboShelves(Long bookId) {
@@ -76,9 +78,10 @@ public class KoboAutoShelfService {
             }
 
             // Auto-add used to put every new book on every Kobo user's shelf, so books from libraries a
-            // user can't access synced to their device (Grimmory 4980391c).
-            if (!canAccessBookLibrary(users.get(setting.getUserId()), book)) {
-                log.debug("Book {} is not in a library user {} can access", book.getId(), setting.getUserId());
+            // user can't access synced to their device (Grimmory 4980391c). Their content restrictions
+            // count too: a book they can't see in the app mustn't reach their Kobo.
+            if (!canSeeBook(users.get(setting.getUserId()), book)) {
+                log.debug("Book {} is not one user {} can see", book.getId(), setting.getUserId());
                 continue;
             }
 
@@ -101,7 +104,7 @@ public class KoboAutoShelfService {
         }
     }
 
-    private boolean canAccessBookLibrary(BookLoreUserEntity user, BookEntity book) {
+    private boolean canSeeBook(BookLoreUserEntity user, BookEntity book) {
         if (user == null || book.getLibrary() == null) {
             return false;
         }
@@ -110,8 +113,9 @@ public class KoboAutoShelfService {
             return true;
         }
         Long libraryId = book.getLibrary().getId();
-        return user.getLibraries() != null
+        boolean inTheirLibraries = user.getLibraries() != null
                 && user.getLibraries().stream().anyMatch(library -> library.getId().equals(libraryId));
+        return inTheirLibraries && !contentRestrictionService.applyRestrictions(List.of(book), user.getId()).isEmpty();
     }
 
     private boolean isBookEligible(BookEntity book) {

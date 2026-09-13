@@ -11,6 +11,7 @@ import org.booklore.model.enums.ReadStatus;
 import org.booklore.model.enums.UserPermission;
 import org.booklore.repository.*;
 import org.booklore.service.progress.ReadingProgressService;
+import org.booklore.service.restriction.BookAccessService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.EnumUtils;
@@ -39,6 +40,7 @@ public class BookUpdateService {
     private final BookQueryService bookQueryService;
     private final ReadingProgressService readingProgressService;
     private final EbookViewerPreferenceRepository ebookViewerPreferenceRepository;
+    private final BookAccessService bookAccessService;
 
     public void updateBookViewerSetting(long bookId, BookViewerSettings bookViewerSettings) {
         BookEntity book = bookRepository.findByIdWithBookFiles(bookId).orElseThrow(() -> ApiError.BOOK_NOT_FOUND.createException(bookId));
@@ -106,12 +108,18 @@ public class BookUpdateService {
         validateShelfOwnership(userEntity, shelfIdsToAssign, shelfIdsToUnassign);
 
         List<BookEntity> bookEntities = bookQueryService.findAllWithMetadataByIds(bookIds);
+        // Only books the user may see can go on their shelves: a Kobo shelf in particular hands its
+        // books to the device. Taking books off is always allowed, so a book that has since become
+        // restricted can still leave a shelf, but only visible books are sent back.
+        if (shelfIdsToAssign != null && !shelfIdsToAssign.isEmpty()) {
+            bookAccessService.assertAccess(bookEntities);
+        }
         List<ShelfEntity> shelvesToAssign = shelfRepository.findAllById(shelfIdsToAssign);
 
         updateBookShelves(bookEntities, shelvesToAssign, shelfIdsToUnassign);
         bookRepository.saveAll(bookEntities);
 
-        return buildBooksWithProgress(bookEntities, user.getId());
+        return buildBooksWithProgress(bookAccessService.filterAccessible(bookEntities), user.getId());
     }
 
     private void updatePdfViewerSettings(long bookId, Long userId, BookViewerSettings settings) {

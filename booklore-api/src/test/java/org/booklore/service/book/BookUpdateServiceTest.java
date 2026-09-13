@@ -2,6 +2,7 @@ package org.booklore.service.book;
 
 import org.booklore.config.security.service.AuthenticationService;
 import org.booklore.exception.APIException;
+import org.booklore.exception.ApiError;
 import org.booklore.mapper.BookMapper;
 import org.booklore.model.dto.*;
 import org.booklore.model.dto.response.BookStatusUpdateResponse;
@@ -11,6 +12,7 @@ import org.booklore.model.enums.BookFileType;
 import org.booklore.model.enums.ReadStatus;
 import org.booklore.repository.*;
 import org.booklore.service.progress.ReadingProgressService;
+import org.booklore.service.restriction.BookAccessService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -48,6 +50,8 @@ class BookUpdateServiceTest {
     private ReadingProgressService readingProgressService;
     @Mock
     private EbookViewerPreferenceRepository ebookViewerPreferenceRepository;
+    @Mock
+    private BookAccessService bookAccessService;
 
     @InjectMocks
     private BookUpdateService bookUpdateService;
@@ -67,7 +71,8 @@ class BookUpdateServiceTest {
                 authenticationService,
                 bookQueryService,
                 readingProgressService,
-                ebookViewerPreferenceRepository
+                ebookViewerPreferenceRepository,
+                bookAccessService
         );
     }
 
@@ -318,10 +323,56 @@ class BookUpdateServiceTest {
 
         when(readingProgressService.fetchUserProgress(eq(1L), anySet())).thenReturn(Collections.emptyMap());
         when(readingProgressService.fetchUserFileProgress(eq(1L), anySet())).thenReturn(Collections.emptyMap());
+        when(bookAccessService.filterAccessible(anyCollection())).thenAnswer(inv -> new ArrayList<>(inv.<Collection<BookEntity>>getArgument(0)));
 
         List<Book> result = bookUpdateService.assignShelvesToBooks(bookIds, assignIds, unassignIds);
+        verify(bookAccessService).assertAccess(Arrays.asList(bookEntity1, bookEntity2));
         verify(bookRepository).saveAll(anyList());
         assertEquals(2, result.size());
+    }
+
+    @Test
+    void assignShelvesToBooks_refusesBooksTheUserCannotSee() {
+        BookLoreUser user = mock(BookLoreUser.class);
+        when(authenticationService.getAuthenticatedUser()).thenReturn(user);
+        when(user.getId()).thenReturn(1L);
+        BookLoreUserEntity userEntity = new BookLoreUserEntity();
+        ShelfEntity koboShelf = new ShelfEntity();
+        koboShelf.setId(10L);
+        userEntity.setShelves(new HashSet<>(Collections.singletonList(koboShelf)));
+        when(userRepository.findById(1L)).thenReturn(Optional.of(userEntity));
+        BookEntity restricted = new BookEntity();
+        restricted.setId(5L);
+        restricted.setShelves(new HashSet<>());
+        when(bookQueryService.findAllWithMetadataByIds(Set.of(5L))).thenReturn(List.of(restricted));
+        doThrow(ApiError.FORBIDDEN.createException("no")).when(bookAccessService).assertAccess(List.of(restricted));
+
+        assertThrows(APIException.class, () -> bookUpdateService.assignShelvesToBooks(Set.of(5L), Set.of(10L), Set.of()));
+        assertTrue(restricted.getShelves().isEmpty());
+        verify(bookRepository, never()).saveAll(anyList());
+    }
+
+    @Test
+    void assignShelvesToBooks_letsAnyBookLeaveTheUsersShelves() {
+        BookLoreUser user = mock(BookLoreUser.class);
+        when(authenticationService.getAuthenticatedUser()).thenReturn(user);
+        when(user.getId()).thenReturn(1L);
+        BookLoreUserEntity userEntity = new BookLoreUserEntity();
+        ShelfEntity koboShelf = new ShelfEntity();
+        koboShelf.setId(10L);
+        userEntity.setShelves(new HashSet<>(Collections.singletonList(koboShelf)));
+        when(userRepository.findById(1L)).thenReturn(Optional.of(userEntity));
+        BookEntity restricted = new BookEntity();
+        restricted.setId(5L);
+        restricted.setShelves(new HashSet<>(Set.of(koboShelf)));
+        when(bookQueryService.findAllWithMetadataByIds(Set.of(5L))).thenReturn(List.of(restricted));
+        when(bookAccessService.filterAccessible(anyCollection())).thenReturn(List.of());
+
+        List<Book> result = bookUpdateService.assignShelvesToBooks(Set.of(5L), Set.of(), Set.of(10L));
+
+        verify(bookAccessService, never()).assertAccess(anyCollection());
+        assertTrue(restricted.getShelves().isEmpty());
+        assertTrue(result.isEmpty(), "a book the user can't see isn't sent back");
     }
 
     @Test

@@ -3,12 +3,17 @@ package org.booklore.service.restriction;
 import org.booklore.config.security.service.AuthenticationService;
 import org.booklore.exception.ApiError;
 import org.booklore.model.dto.BookLoreUser;
+import org.booklore.model.dto.Library;
 import org.booklore.model.entity.BookEntity;
 import org.booklore.repository.BookRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Central place to verify that the currently authenticated user is allowed to
@@ -56,5 +61,28 @@ public class BookAccessService {
         if (filteredBooks.isEmpty()) {
             throw ApiError.FORBIDDEN.createException("You are not authorized to access this book.");
         }
+    }
+
+    /** The same check for many books at once, such as everything in a bulk request. */
+    public void assertAccess(Collection<BookEntity> books) {
+        if (filterAccessible(books).size() != books.size()) {
+            throw ApiError.FORBIDDEN.createException("You are not authorized to access one or more of these books.");
+        }
+    }
+
+    /** The books the current user may see: all of them for an admin, otherwise their libraries' books minus restricted ones. */
+    public List<BookEntity> filterAccessible(Collection<BookEntity> books) {
+        BookLoreUser user = authenticationService.getAuthenticatedUser();
+        if (user == null) {
+            throw ApiError.FORBIDDEN.createException("Authentication required.");
+        }
+        if (user.getPermissions().isAdmin()) {
+            return new ArrayList<>(books);
+        }
+        Set<Long> libraryIds = user.getAssignedLibraries().stream().map(Library::getId).collect(Collectors.toSet());
+        List<BookEntity> inLibraries = books.stream()
+                .filter(book -> book.getLibrary() != null && libraryIds.contains(book.getLibrary().getId()))
+                .toList();
+        return contentRestrictionService.applyRestrictions(inLibraries, user.getId());
     }
 }

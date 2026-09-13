@@ -16,6 +16,7 @@ import org.booklore.repository.KoboDeletedBookProgressRepository;
 import org.booklore.repository.KoboLibrarySnapshotRepository;
 import org.booklore.repository.KoboSnapshotBookRepository;
 import org.booklore.repository.ShelfRepository;
+import org.booklore.service.restriction.ContentRestrictionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,8 +31,10 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -58,6 +61,9 @@ class KoboLibrarySnapshotServiceTest {
     @Mock
     private AuthenticationService authenticationService;
 
+    @Mock
+    private ContentRestrictionService contentRestrictionService;
+
     @InjectMocks
     private KoboLibrarySnapshotService service;
 
@@ -68,6 +74,8 @@ class KoboLibrarySnapshotServiceTest {
 
     @BeforeEach
     void setUp() {
+        // No content restrictions unless a test sets some.
+        lenient().when(contentRestrictionService.applyRestrictions(anyList(), any())).thenAnswer(inv -> inv.getArgument(0));
         owner = BookLoreUserEntity.builder().id(1L).isDefaultPassword(false).build();
         otherUser = BookLoreUserEntity.builder().id(2L).isDefaultPassword(false).build();
 

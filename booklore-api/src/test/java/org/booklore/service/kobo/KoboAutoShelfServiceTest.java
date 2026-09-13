@@ -11,6 +11,7 @@ import org.booklore.repository.BookRepository;
 import org.booklore.repository.KoboUserSettingsRepository;
 import org.booklore.repository.ShelfRepository;
 import org.booklore.repository.UserRepository;
+import org.booklore.service.restriction.ContentRestrictionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,6 +22,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -41,6 +43,9 @@ class KoboAutoShelfServiceTest {
     @Mock
     private KoboCompatibilityService koboCompatibilityService;
 
+    @Mock
+    private ContentRestrictionService contentRestrictionService;
+
     @InjectMocks
     private KoboAutoShelfService koboAutoShelfService;
 
@@ -55,6 +60,8 @@ class KoboAutoShelfServiceTest {
 
     @BeforeEach
     void setUp() {
+        // No content restrictions unless a test sets some.
+        lenient().when(contentRestrictionService.applyRestrictions(anyList(), any())).thenAnswer(inv -> inv.getArgument(0));
         library = LibraryEntity.builder().id(5L).name("Books").build();
         testBook = BookEntity.builder()
                 .id(1L)
@@ -314,5 +321,18 @@ class KoboAutoShelfServiceTest {
         koboAutoShelfService.autoAddBookToKoboShelves(1L);
 
         assertThat(testBook.getShelves()).containsExactly(koboShelf2);
+    }
+
+    @Test
+    void autoAddBookToKoboShelves_skipsUsersWhoseRestrictionsHideTheBook() {
+        when(bookRepository.findById(1L)).thenReturn(Optional.of(testBook));
+        when(koboCompatibilityService.isBookSupportedForKobo(testBook)).thenReturn(true);
+        when(koboUserSettingsRepository.findByAutoAddToShelfTrueAndSyncEnabledTrue()).thenReturn(List.of(settings1, settings2));
+        when(shelfRepository.findByUserIdInAndName(anyList(), eq(ShelfType.KOBO.getName()))).thenReturn(List.of(koboShelf1, koboShelf2));
+        when(contentRestrictionService.applyRestrictions(anyList(), eq(testUser2.getId()))).thenReturn(List.of());
+
+        koboAutoShelfService.autoAddBookToKoboShelves(1L);
+
+        assertThat(testBook.getShelves()).containsExactly(koboShelf1);
     }
 }

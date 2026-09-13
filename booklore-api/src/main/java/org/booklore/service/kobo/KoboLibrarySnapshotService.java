@@ -9,6 +9,7 @@ import org.booklore.repository.KoboDeletedBookProgressRepository;
 import org.booklore.repository.KoboLibrarySnapshotRepository;
 import org.booklore.repository.KoboSnapshotBookRepository;
 import org.booklore.repository.ShelfRepository;
+import org.booklore.service.restriction.ContentRestrictionService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,6 +30,7 @@ public class KoboLibrarySnapshotService {
     private final KoboDeletedBookProgressRepository koboDeletedBookProgressRepository;
     private final KoboCompatibilityService koboCompatibilityService;
     private final AuthenticationService authenticationService;
+    private final ContentRestrictionService contentRestrictionService;
 
     @Transactional(readOnly = true)
     public Optional<KoboLibrarySnapshotEntity> findByIdAndUserId(String id, Long userId) {
@@ -133,9 +135,16 @@ public class KoboLibrarySnapshotService {
     private List<KoboSnapshotBookEntity> mapBooksToKoboSnapshotBook(ShelfEntity shelf, KoboLibrarySnapshotEntity snapshot) {
         Long userId = snapshot.getUserId();
 
-        return shelf.getBookEntities().stream()
+        List<BookEntity> books = shelf.getBookEntities().stream()
                 .filter(book -> isBookOwnedByUser(book, userId))
                 .filter(koboCompatibilityService::isBookSupportedForKobo)
+                .collect(Collectors.toList());
+        // Books that became restricted for this user after going on the shelf stay off the device.
+        if (!authenticationService.getAuthenticatedUser().getPermissions().isAdmin()) {
+            books = contentRestrictionService.applyRestrictions(books, userId);
+        }
+
+        return books.stream()
                 .map(book -> {
                     KoboSnapshotBookEntity snapshotBook = mapper.toKoboSnapshotBook(book);
                     snapshotBook.setSnapshot(snapshot);
