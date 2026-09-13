@@ -31,11 +31,11 @@
 <aside class="note note-tip"><p class="note-title">Setting Up Your KOReader Device</p><p>On your KOReader device, go to <strong>Tools &gt; Progress sync &gt; Custom sync server</strong> and enter the API Path, Username, and Password shown on this page.</p></aside>
 
 <h2 id="hardcover-integration">Hardcover Integration</h2>
-<p>Sync your KOReader reading progress from Trove to your <a href="https://web.archive.org/web/20260309185346/https://hardcover.app/">Hardcover</a> account. When enabled, progress updates from KOReader are automatically pushed to Hardcover.</p>
+<p>Sync your KOReader reading progress from Trove to your <a href="https://hardcover.app/">Hardcover</a> account. When enabled, progress updates from KOReader are automatically pushed to Hardcover.</p>
 <p>Requires the <strong>KOReader Sync</strong> or <strong>Kobo Sync</strong> permission.</p>
 <figure><img alt="Hardcover Integration" loading="lazy" src="../images/tools/devices/hardcover-integration.jpg"/></figure>
 <h3 id="configuration">Configuration</h3>
-<div class="table-wrap"><table><thead><tr><th>Setting</th><th>Description</th></tr></thead><tbody><tr><td><strong>Sync KOReader Reading Progress to Hardcover</strong></td><td>Enable or disable the sync. When enabled, the API Key field appears.</td></tr><tr><td><strong>Hardcover API Key</strong></td><td>Your personal API key from Hardcover. Get it from <a href="https://web.archive.org/web/20260309185346/https://hardcover.app/account/api">hardcover.app/account/api</a>. This key is private to your account.</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th>Setting</th><th>Description</th></tr></thead><tbody><tr><td><strong>Sync KOReader Reading Progress to Hardcover</strong></td><td>Enable or disable the sync. When enabled, the API Key field appears.</td></tr><tr><td><strong>Hardcover API Key</strong></td><td>Your personal API key from Hardcover. Get it from <a href="https://hardcover.app/account/api">hardcover.app/account/api</a>. This key is private to your account.</td></tr></tbody></table></div>
 <aside class="note note-info"><p class="note-title">How It Works</p><p>When KOReader progress is synced to Trove, Trove automatically forwards the update to Hardcover. Books are marked as "Currently Reading" when progress begins and "Read" when progress reaches 99%+. Trove matches books to Hardcover using the Hardcover book ID stored in metadata.</p></aside>
 
 <p>Step-by-step setup is in <a href="../integration/koreader.html">KOReader</a>.</p>
@@ -66,7 +66,7 @@
 <li>Kobo sync creates a dedicated "Kobo" shelf automatically. Add books to this shelf (or enable auto-add) to sync them to your device.</li>
 <li>Hardcover sync is triggered automatically whenever KOReader progress is updated. There is no manual sync button.</li>
 <li>Reading progress from KOReader and Kobo is stored separately, so both devices can be used independently.</li>
-<li>KEPUB conversion uses the <a href="https://web.archive.org/web/20260309185346/https://github.com/pgaskin/kepubify">kepubify</a> tool and is handled server-side.</li>
+<li>KEPUB conversion uses the <a href="https://github.com/pgaskin/kepubify">kepubify</a> tool and is handled server-side.</li>
 <li>All device settings changes are reflected immediately without needing to restart the server.</li>
 </ul>
 </main>

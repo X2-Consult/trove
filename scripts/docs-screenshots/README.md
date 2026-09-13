@@ -4,10 +4,12 @@ The in-app help (`booklore-ui/public/docs`) uses screenshots taken from a throwa
 that holds nothing but public-domain sample books, so the pictures never show anyone's real library,
 accounts or copyrighted cover art.
 
-- `capture.mjs` drives that instance with Playwright and saves each screenshot as
-  `booklore-ui/public/docs/images/<page>/<name>.jpg`, named after the image it replaces.
-- `link-images.mjs` points each help page's `<img>` tags at the new files. Images with no capture yet,
-  such as an identity provider's own admin screens, keep loading from the old docs site.
+| File | What it does |
+|---|---|
+| `build-library.sh` | Downloads and assembles the sample library (below) |
+| `sample-data.py` | Sets the sample books' details, author biographies and reading history through the API |
+| `capture.mjs` | Drives the instance with Playwright and saves each screenshot as `booklore-ui/public/docs/images/<page>/<name>.jpg` |
+| `link-images.mjs` | Points help pages' `<img>` tags that still load from the old docs site at the new files |
 
 ## The docs instance
 
@@ -17,7 +19,12 @@ folder (`/srv/trove-docs`), port (6061), and the sample library mounted at `/boo
 checkout with `TROVE_SELF_UPDATE=false`.
 
 The admin account is a public-domain persona, Elinor Dashwood (`elinor`), created by the capture
-script's `setup` scene on the first run.
+script's `setup` scene on the first run. A second user, Marianne Dashwood, is created by the `devices`
+scene for the permission screenshots.
+
+The browser reaches the instance as `http://trove.example.com` (Chromium resolves that name to the
+real address), so wherever Trove prints its own address (KOReader, OPDS, Kobo, OIDC redirect) the
+screenshots show an example domain rather than `localhost`. Set `TROVE_DOCS_SITE` to use another.
 
 ## The sample library
 
@@ -25,29 +32,48 @@ All public domain:
 
 - 32 EPUBs from [Project Gutenberg](https://www.gutenberg.org), including three series (Sherlock
   Holmes, Oz, Anne of Green Gables), with their scanned original covers.
-- *The Art of War* as a PDF, rendered with Playwright from Gutenberg's HTML edition (Lionel Giles's
+- *The Art of War* as a PDF, printed with Playwright from Gutenberg's HTML edition (Lionel Giles's
   1910 translation).
 - *The Marvelous Land of Oz Picture Book*: a CBZ of John R. Neill's 1904 illustrations, taken from the
   Gutenberg edition of *The Marvelous Land of Oz*.
 - *The Happy Prince and Other Tales* as an M4B, from [LibriVox](https://librivox.org) via the
   Internet Archive.
 
-Titles, series order, first publication years, genres and one-line descriptions were set through the
-API, and the reading history (sessions, progress, statuses, ratings) is sample data, also created
-through the API, so the statistics pages have something to show. Metadata was not fetched from the
-online providers: they would bring in modern publishers' cover art and copy. Screens that do show
-provider results have those results blurred (`blurProviderContent`).
+Kept aside for scenes that add books: three more Gutenberg EPUBs for Bookdrop, and the
+[Literata](https://github.com/googlefonts/literata) typeface (SIL Open Font License) for custom fonts.
+
+Titles, series order, first publication years, genres, descriptions and author biographies were
+written for these screenshots, and the reading history is sample data. Metadata was not fetched from
+the online providers: they would bring in modern publishers' cover art and copy. Screens that do show
+provider results (metadata search, Bookdrop, author search) have those results blurred.
 
 ## Running it
 
 ```sh
-# once, in a scratch directory
+# once, in a scratch directory: Playwright for capture.mjs (and the PDF in build-library.sh)
 npm init -y >/dev/null && npm i playwright@1.63.0 && npx playwright install chromium
-# then, from that directory
-TROVE_DOCS_URL=http://localhost:6061 TROVE_DOCS_PASSWORD=... node /opt/trove/scripts/docs-screenshots/capture.mjs [scene ...]
+
+# once: the sample library
+scripts/docs-screenshots/build-library.sh /srv/trove-docs/library /srv/trove/docs-staging "$SCRATCH"
+
+# start the docs instance, then from the scratch directory:
+export TROVE_DOCS_URL=http://localhost:6061 TROVE_DOCS_PASSWORD=...
+node /opt/trove/scripts/docs-screenshots/capture.mjs setup welcome library   # first run only
+python3 /opt/trove/scripts/docs-screenshots/sample-data.py                  # once, after the scan
+node /opt/trove/scripts/docs-screenshots/capture.mjs [scene ...]            # all scenes, or some
 node /opt/trove/scripts/docs-screenshots/link-images.mjs
 ```
 
-Scenes that change the instance (creating a shelf, a magic shelf, highlights) remove what an earlier
-run created first, so they can be run again. The table scene opens the delete confirmation but always
-cancels it, and checks afterwards that no book was removed.
+With no scene names, every scene runs in order. `TROVE_DOCS_SETTINGS_ONLY=name,name` limits the
+`settings` scene to some of its screenshots. If a scene fails, a picture of the page at that moment is
+saved as `failed-<scene>.png` in the current directory.
+
+Scenes that change the instance put it back or clean up after an earlier run: the shelf, magic shelf,
+tag, Bookdrop, email, icon, font, API token and Kobo shelf scenes remove what a previous run created
+first. The table scene opens the delete confirmation but always cancels it and checks no book was
+removed; the Bookdrop scene deletes the books it imports and checks the book count afterwards.
+
+## Help pages
+
+The pages are plain HTML sharing `docs.css` and `docs.js` (the sidebar of topics). To add a page,
+copy an existing one, keep its `<main class="doc">` structure, and add it to `NAV` in `docs.js`.
