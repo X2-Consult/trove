@@ -44,14 +44,16 @@ class MountInfoTest {
         assertThat(MountInfo.find(Path.of("/mnt/pool/books"), HOST)).hasValueSatisfying(m -> assertThat(m.isNetwork()).isFalse());
     }
 
+    // The mount points in these tests mustn't exist on the machine running them: find() follows
+    // symlinks, so a real /books (as on a Docker host) would change the answer.
     @Test
     void theLaterOfTwoMountsOnOnePointWins() {
         List<MountInfo.Mount> stacked = MountInfo.parse(List.of(
                 "29 1 253:0 / / rw - ext4 /dev/sda1 rw",
-                "40 29 0:60 / /books rw - ext4 /dev/sdb1 rw",
-                "41 40 0:61 / /books rw - nfs nas:/books rw"));
+                "40 29 0:60 / /trove-test-books rw - ext4 /dev/sdb1 rw",
+                "41 40 0:61 / /trove-test-books rw - nfs nas:/books rw"));
 
-        assertThat(MountInfo.find(Path.of("/books/a.epub"), stacked)).hasValueSatisfying(m -> assertThat(m.fsType()).isEqualTo("nfs"));
+        assertThat(MountInfo.find(Path.of("/trove-test-books/a.epub"), stacked)).hasValueSatisfying(m -> assertThat(m.fsType()).isEqualTo("nfs"));
     }
 
     @Test
@@ -59,9 +61,9 @@ class MountInfoTest {
         // A NAS folder bind-mounted into a container shows up with the share's own type.
         List<MountInfo.Mount> container = MountInfo.parse(List.of(
                 "600 500 0:90 / / rw,relatime - overlay overlay rw,lowerdir=/var/lib/docker/...",
-                "610 600 0:52 /volume1/books /books rw,relatime - nfs4 nas.local:/volume1 rw"));
+                "610 600 0:52 /volume1/books /trove-test-books rw,relatime - nfs4 nas.local:/volume1 rw"));
 
-        assertThat(MountInfo.find(Path.of("/books"), container)).hasValueSatisfying(m -> assertThat(m.isNetwork()).isTrue());
+        assertThat(MountInfo.find(Path.of("/trove-test-books"), container)).hasValueSatisfying(m -> assertThat(m.isNetwork()).isTrue());
     }
 
     @Test
