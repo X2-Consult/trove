@@ -161,6 +161,11 @@ bootRun {
 
 bootJar {
     mainClass = 'org.booklore.BookloreApplication'
+    // deploy.sh and install.sh build into another folder (-PbootJarDir) and rename the jar into
+    // build/libs, so the jar a running server loads its classes from is never written over.
+    if (project.hasProperty('bootJarDir')) {
+        destinationDirectory = layout.projectDirectory.dir(project.property('bootJarDir').toString())
+    }
 }
 
 // For native (non-Docker) production builds: embed the Angular production

@@ -186,7 +186,11 @@ if [ "$INSTALL_MODE" = "production" ]; then
   (cd "$REPO_DIR/booklore-ui" && npx ng build --configuration production)
 
   log "Building backend jar (embeds the Angular build)..."
-  (cd "$REPO_DIR/booklore-api" && ./gradlew bootJar -x test)
+  # Built in build/next and renamed into build/libs: the running server loads classes from its
+  # jar, so writing over it in place breaks the server until the restart (every request hangs),
+  # while a rename leaves it reading the old file.
+  (cd "$REPO_DIR/booklore-api" && rm -rf build/next && ./gradlew bootJar -x test -PbootJarDir=build/next \
+    && mkdir -p build/libs && for jar in build/next/*.jar; do mv -f "$jar" build/libs/; done)
 
   log "Restarting $API_SERVICE..."
   sudo systemctl restart "$API_SERVICE"
