@@ -127,6 +127,7 @@ large_client_header_buffers 8 32k;</code></pre>
 <li>Your Trove books appear on the device</li>
 </ol>
 <figure><img alt="Synced Books" loading="lazy" src="../images/integration/kobo/synced-books.jpg"/></figure>
+<aside class="note note-info"><p class="note-title">What a Kobo can download</p><p>A Kobo only gets the books on its owner's Kobo shelf, and only those in libraries the owner has access to that their <a href="../content-restrictions.html">content restrictions</a> allow. Its sync token can't be used to download any other book.</p></aside>
 
 <h2 id="removing-books">Removing Books</h2>
 <h3 id="from-the-kobo-device">From the Kobo device</h3>
@@ -168,6 +169,15 @@ large_client_header_buffers 8 32k;</code></pre>
 </ol>
 <figure><img alt="User Permissions" loading="lazy" src="../images/integration/kobo/user-permissions.jpg"/></figure>
 <p>The user can then find their own API token in <strong>Settings &gt; Devices</strong> and follow the setup steps above. Each user gets their own token and Kobo shelf.</p>
+
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="books-you-deleted">Books you deleted from Trove</h3>
+<p>A Kobo keeps reporting reading progress for books it still holds, even after you delete them from Trove or take them off the Kobo shelf. Trove accepts that progress without saving it, so the sync carries on, and the next sync removes the books from the device.</p>
+<h3 id="sync-fails-or-the-site-stops-loading">Sync fails, or the site stops loading, after a burst of errors</h3>
+<p>If your server runs <strong>fail2ban</strong> (or a similar tool) with a rule that bans addresses after many "not found" (404) responses, it can ban your own home. Your Kobo, phone and browser all reach Trove from your home's one public address, so a sync or a page of missing covers can add up to a ban. The site then refuses connections from everything at home, though Trove itself is running fine. Check with <code>sudo fail2ban-client status</code>, and add your home network to the ignore list:</p>
+<pre><code>printf '[DEFAULT]\nignoreip = 127.0.0.1/8 ::1 192.168.1.0/24 YOUR.PUBLIC.IP\n' | sudo tee /etc/fail2ban/jail.d/local-network.local
+sudo fail2ban-client reload</code></pre>
+<p>Use your own network range and public address in place of the examples.</p>
 </main>
 </div>
 </body>

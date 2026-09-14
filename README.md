@@ -32,7 +32,11 @@ Organize, read, annotate, sync across devices, and share, all without relying on
 - **Metadata that survives bot checks.** Amazon and GoodReads pages are loaded in a headless browser on native installs,
   with request spacing and cool-downs, so bulk metadata fetches keep working.
 - **Security hardening.** Books opened in the reader can't reach your login, login tokens are harder to misuse,
-  cover downloads can't be pointed at your own network, and several access-control gaps are closed.
+  cover downloads can't be pointed at your own network, and several access-control gaps are closed. Library access and
+  content restrictions apply to Kobo sync, the Komga API and shelves as well as the web app and OPDS.
+- **Library housekeeping.** Library folders can't overlap (which imported books twice), books whose file has gone are
+  marked **No file** and can be filtered out and cleaned up, and a task fills in missing page counts: exact for PDFs,
+  comics and EPUBs with print page numbers, otherwise estimated from word counts measured against your own books.
 - **Lower memory use.** JVM settings that hand unused memory back to the system, plus fixes for leaks during scans and bulk jobs.
 - **Help built into the app.** The original docs site went offline with the abandoned project. Trove's help lives at
   `/docs` in the app itself, rewritten for Trove with current screenshots, so in-app help links keep working.
@@ -157,7 +161,7 @@ More examples: [Podman Quadlets](example-podman/), [Helm chart](example-chart/).
 On an Ubuntu or Debian server with systemd:
 
 ```bash
-git clone https://github.com/X2-Consult/trove.git
+git clone -b master https://github.com/X2-Consult/trove.git
 cd trove
 ./install.sh
 ```
@@ -243,6 +247,14 @@ Trove is free, open source, and built with care. Here's how you can give back:
 | ⭐ **Star this repo** | It's the simplest way to help others find Trove |
 | ☕ **Buy me a coffee** | [Ko-fi](https://ko-fi.com/xspader) — a one-time tip to fuel continued development |
 | 📢 **Tell someone** | Share Trove with a friend, a subreddit, or your local book club |
+
+---
+
+## 🔒 Security
+
+Found a security problem? Please report it privately through
+[GitHub's vulnerability reporting](https://github.com/X2-Consult/trove/security/advisories/new) rather than in a public
+issue. See [SECURITY.md](SECURITY.md) for what's supported and what to expect.
 
 ---
 

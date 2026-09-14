@@ -41,7 +41,13 @@
 <li><strong>Direct book access</strong> is checked when opening a specific book. If a restricted book is accessed directly (e.g., via URL), the server returns a 403 Forbidden response</li>
 </ul>
 <aside class="note note-info"><p>Only admins can configure content restrictions. Users cannot see or modify their own restrictions.</p></aside>
-<aside class="note note-info"><p>The restrictions also apply to the user's <a href="integration/opds.html">OPDS</a> feeds.</p></aside>
+<p>They also apply outside the web app, wherever the user reaches their books:</p>
+<ul>
+<li><strong><a href="integration/opds.html">OPDS</a> feeds</strong> leave restricted books out.</li>
+<li><strong>The <a href="integration/komga-api.html">Komga API</a></strong> shows the user's OPDS logins only the libraries they've been given, without restricted books. Asking for a restricted book by its ID gets "not found".</li>
+<li><strong><a href="integration/kobo.html">Kobo sync</a></strong> doesn't send restricted books to the device, and a Kobo can't download or fetch details for them, even if they're on the user's Kobo shelf.</li>
+<li><strong>Shelves:</strong> a user can't put a restricted book on a shelf, including their Kobo shelf.</li>
+</ul>
 </main>
 </div>
 </body>

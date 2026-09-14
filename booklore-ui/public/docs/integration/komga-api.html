@@ -60,6 +60,7 @@
 </ol>
 <aside class="note note-danger"><p class="note-title">Security Note</p><p>OPDS users are separate from your main Trove account and are specifically for reading app access. Make sure OPDS is enabled to use these credentials with the Komga API.</p></aside>
 <aside class="note note-warning"><p class="note-title">Important</p><p>Passwords are created once and cannot be retrieved later. Make sure to store your OPDS credentials securely before saving.</p></aside>
+<aside class="note note-info"><p class="note-title">What each login sees</p><p>An OPDS login belongs to a Trove user, and the Komga API shows it what that user can see: only the libraries they've been given, without books their <a href="../content-restrictions.html">content restrictions</a> exclude. Series lists and counts leave those books out too, and asking for a hidden book or library by its ID gets "not found". Admins see everything.</p></aside>
 
 <h2 id="step-4-configure-group-unknown-series-optional">Step 4: Configure Group Unknown Series (Optional)</h2>
 <p>Trove organizes books differently than Komga:</p>
