@@ -89,13 +89,17 @@ class ApiTokenServiceTest {
 
     @Test
     void authenticate_returnsUserAndTouchesLastUsedAt_forValidActiveToken() {
-        BookLoreUserEntity user = BookLoreUserEntity.builder().id(USER_ID).build();
-        ApiTokenEntity active = ApiTokenEntity.builder().id(1L).user(user).build();
+        // The token holds only a reference to its user; the full user (permissions, libraries,
+        // settings) is loaded by id so it can still be read after the transaction ends.
+        BookLoreUserEntity reference = BookLoreUserEntity.builder().id(USER_ID).build();
+        BookLoreUserEntity user = BookLoreUserEntity.builder().id(USER_ID).username("reader").build();
+        ApiTokenEntity active = ApiTokenEntity.builder().id(1L).user(reference).build();
         when(apiTokenRepository.findByTokenHash(any())).thenReturn(Optional.of(active));
+        when(userRepository.findById(USER_ID)).thenReturn(Optional.of(user));
 
         Optional<BookLoreUserEntity> result = apiTokenService.authenticate(ApiTokenService.TOKEN_PREFIX + "valid");
 
-        assertThat(result).contains(user);
+        assertThat(result).containsSame(user);
         ArgumentCaptor<ApiTokenEntity> captor = ArgumentCaptor.forClass(ApiTokenEntity.class);
         verify(apiTokenRepository).save(captor.capture());
         assertThat(captor.getValue().getLastUsedAt()).isNotNull();

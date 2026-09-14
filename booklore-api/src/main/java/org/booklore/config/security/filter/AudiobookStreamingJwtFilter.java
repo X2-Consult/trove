@@ -30,6 +30,7 @@ public class AudiobookStreamingJwtFilter extends OncePerRequestFilter {
     private final JwtUtils jwtUtils;
     private final UserRepository userRepository;
     private final BookLoreUserTransformer bookLoreUserTransformer;
+    private final StreamingApiTokenAuthenticator apiTokenAuthenticator;
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
@@ -42,6 +43,18 @@ public class AudiobookStreamingJwtFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String token = extractTokenFromHeader(request);
+        switch (apiTokenAuthenticator.authenticate(token, request.getParameter("token"), request, response)) {
+            case REJECTED -> {
+                return;
+            }
+            case AUTHENTICATED -> {
+                chain.doFilter(request, response);
+                return;
+            }
+            case NOT_AN_API_TOKEN -> {
+                // a login token, checked below
+            }
+        }
         if (token == null) {
             token = request.getParameter("token");
         }

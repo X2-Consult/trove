@@ -102,7 +102,11 @@ public class ApiTokenService {
             t.setLastUsedAt(Instant.now());
             apiTokenRepository.save(t);
         });
-        return found.map(ApiTokenEntity::getUser);
+        // The token's user is a lazy proxy that can't be read once this transaction ends, and the
+        // filters read the user's permissions after it has; load the real user here instead.
+        return found.map(t -> t.getUser().getId())
+                .flatMap(userRepository::findById)
+                .map(user -> (BookLoreUserEntity) org.hibernate.Hibernate.unproxy(user));
     }
 
     private String generateToken() {

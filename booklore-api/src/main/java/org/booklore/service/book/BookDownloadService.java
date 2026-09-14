@@ -82,7 +82,7 @@ public class BookDownloadService {
             String contentDisposition = String.format("attachment; filename=\"%s\"; filename*=UTF-8''%s",
                     fallbackFilename, encodedFilename);
             return ResponseEntity.ok()
-                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .contentType(downloadType(primaryFile, file))
                     .contentLength(bookFile.length())
                     .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
                     .header(HttpHeaders.CACHE_CONTROL, "no-cache, no-store, must-revalidate")
@@ -125,7 +125,7 @@ public class BookDownloadService {
             String contentDisposition = String.format("attachment; filename=\"%s\"; filename*=UTF-8''%s",
                     fallbackFilename, encodedFilename);
             return ResponseEntity.ok()
-                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .contentType(downloadType(bookFileEntity, file))
                     .contentLength(bookFile.length())
                     .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
                     .header(HttpHeaders.CACHE_CONTROL, "no-cache, no-store, must-revalidate")
@@ -136,6 +136,27 @@ public class BookDownloadService {
             log.error("Failed to download book file {}: {}", fileId, e.getMessage(), e);
             throw ApiError.FAILED_TO_DOWNLOAD_FILE.createException(fileId);
         }
+    }
+
+    /**
+     * An audiobook file goes out as the audio type it is: players such as iOS's won't play audio they
+     * can't identify, and these URLs have no file extension to go by. Other formats download as a
+     * generic file, as before.
+     */
+    static MediaType downloadType(BookFileEntity bookFile, Path path) {
+        if (bookFile.getBookType() == BookFileType.AUDIOBOOK) {
+            String name = path.getFileName().toString().toLowerCase(java.util.Locale.ROOT);
+            if (name.endsWith(".mp3")) {
+                return MediaType.parseMediaType("audio/mpeg");
+            }
+            if (name.endsWith(".opus")) {
+                return MediaType.parseMediaType("audio/opus");
+            }
+            if (name.endsWith(".m4b") || name.endsWith(".m4a")) {
+                return MediaType.parseMediaType("audio/mp4");
+            }
+        }
+        return MediaType.APPLICATION_OCTET_STREAM;
     }
 
     public void downloadAllBookFiles(Long bookId, HttpServletResponse response) {
