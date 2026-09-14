@@ -13,6 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.booklore.model.dto.BookLoreUser;
 import org.booklore.model.dto.Shelf;
 import org.booklore.model.dto.kobo.*;
+import org.booklore.model.dto.response.kobo.KoboReadingStateResponse;
 import org.booklore.service.ShelfService;
 import org.booklore.service.book.BookDownloadService;
 import org.booklore.service.book.BookService;
@@ -24,9 +25,13 @@ import org.springframework.web.bind.annotation.*;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.JsonNode;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -148,7 +153,10 @@ public class KoboController {
     @GetMapping("/v1/library/{bookId}/state")
     public ResponseEntity<?> getState(@Parameter(description = "Book ID") @PathVariable String bookId) {
         if (StringUtils.isNumeric(bookId)) {
-            koboBookAccessService.assertCanRead(Long.parseLong(bookId));
+            // A book that's gone, or isn't the user's to see, has no state to report.
+            if (!koboBookAccessService.canRead(Long.parseLong(bookId))) {
+                return ResponseEntity.ok(new KoboReadingStateList());
+            }
             return ResponseEntity.ok(new KoboReadingStateList(koboReadingStateService.getReadingState(bookId)));
         } else {
             return koboServerProxy.proxyCurrentRequest(null, false);
@@ -162,15 +170,23 @@ public class KoboController {
             @Parameter(description = "Book ID") @PathVariable String bookId,
             @Parameter(description = "Reading state update body") @RequestBody KoboReadingStateRequest body) {
         if (StringUtils.isNumeric(bookId)) {
-            // The body names the books it updates; each must be one the user can read, not just the one in the path.
-            koboBookAccessService.assertCanRead(Long.parseLong(bookId));
-            if (body.getReadingStates() != null) {
-                body.getReadingStates().stream()
-                        .map(KoboReadingState::getEntitlementId)
-                        .filter(StringUtils::isNumeric)
-                        .forEach(id -> koboBookAccessService.assertCanRead(Long.parseLong(id)));
-            }
-            return ResponseEntity.ok(koboReadingStateService.saveReadingState(body.getReadingStates()));
+            // The body names the books it updates. Progress is saved only for books the user can read;
+            // the rest (deleted, or out of reach) is acknowledged without saving, since refusing it
+            // would fail the Kobo's whole sync and it would keep sending it.
+            Map<Boolean, List<KoboReadingState>> byReadable = Optional.ofNullable(body.getReadingStates()).orElse(List.of())
+                    .stream()
+                    .collect(Collectors.partitioningBy(state -> !StringUtils.isNumeric(state.getEntitlementId())
+                            || koboBookAccessService.canRead(Long.parseLong(state.getEntitlementId()))));
+            KoboReadingStateResponse response = koboReadingStateService.saveReadingState(byReadable.get(true));
+            List<KoboReadingStateResponse.UpdateResult> results = new ArrayList<>(response.getUpdateResults());
+            byReadable.get(false).forEach(state -> results.add(KoboReadingStateResponse.UpdateResult.builder()
+                    .entitlementId(state.getEntitlementId())
+                    .currentBookmarkResult(KoboReadingStateResponse.Result.success())
+                    .statisticsResult(KoboReadingStateResponse.Result.success())
+                    .statusInfoResult(KoboReadingStateResponse.Result.success())
+                    .build()));
+            response.setUpdateResults(results);
+            return ResponseEntity.ok(response);
         } else {
             return koboServerProxy.proxyCurrentRequest(body, false);
         }

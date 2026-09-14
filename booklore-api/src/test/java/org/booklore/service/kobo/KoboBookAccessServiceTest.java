@@ -18,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
@@ -87,8 +88,26 @@ class KoboBookAccessServiceTest {
 
     @Test
     void readingProgressOnlyNeedsAccessToTheBook() {
-        assertThatCode(() -> koboBookAccessService.assertCanRead(BOOK_ID)).doesNotThrowAnyException();
+        when(bookRepository.existsById(BOOK_ID)).thenReturn(true);
+
+        assertThat(koboBookAccessService.canRead(BOOK_ID)).isTrue();
         verify(bookAccessService).assertAccess(BOOK_ID);
-        verifyNoInteractions(shelfRepository, bookRepository);
+        verifyNoInteractions(shelfRepository);
+    }
+
+    @Test
+    void readingProgressForADeletedBookIsSkippedNotRefused() {
+        when(bookRepository.existsById(BOOK_ID)).thenReturn(false);
+
+        assertThat(koboBookAccessService.canRead(BOOK_ID)).isFalse();
+        verifyNoInteractions(bookAccessService);
+    }
+
+    @Test
+    void readingProgressForABookOutOfReachIsSkippedNotRefused() {
+        when(bookRepository.existsById(BOOK_ID)).thenReturn(true);
+        doThrow(ApiError.FORBIDDEN.createException("restricted")).when(bookAccessService).assertAccess(BOOK_ID);
+
+        assertThat(koboBookAccessService.canRead(BOOK_ID)).isFalse();
     }
 }

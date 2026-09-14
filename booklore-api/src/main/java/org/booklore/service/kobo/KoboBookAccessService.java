@@ -2,6 +2,7 @@ package org.booklore.service.kobo;
 
 import lombok.RequiredArgsConstructor;
 import org.booklore.config.security.service.AuthenticationService;
+import org.booklore.exception.APIException;
 import org.booklore.exception.ApiError;
 import org.booklore.model.enums.ShelfType;
 import org.booklore.repository.BookRepository;
@@ -14,7 +15,8 @@ import org.springframework.stereotype.Service;
  * the endpoints themselves would serve any book to anyone with a token. A download or metadata
  * request needs the book on that user's Kobo shelf (the only books a sync offers) and within their
  * libraries and content restrictions, the same check as the web app. Reading progress only needs
- * the second, so a book that has just left the shelf can still report where its reader stopped.
+ * the second, so a book that has just left the shelf can still report where its reader stopped;
+ * progress for a book that fails it is ignored rather than refused (see {@link #canRead}).
  */
 @Service
 @RequiredArgsConstructor
@@ -27,7 +29,7 @@ public class KoboBookAccessService {
 
     /** For downloads and book metadata: on the user's Kobo shelf, and theirs to see. */
     public void assertCanSync(long bookId) {
-        assertCanRead(bookId);
+        bookAccessService.assertAccess(bookId);
         Long userId = authenticationService.getAuthenticatedUser().getId();
         boolean onKoboShelf = shelfRepository.findByUserIdAndName(userId, ShelfType.KOBO.getName())
                 .map(shelf -> bookRepository.existsByIdAndShelves_Id(bookId, shelf.getId()))
@@ -37,8 +39,21 @@ public class KoboBookAccessService {
         }
     }
 
-    /** For reading progress: a book in the user's libraries that their content restrictions allow. */
-    public void assertCanRead(long bookId) {
-        bookAccessService.assertAccess(bookId);
+    /**
+     * For reading progress: whether the book still exists, is in the user's libraries, and their
+     * content restrictions allow it. A Kobo keeps reporting progress for books it holds even after
+     * they're deleted or put out of reach, and fails its whole sync if that's refused, so callers
+     * skip such books instead of returning an error.
+     */
+    public boolean canRead(long bookId) {
+        if (!bookRepository.existsById(bookId)) {
+            return false;
+        }
+        try {
+            bookAccessService.assertAccess(bookId);
+            return true;
+        } catch (APIException e) {
+            return false;
+        }
     }
 }
