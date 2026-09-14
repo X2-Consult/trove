@@ -1,21 +1,46 @@
 # Security Policy
 
-## Supported Versions
+## Supported versions
 
-Use this section to tell people about which versions of your project are
-currently being supported with security updates.
+Trove is maintained by one person, so only the latest release gets security fixes. Fixes land on
+`develop` first and reach a release when `develop` is promoted to `master`.
 
-| Version | Supported          |
-| ------- | ------------------ |
-| 5.1.x   | :white_check_mark: |
-| 5.0.x   | :x:                |
-| 4.0.x   | :white_check_mark: |
-| < 4.0   | :x:                |
+| Version | Supported |
+| --- | --- |
+| Latest release (`master`, and the matching container image) | Yes |
+| Older releases | No: update to the latest |
+| `develop` and `develop-*` images | Fixed as soon as possible, but not a release |
 
-## Reporting a Vulnerability
+To update a native install, run `./deploy.sh` in `/opt/trove` or use **Update now** in the app. For
+Docker, pull the latest image.
 
-Use this section to tell people how to report a vulnerability.
+## Reporting a vulnerability
 
-Tell them where to go, how often they can expect to get an update on a
-reported vulnerability, what to expect if the vulnerability is accepted or
-declined, etc.
+Please **don't open a public issue** for a security problem.
+
+Report it privately through GitHub instead:
+[**Report a vulnerability**](https://github.com/X2-Consult/trove/security/advisories/new)
+(the Security tab, then "Report a vulnerability"). Only the maintainer can see it.
+
+Helpful things to include:
+
+- what an attacker can do, and what they need first (an account, a particular permission, a Kobo or
+  OPDS token, network access);
+- the steps or a request that shows it;
+- the Trove version (shown in the app's sidebar) and whether you run it natively or in Docker.
+
+## What happens next
+
+- You'll get a reply within **7 days**.
+- If it's confirmed, the fix is worked on privately and released as soon as it's ready; you'll be told
+  when, and credited in the advisory unless you'd rather not be.
+- If it isn't treated as a vulnerability, you'll be told why.
+
+## Scope
+
+In scope: the Trove server and web app in this repository, including its Kobo, KOReader, OPDS and
+Komga-compatible APIs, and the install, deploy and update scripts.
+
+Out of scope: problems that need an administrator account to exploit against the same install, a
+setup that ignores the install notes (for example, exposing the database to the internet), and
+issues in BookLore or Grimmory that don't affect Trove (report those to those projects).
