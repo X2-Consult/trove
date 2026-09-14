@@ -258,6 +258,7 @@
     "koboProgressLabel": "Kobo Progress:",
     "finishedOnLabel": "Finished On:",
     "pageCountLabel": "Page Count:",
+    "pageCountEstimatedTooltip": "Estimated from the book's word count",
     "ageRatingLabel": "Age Rating:",
     "contentRatingLabel": "Content Rating:",
     "fileSizeLabel": "File Size:",

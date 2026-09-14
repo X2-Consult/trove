@@ -13,7 +13,8 @@ export enum TaskType {
   BOOKDROP_PERIODIC_SCANNING = 'BOOKDROP_PERIODIC_SCANNING',
   CLEANUP_TEMP_METADATA = 'CLEANUP_TEMP_METADATA',
   REFRESH_METADATA_MANUAL = 'REFRESH_METADATA_MANUAL',
-  CHECK_EBOOK_INTEGRITY = 'CHECK_EBOOK_INTEGRITY'
+  CHECK_EBOOK_INTEGRITY = 'CHECK_EBOOK_INTEGRITY',
+  FILL_MISSING_PAGE_COUNTS = 'FILL_MISSING_PAGE_COUNTS'
 }
 
 export const TASK_TYPE_CONFIG: Record<TaskType, { parallel: boolean; async: boolean; displayOrder: number }> = {
@@ -26,6 +27,7 @@ export const TASK_TYPE_CONFIG: Record<TaskType, { parallel: boolean; async: bool
   [TaskType.REFRESH_METADATA_MANUAL]: {parallel: false, async: false, displayOrder: 7},
   [TaskType.CLEAR_PDF_CACHE]: {parallel: false, async: false, displayOrder: 8},
   [TaskType.CHECK_EBOOK_INTEGRITY]: {parallel: false, async: true, displayOrder: 9},
+  [TaskType.FILL_MISSING_PAGE_COUNTS]: {parallel: false, async: true, displayOrder: 10},
 };
 
 export enum MetadataReplaceMode {

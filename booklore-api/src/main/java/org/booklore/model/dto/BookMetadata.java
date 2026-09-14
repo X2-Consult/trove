@@ -28,6 +28,8 @@ public class BookMetadata {
     private String isbn13;
     private String isbn10;
     private Integer pageCount;
+    /** Worked out from the book's file rather than read from metadata. */
+    private Boolean pageCountEstimated;
     private String language;
     private String narrator;
     private Boolean abridged;

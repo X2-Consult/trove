@@ -60,6 +60,11 @@ public class BookMetadataEntity {
     @Column(name = "page_count")
     private Integer pageCount;
 
+    /** The page count was worked out from the book's file, not read from metadata; see {@link #setPageCount}. */
+    @Column(name = "page_count_estimated", nullable = false)
+    @Builder.Default
+    private Boolean pageCountEstimated = Boolean.FALSE;
+
     @Column(name = "language", length = 10)
     private String language;
 
@@ -499,5 +504,13 @@ public class BookMetadataEntity {
                 && Boolean.TRUE.equals(this.contentRatingLocked)
                 && (this.comicMetadata == null || this.comicMetadata.areAllFieldsLocked())
                 ;
+    }
+
+    /** A different count comes from somewhere real (an edit or a metadata source), so it's no longer an estimate. */
+    public void setPageCount(Integer pageCount) {
+        if (!java.util.Objects.equals(this.pageCount, pageCount)) {
+            this.pageCountEstimated = Boolean.FALSE;
+        }
+        this.pageCount = pageCount;
     }
 }

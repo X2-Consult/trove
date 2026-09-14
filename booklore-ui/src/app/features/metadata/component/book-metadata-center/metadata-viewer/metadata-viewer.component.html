@@ -535,8 +535,9 @@
             <div class="metadata-item">
               <span class="metadata-key">{{ t('pageCountLabel') }}</span>
               @if (book?.metadata!.pageCount) {
-                <span class="metadata-value metadata-link" (click)="goToPageCountRange(book?.metadata!.pageCount!)">
-                  {{ book?.metadata!.pageCount }}
+                <span class="metadata-value metadata-link" (click)="goToPageCountRange(book?.metadata!.pageCount!)"
+                      [pTooltip]="book?.metadata?.pageCountEstimated ? t('pageCountEstimatedTooltip') : undefined">
+                  @if (book?.metadata?.pageCountEstimated) {~}{{ book?.metadata!.pageCount }}
                 </span>
               } @else {
                 <span class="metadata-value">-</span>

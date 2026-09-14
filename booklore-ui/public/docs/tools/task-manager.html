@@ -82,6 +82,20 @@
 <li>Now and then, on a schedule, as a check on your storage</li>
 </ul>
 
+<h3 id="fill-missing-page-counts">Fill Missing Page Counts</h3>
+<p>Gives books with no page count one worked out from their files, for when neither the file nor any metadata source had one. The task card shows how many books are still missing a count. Audiobooks have no pages and are left out.</p>
+<div class="table-wrap"><table><thead><tr><th>Book</th><th>Page count</th></tr></thead><tbody>
+<tr><td><strong>PDF</strong></td><td>Its pages (exact)</td></tr>
+<tr><td><strong>Comic</strong> (CBZ, CBR, CB7)</td><td>Its page images (exact)</td></tr>
+<tr><td><strong>EPUB with print page numbers</strong></td><td>The last printed page number. Many publishers' EPUBs carry the print edition's page numbers.</td></tr>
+<tr><td><strong>Fixed-layout EPUB</strong> (picture books, comics)</td><td>Its pages (exact)</td></tr>
+<tr><td><strong>Any other EPUB, or FB2</strong></td><td>Estimated from the word count</td></tr>
+<tr><td><strong>MOBI or AZW3 only</strong></td><td>Not counted</td></tr>
+</tbody></table></div>
+<p>For the estimate, the task first measures how many words fit on a page in your library: it takes up to 300 of your books that already have a page count and an EPUB or FB2, divides their words by their pages, and uses the median, so an odd edition doesn't skew it. With fewer than 20 such books it uses 300 words a page. The result message says which figure it used and how many books got each kind of count.</p>
+<p>Estimated counts show with a <strong>~</strong> on the book's page. They're never used for measuring, and a real page count from a metadata refresh or your own edit replaces them. Books that already have a page count, or whose page count is locked, are left alone.</p>
+<p><strong>When to use:</strong> after importing books or refreshing metadata, when the Page Count filter or reading statistics have gaps. It can also run on a schedule to catch new books.</p>
+
 <h2 id="running-tasks">Running Tasks</h2>
 <p>Click the <strong>Run</strong> button on any task to execute it immediately. While a task is running:</p>
 <ul>

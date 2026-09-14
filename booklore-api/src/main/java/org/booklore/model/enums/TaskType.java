@@ -66,6 +66,14 @@ public enum TaskType {
             false,
             "Check Book File Integrity",
             "Verifies book files aren't corrupted - EPUB, CBZ, CB7, CBR, PDF, M4B/M4A and MP3 - by checking every entry's checksum or the file's structure, not just its header, and logs any that need to be re-imported."
+    ),
+    FILL_MISSING_PAGE_COUNTS(
+            false,
+            true,
+            true,
+            false,
+            "Fill Missing Page Counts",
+            "Gives books without a page count one from their files: exact for PDFs, comics and EPUBs with print page numbers, otherwise estimated from the word count, measured against your books that have one. Existing and locked counts are kept."
     );
 
     @Getter

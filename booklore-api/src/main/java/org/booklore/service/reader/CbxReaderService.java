@@ -175,6 +175,11 @@ public class CbxReaderService {
         return newMetadata;
     }
 
+    /** The number of page images in a comic archive, read afresh rather than from the reader's cache. */
+    public int countPages(Path cbxPath) throws IOException {
+        return scanArchiveMetadata(cbxPath).imageEntries.size();
+    }
+
     private List<String> getImageEntriesFromArchiveCached(Path cbxPath) throws IOException {
         return getCachedMetadata(cbxPath).imageEntries;
     }

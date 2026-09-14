@@ -172,6 +172,8 @@ export interface BookMetadata {
   hardcoverBookId?: number | null;
   googleId?: string;
   pageCount?: number | null;
+  /** Worked out from the book's word count rather than read from metadata. */
+  pageCountEstimated?: boolean;
   language?: string;
   rating?: number | null;
   reviewCount?: number | null;

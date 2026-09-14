@@ -211,6 +211,48 @@ class BookMetadataUpdaterTest {
     }
 
     @Test
+    void setBookMetadata_replaceMissing_replacesAnEstimatedPageCountWithARealOne() {
+        metadataEntity.setPageCount(310);
+        metadataEntity.setPageCountEstimated(true);
+        BookMetadata newMeta = BookMetadata.builder().title("T").pageCount(288).build();
+        MetadataUpdateContext context = buildContext(newMeta, MetadataReplaceMode.REPLACE_MISSING);
+
+        try (MockedStatic<MetadataChangeDetector> mcd = mockStatic(MetadataChangeDetector.class)) {
+            mockSettingsAndChangeDetector(mcd, true, true);
+
+            updater.setBookMetadata(context);
+
+            assertThat(metadataEntity.getPageCount()).isEqualTo(288);
+            assertThat(metadataEntity.getPageCountEstimated()).isFalse();
+        }
+    }
+
+    @Test
+    void setBookMetadata_replaceMissing_keepsARealPageCount() {
+        metadataEntity.setPageCount(310);
+        BookMetadata newMeta = BookMetadata.builder().title("T").pageCount(288).build();
+        MetadataUpdateContext context = buildContext(newMeta, MetadataReplaceMode.REPLACE_MISSING);
+
+        try (MockedStatic<MetadataChangeDetector> mcd = mockStatic(MetadataChangeDetector.class)) {
+            mockSettingsAndChangeDetector(mcd, true, true);
+
+            updater.setBookMetadata(context);
+
+            assertThat(metadataEntity.getPageCount()).isEqualTo(310);
+        }
+    }
+
+    @Test
+    void savingTheSameEstimatedPageCountKeepsItMarkedEstimated() {
+        metadataEntity.setPageCount(310);
+        metadataEntity.setPageCountEstimated(true);
+
+        metadataEntity.setPageCount(310);
+
+        assertThat(metadataEntity.getPageCountEstimated()).isTrue();
+    }
+
+    @Test
     void setBookMetadata_replaceMissing_fillsWhenExistingIsNull() {
         metadataEntity.setPublisher(null);
         BookMetadata newMeta = BookMetadata.builder().title("T").publisher("New Publisher").build();

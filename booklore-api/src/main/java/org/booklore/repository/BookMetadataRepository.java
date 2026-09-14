@@ -38,4 +38,52 @@ public interface BookMetadataRepository extends JpaRepository<BookMetadataEntity
     List<BookMetadataEntity> findAllByPublisherIgnoreCase(String publisher);
 
     List<BookMetadataEntity> findAllByLanguageIgnoreCase(String language);
+
+    /** Books with a readable file but no page count, whose page count isn't locked. Audiobooks have no pages. */
+    @Query("""
+            SELECT m.bookId FROM BookMetadataEntity m JOIN m.book b
+            WHERE (b.deleted IS NULL OR b.deleted = false)
+              AND (m.pageCount IS NULL OR m.pageCount <= 0)
+              AND (m.pageCountLocked IS NULL OR m.pageCountLocked = false)
+              AND EXISTS (SELECT f.id FROM BookFileEntity f WHERE f.book = b AND f.isBookFormat = true
+                          AND f.bookType <> org.booklore.model.enums.BookFileType.AUDIOBOOK)
+            ORDER BY m.bookId
+            """)
+    List<Long> findBookIdsMissingPageCount();
+
+    @Query("""
+            SELECT COUNT(m) FROM BookMetadataEntity m JOIN m.book b
+            WHERE (b.deleted IS NULL OR b.deleted = false)
+              AND (m.pageCount IS NULL OR m.pageCount <= 0)
+              AND (m.pageCountLocked IS NULL OR m.pageCountLocked = false)
+              AND EXISTS (SELECT f.id FROM BookFileEntity f WHERE f.book = b AND f.isBookFormat = true
+                          AND f.bookType <> org.booklore.model.enums.BookFileType.AUDIOBOOK)
+            """)
+    long countBooksMissingPageCount();
+
+    @Query("SELECT m.pageCount FROM BookMetadataEntity m WHERE m.bookId = :bookId")
+    Integer findPageCount(@Param("bookId") Long bookId);
+
+    /** Books whose page count came from metadata, with an EPUB or FB2 to measure words per page against. */
+    @Query("""
+            SELECT m.bookId FROM BookMetadataEntity m JOIN m.book b
+            WHERE (b.deleted IS NULL OR b.deleted = false)
+              AND m.pageCount > 10
+              AND m.pageCountEstimated = false
+              AND EXISTS (SELECT f.id FROM BookFileEntity f WHERE f.book = b AND f.isBookFormat = true
+                          AND f.bookType IN (org.booklore.model.enums.BookFileType.EPUB, org.booklore.model.enums.BookFileType.FB2))
+            ORDER BY m.bookId
+            """)
+    List<Long> findBookIdsWithKnownPageCountAndText();
+
+    /** Fills in a worked-out page count, unless one has appeared or the field was locked meanwhile. */
+    @Modifying
+    @Transactional
+    @Query("""
+            UPDATE BookMetadataEntity m SET m.pageCount = :pageCount, m.pageCountEstimated = :estimated
+            WHERE m.bookId = :bookId
+              AND (m.pageCount IS NULL OR m.pageCount <= 0)
+              AND (m.pageCountLocked IS NULL OR m.pageCountLocked = false)
+            """)
+    int fillMissingPageCount(@Param("bookId") Long bookId, @Param("pageCount") int pageCount, @Param("estimated") boolean estimated);
 }
