@@ -1,7 +1,7 @@
 import {Component, inject, OnInit} from '@angular/core';
 import {ReleaseNote, VersionService} from '../../../../service/version.service';
 
-import showdown from 'showdown';
+import {marked} from 'marked';
 import DOMPurify from 'dompurify';
 import {DatePipe} from '@angular/common';
 import {DynamicDialogRef} from 'primeng/dynamicdialog';
@@ -37,8 +37,6 @@ export class VersionChangelogDialogComponent implements OnInit {
 
   updateStatus: SelfUpdateStatus | null = null;
   starting = false;
-
-  private converter = new showdown.Converter({tables: true, emoji: true});
 
   ngOnInit(): void {
     this.versionService.getChangelog().subscribe({
@@ -95,7 +93,7 @@ export class VersionChangelogDialogComponent implements OnInit {
   }
 
   markdownToHtml(markdown: string): string {
-    let html = this.converter.makeHtml(markdown);
+    let html = marked.parse(markdown ?? '', {async: false, gfm: true});
     html = html.replace(/<h2\b([^>]*)>/g, '<h3$1>').replace(/<\/h2>/g, '</h3>');
     return DOMPurify.sanitize(html);
   }

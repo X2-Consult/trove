@@ -1,8 +1,8 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '4.1.0'
+    id 'org.springframework.boot' version '4.1.1'
     id 'io.spring.dependency-management' version '1.1.7'
-    id 'org.hibernate.orm' version '7.4.1.Final'
+    id 'org.hibernate.orm' version '7.4.5.Final'
     id 'com.github.ben-manes.versions' version '0.54.0'
     id 'jacoco'
 }
@@ -28,6 +28,8 @@ configurations {
 }
 
 ext['flyway.version'] = '12.9.0'
+// Boot 4.1.1 manages 11.0.24; 11.0.25 fixes GHSA-9xv2-5v5q-p794, GHSA-gcx9-497g-6cp6 and GHSA-h3x4-894j-xpx5.
+ext['tomcat.version'] = '11.0.25'
 
 dependencies {
     // --- Spring Boot ---
@@ -84,7 +86,7 @@ dependencies {
     implementation 'com.github.junrar:junrar:7.6.0'
 
     // --- JSON & Web Scraping ---
-    implementation 'org.jsoup:jsoup:1.22.2'
+    implementation 'org.jsoup:jsoup:1.23.2'
     // Headless Chromium for Amazon/GoodReads pages that bot-check plain HTTP clients.
     // Bundles its Node driver for every platform (~190 MB); Chromium itself downloads on first use.
     implementation 'com.microsoft.playwright:playwright:1.62.0'
