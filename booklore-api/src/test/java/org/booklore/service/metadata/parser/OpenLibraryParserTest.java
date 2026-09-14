@@ -27,6 +27,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 class OpenLibraryParserTest {
@@ -221,6 +222,26 @@ class OpenLibraryParserTest {
         when(response.body()).thenReturn(jsonBody);
         when(response.statusCode()).thenReturn(200);
         when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class))).thenReturn(response);
+    }
+
+    @Test
+    void searchAuthorKeys_putsExactNamesFirst_thenTheMostProlific() throws Exception {
+        mockResponseSequence("""
+                {"docs":[
+                  {"key":"OL8894763A","name":"Tessa S. Bailey","work_count":1},
+                  {"key":"OL10599515A","name":"Tessa Bailey","work_count":0},
+                  {"key":"OL13097747A","name":"Tessa Bailey","work_count":106}
+                ]}
+                """);
+
+        assertEquals(List.of("OL13097747A", "OL10599515A"), parser.searchAuthorKeys("Tessa Bailey", 2));
+    }
+
+    @Test
+    void fetchAuthorByKey_refusesAnythingButAnAuthorKey() {
+        assertNull(parser.fetchAuthorByKey("../works/OL1W"));
+        assertNull(parser.fetchAuthorByKey(null));
+        verifyNoInteractions(httpClient);
     }
 
     private void mockResponseSequence(String... jsonBodies) throws IOException, InterruptedException {

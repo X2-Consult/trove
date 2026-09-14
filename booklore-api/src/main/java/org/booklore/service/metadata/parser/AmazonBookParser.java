@@ -1,9 +1,11 @@
 package org.booklore.service.metadata.parser;
 
+import org.booklore.model.dto.AuthorSearchResult;
 import org.booklore.model.dto.Book;
 import org.booklore.model.dto.BookMetadata;
 import org.booklore.model.dto.BookReview;
 import org.booklore.model.dto.request.FetchMetadataRequest;
+import org.booklore.model.enums.AuthorMetadataSource;
 import org.booklore.model.enums.MetadataProvider;
 import org.booklore.service.appsettings.AppSettingService;
 import org.booklore.util.BookUtils;
@@ -100,6 +102,121 @@ public class AmazonBookParser implements BookParser, DetailedMetadataProvider {
     private record LocaleInfo(String acceptLanguage, Locale locale) {}
     private record TitleInfo(String title, String subtitle) {}
     private record SeriesInfo(String name, Float number, Integer total) {}
+
+    private static final Pattern AUTHOR_LINK_ASIN = Pattern.compile("/(?:e|stores/(?:[^/]+/)?author)/(B[0-9A-Z]{9})(?:[/?]|$)");
+    private static final Pattern AUTHOR_ASIN = Pattern.compile("B[0-9A-Z]{9}");
+
+    /** An Amazon author found in search results: their author ASIN and name. */
+    public record AuthorRef(String asin, String name) {}
+
+    /**
+     * Amazon authors whose name matches, found through a book search for the name: each result's
+     * byline links to its author's page by author ASIN. Empty when Amazon is blocking requests.
+     */
+    public List<AuthorRef> searchAuthors(String name, int limit) {
+        if (name == null || name.isBlank()) {
+            return List.of();
+        }
+        try {
+            String domain = appSettingService.getAppSettings().getMetadataProviderSettings().getAmazon().getDomain();
+            String url = "https://www.amazon." + domain + "/s?k=" + cleanSearchTerm(name).replace(" ", "+") + "&i=stripbooks";
+            Document doc = fetchDocument(url);
+            // A fresh browser session's first request can be sent to the visitor's local store (its
+            // results lack author links) or get a page without results; the retry stays put.
+            boolean otherStore = !doc.location().isEmpty() && !doc.location().startsWith("https://www.amazon." + domain + "/");
+            if (otherStore || doc.selectFirst("[data-component-type=s-search-result], .s-result-item") == null) {
+                log.info("Amazon: author search for '{}' landed on '{}' (title '{}'), trying once more", name, doc.location(), doc.title());
+                doc = fetchDocument(url);
+            }
+            List<AuthorRef> refs = extractAuthorRefs(doc, name, limit);
+            if (refs.isEmpty()) {
+                log.info("Amazon: no author pages for '{}' in the search results (title '{}')", name, doc.title());
+            }
+            return refs;
+        } catch (AmazonAntiScrapingException e) {
+            log.info("Amazon: author search for '{}' blocked: {}", name, e.getMessage());
+            return List.of();
+        } catch (Exception e) {
+            log.warn("Amazon: author search failed for '{}': {}", name, e.getMessage());
+            return List.of();
+        }
+    }
+
+    List<AuthorRef> extractAuthorRefs(Document doc, String name, int limit) {
+        Map<String, AuthorRef> byAsin = new LinkedHashMap<>();
+        for (Element link : doc.select("a[href*=/e/B], a[href*=/author/B]")) {
+            Matcher m = AUTHOR_LINK_ASIN.matcher(link.attr("href"));
+            String linkName = link.text().trim();
+            if (m.find() && !linkName.isEmpty() && authorNamesMatch(linkName, name)) {
+                byAsin.putIfAbsent(m.group(1), new AuthorRef(m.group(1), linkName));
+            }
+            if (byAsin.size() >= limit) {
+                break;
+            }
+        }
+        return new ArrayList<>(byAsin.values());
+    }
+
+    /** An author's Amazon page ("About the author"): name, biography and photo. Null when it can't be read. */
+    public AuthorSearchResult fetchAuthorPage(String authorAsin) {
+        if (authorAsin == null || !AUTHOR_ASIN.matcher(authorAsin).matches()) {
+            return null;
+        }
+        try {
+            String domain = appSettingService.getAppSettings().getMetadataProviderSettings().getAmazon().getDomain();
+            return extractAuthorPage(fetchDocument("https://www.amazon." + domain + "/stores/author/" + authorAsin + "/about"), authorAsin);
+        } catch (AmazonAntiScrapingException e) {
+            log.info("Amazon: author page {} blocked: {}", authorAsin, e.getMessage());
+            return null;
+        } catch (Exception e) {
+            log.warn("Amazon: author page {} failed: {}", authorAsin, e.getMessage());
+            return null;
+        }
+    }
+
+    AuthorSearchResult extractAuthorPage(Document doc, String authorAsin) {
+        Element title = doc.selectFirst("meta[property=og:title]");
+        String name = title != null ? title.attr("content") : null;
+        if (name != null && name.contains(":")) {
+            name = name.substring(0, name.indexOf(':'));
+        }
+        name = name == null || name.isBlank() ? null : name.trim();
+        if (name == null) {
+            return null;
+        }
+        Element widget = doc.selectFirst("[data-widgettype=AuthorBio]");
+        String description = null;
+        if (widget != null) {
+            Element bio = widget.selectFirst("[class*=author-biography]");
+            if (bio != null) {
+                String text = bio.select("p").isEmpty() ? bio.text() : String.join("\n\n", bio.select("p").eachText());
+                description = text.isBlank() ? null : text.trim();
+            }
+        }
+        // Real author photos live in Amazon's author-media store; an author without one gets a
+        // generic silhouette from elsewhere, which isn't worth saving as their picture.
+        String imageUrl = null;
+        Element image = doc.selectFirst("meta[property=og:image]");
+        if (image != null && image.attr("content").contains("author-media")) {
+            imageUrl = image.attr("content");
+        } else if (widget != null && widget.selectFirst("img[src*=author-media]") != null) {
+            imageUrl = widget.selectFirst("img[src*=author-media]").absUrl("src");
+        }
+        return AuthorSearchResult.builder()
+                .source(AuthorMetadataSource.AMAZON)
+                .asin(authorAsin)
+                .name(name)
+                .description(description)
+                .imageUrl(imageUrl == null || imageUrl.isBlank() ? null : imageUrl)
+                .build();
+    }
+
+    /** Same person, allowing for initials, punctuation and a middle name the other side leaves out. */
+    static boolean authorNamesMatch(String a, String b) {
+        String na = a.toLowerCase(Locale.ROOT).replaceAll("[^\\p{L}\\p{N}]+", " ").trim();
+        String nb = b.toLowerCase(Locale.ROOT).replaceAll("[^\\p{L}\\p{N}]+", " ").trim();
+        return !na.isEmpty() && !nb.isEmpty() && (na.equals(nb) || na.contains(nb) || nb.contains(na));
+    }
 
     @Override
     public BookMetadata fetchTopMetadata(Book book, FetchMetadataRequest fetchMetadataRequest) {

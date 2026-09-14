@@ -7,5 +7,7 @@ import org.booklore.model.enums.AuthorMetadataSource;
 public class AuthorMatchRequest {
     private AuthorMetadataSource source;
     private String asin;
+    private String goodreadsId;
+    private String openlibraryId;
     private String region = "us";
 }

@@ -52,7 +52,9 @@ export interface AuthorDetails {
 
 export interface AuthorSearchResult {
   source: string;
-  asin: string;
+  asin?: string;
+  goodreadsId?: string;
+  openlibraryId?: string;
   name: string;
   description?: string;
   imageUrl?: string;
@@ -60,7 +62,9 @@ export interface AuthorSearchResult {
 
 export interface AuthorMatchRequest {
   source: string;
-  asin: string;
+  asin?: string;
+  goodreadsId?: string;
+  openlibraryId?: string;
   region: string;
 }
 

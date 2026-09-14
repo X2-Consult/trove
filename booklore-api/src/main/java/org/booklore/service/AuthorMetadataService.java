@@ -60,6 +60,8 @@ public class AuthorMetadataService {
 
     private record Enrichment(AuthorSearchResult result, String sourceLabel) {}
 
+    private static final long PROVIDER_SEARCH_TIMEOUT_SECONDS = 90;
+
     public List<AuthorSummary> getAllAuthors() {
         BookLoreUser user = authenticationService.getAuthenticatedUser();
         List<Object[]> results;
@@ -86,20 +88,103 @@ public class AuthorMetadataService {
         return summaries;
     }
 
+    /**
+     * Asks every enabled source at once (each is paced separately, so one slow site doesn't hold up
+     * the rest) and lists the results in source order.
+     */
     public List<AuthorSearchResult> searchAuthorMetadata(String name, String region) {
-        return authorParserMap.values().stream()
-                .flatMap(provider -> {
-                    List<AuthorSearchResult> results = provider.searchAuthors(name, region);
-                    return results != null ? results.stream() : java.util.stream.Stream.empty();
-                })
+        List<AuthorParser> providers = enabledProviders();
+        try (var executor = java.util.concurrent.Executors.newVirtualThreadPerTaskExecutor()) {
+            List<java.util.concurrent.Future<List<AuthorSearchResult>>> searches = providers.stream()
+                    .map(provider -> executor.submit(() -> provider.searchAuthors(name, region)))
+                    .toList();
+            List<AuthorSearchResult> results = new java.util.ArrayList<>();
+            for (int i = 0; i < searches.size(); i++) {
+                try {
+                    List<AuthorSearchResult> found = searches.get(i).get(PROVIDER_SEARCH_TIMEOUT_SECONDS, java.util.concurrent.TimeUnit.SECONDS);
+                    if (found != null) {
+                        results.addAll(found);
+                    }
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    break;
+                } catch (Exception e) {
+                    searches.get(i).cancel(true);
+                    log.warn("Author search via {} failed for '{}': {}", providers.get(i).getClass().getSimpleName(), name, e.getMessage());
+                }
+            }
+            return tidySearchResults(results, name);
+        }
+    }
+
+    /**
+     * Makes the combined list worth reading: drops results for other people (sources match loosely,
+     * so "L. M. Montgomery" also brings back "M. L. Longworth"), empty records when the same source
+     * has a better one, and Audible's copy of an Amazon author already listed (they share author ASINs).
+     */
+    static List<AuthorSearchResult> tidySearchResults(List<AuthorSearchResult> results, String query) {
+        List<String> wanted = nameTokens(query);
+        List<AuthorSearchResult> sameSurname = results.stream()
+                .filter(r -> wanted.isEmpty() || sameName(wanted, nameTokens(r.getName())))
+                .toList();
+        java.util.Set<AuthorMetadataSource> sourcesWithData = sameSurname.stream()
+                .filter(r -> isNotBlankStatic(r.getDescription()) || isNotBlankStatic(r.getImageUrl()))
+                .map(AuthorSearchResult::getSource)
+                .collect(java.util.stream.Collectors.toSet());
+        java.util.Set<String> amazonAsins = sameSurname.stream()
+                .filter(r -> r.getSource() == AuthorMetadataSource.AMAZON && r.getAsin() != null)
+                .map(AuthorSearchResult::getAsin)
+                .collect(java.util.stream.Collectors.toSet());
+        return sameSurname.stream()
+                .filter(r -> !sourcesWithData.contains(r.getSource())
+                        || isNotBlankStatic(r.getDescription()) || isNotBlankStatic(r.getImageUrl()))
+                .filter(r -> r.getSource() != AuthorMetadataSource.AUDNEXUS || !amazonAsins.contains(r.getAsin()))
                 .toList();
     }
 
+    /**
+     * Every part of the searched name is in the result's, with an initial standing for any name it
+     * begins: "L. M. Montgomery" is "Lucy Maud Montgomery", "Tessa Bailey" isn't "Anna Bailey".
+     */
+    private static boolean sameName(List<String> wanted, List<String> candidate) {
+        // The surname (the last part that isn't an initial) has to be there in full.
+        String surname = null;
+        for (int i = wanted.size() - 1; i >= 0 && surname == null; i--) {
+            if (wanted.get(i).length() > 1) {
+                surname = wanted.get(i);
+            }
+        }
+        if (surname != null && !candidate.contains(surname)) {
+            return false;
+        }
+        return wanted.stream().allMatch(w -> candidate.stream().anyMatch(c ->
+                c.equals(w)
+                        || (w.length() == 1 && c.startsWith(w))
+                        || (c.length() == 1 && w.startsWith(c))));
+    }
+
+    private static List<String> nameTokens(String name) {
+        if (name == null) {
+            return List.of();
+        }
+        return java.util.Arrays.stream(name.toLowerCase(java.util.Locale.ROOT).split("[^\\p{L}\\p{N}]+"))
+                .filter(t -> !t.isEmpty())
+                .toList();
+    }
+
+    private static boolean isNotBlankStatic(String s) {
+        return s != null && !s.isBlank();
+    }
+
     public List<AuthorSearchResult> lookupAuthorByAsin(String asin, String region) {
-        return authorParserMap.values().stream()
+        return enabledProviders().stream()
                 .map(provider -> provider.getAuthorByAsin(asin, region))
                 .filter(java.util.Objects::nonNull)
                 .toList();
+    }
+
+    private List<AuthorParser> enabledProviders() {
+        return authorParserMap.values().stream().filter(AuthorParser::isEnabled).toList();
     }
 
     public AuthorDetails matchAuthor(Long authorId, AuthorMatchRequest request) {
@@ -111,7 +196,13 @@ public class AuthorMetadataService {
             throw ApiError.GENERIC_BAD_REQUEST.createException("Unsupported author metadata source: " + request.getSource());
         }
 
-        AuthorSearchResult result = provider.getAuthorByAsin(request.getAsin(), request.getRegion());
+        AuthorSearchResult ref = AuthorSearchResult.builder()
+                .source(request.getSource())
+                .asin(request.getAsin())
+                .goodreadsId(request.getGoodreadsId())
+                .openlibraryId(request.getOpenlibraryId())
+                .build();
+        AuthorSearchResult result = provider.getAuthor(ref, request.getRegion());
         if (result == null) {
             throw ApiError.GENERIC_BAD_REQUEST.createException("Failed to fetch author metadata");
         }
@@ -124,33 +215,68 @@ public class AuthorMetadataService {
         }
 
         auditService.log(AuditAction.AUTHOR_METADATA_UPDATED, "Author", authorId,
-                "Matched author '" + author.getName() + "' via " + result.getSource() + " (ASIN: " + result.getAsin() + ")");
+                "Matched author '" + author.getName() + "' via " + result.getSource() + describeIds(result));
 
         return toAuthorDetails(author);
     }
 
+    /**
+     * Tries the enabled sources in order and combines what matching ones have: the first to answer
+     * supplies what it can, and later ones fill the gaps (a photo, a bio, their ids) until the
+     * author has both a bio and a photo. Only results with the author's name are used.
+     */
     public AuthorDetails quickMatchAuthor(Long authorId, String region) {
         AuthorEntity author = authorRepository.findById(authorId)
                 .orElseThrow(() -> ApiError.AUTHOR_NOT_FOUND.createException(authorId));
 
-        for (AuthorParser provider : authorParserMap.values()) {
-            AuthorSearchResult result = provider.quickSearch(author.getName(), region);
-            if (result != null) {
-                applyMetadataResult(author, result);
-                authorRepository.save(author);
-
-                if (!author.isPhotoLocked() && result.getImageUrl() != null && !result.getImageUrl().isBlank()) {
-                    fileService.createAuthorThumbnailFromUrl(author.getId(), result.getImageUrl());
-                }
-
-                auditService.log(AuditAction.AUTHOR_METADATA_UPDATED, "Author", authorId,
-                        "Quick-matched author '" + author.getName() + "' via " + result.getSource() + " (ASIN: " + result.getAsin() + ")");
-
-                return toAuthorDetails(author);
+        AuthorSearchResult combined = null;
+        List<String> sources = new java.util.ArrayList<>();
+        for (AuthorParser provider : enabledProviders()) {
+            AuthorSearchResult result;
+            try {
+                result = provider.quickSearch(author.getName(), region);
+            } catch (Exception e) {
+                log.warn("Quick match via {} failed for '{}': {}", provider.getClass().getSimpleName(), author.getName(), e.getMessage());
+                continue;
+            }
+            // Without a name check the first hit for a common name could be someone else entirely.
+            if (result == null || !namesRoughlyMatch(result.getName(), author.getName()) || !hasUsableData(result)) {
+                continue;
+            }
+            combined = fillGaps(combined, result);
+            sources.add(String.valueOf(result.getSource()));
+            if (isNotBlank(combined.getDescription()) && isNotBlank(combined.getImageUrl())) {
+                break;
             }
         }
+        if (combined == null) {
+            throw ApiError.GENERIC_BAD_REQUEST.createException("No metadata found for author: " + author.getName());
+        }
 
-        throw ApiError.GENERIC_BAD_REQUEST.createException("No metadata found for author: " + author.getName());
+        applyMetadataResult(author, combined);
+        authorRepository.save(author);
+        if (!author.isPhotoLocked() && isNotBlank(combined.getImageUrl())) {
+            fileService.createAuthorThumbnailFromUrl(author.getId(), combined.getImageUrl());
+        }
+        auditService.log(AuditAction.AUTHOR_METADATA_UPDATED, "Author", authorId,
+                "Quick-matched author '" + author.getName() + "' via " + String.join(" + ", sources) + describeIds(combined));
+        return toAuthorDetails(author);
+    }
+
+    /** The earlier result's fields, with anything it lacks taken from the later one. */
+    static AuthorSearchResult fillGaps(AuthorSearchResult earlier, AuthorSearchResult later) {
+        if (earlier == null) {
+            return later;
+        }
+        return AuthorSearchResult.builder()
+                .source(earlier.getSource())
+                .name(earlier.getName())
+                .description(isNotBlankStatic(earlier.getDescription()) ? earlier.getDescription() : later.getDescription())
+                .imageUrl(isNotBlankStatic(earlier.getImageUrl()) ? earlier.getImageUrl() : later.getImageUrl())
+                .asin(earlier.getAsin() != null ? earlier.getAsin() : later.getAsin())
+                .goodreadsId(earlier.getGoodreadsId() != null ? earlier.getGoodreadsId() : later.getGoodreadsId())
+                .openlibraryId(earlier.getOpenlibraryId() != null ? earlier.getOpenlibraryId() : later.getOpenlibraryId())
+                .build();
     }
 
     /**
@@ -399,13 +525,17 @@ public class AuthorMetadataService {
         }
     }
 
+    /** A source that has no bio, or no ASIN, leaves what the author already has. */
     private void applyMetadataResult(AuthorEntity author, AuthorSearchResult result) {
-        if (!author.isDescriptionLocked()) {
-            author.setDescription(result.getDescription());
-        }
-        if (!author.isAsinLocked()) {
-            author.setAsin(result.getAsin());
-        }
+        applyEnrichmentResult(author, result);
+    }
+
+    private static String describeIds(AuthorSearchResult r) {
+        List<String> ids = new java.util.ArrayList<>();
+        if (r.getAsin() != null) ids.add("ASIN " + r.getAsin());
+        if (r.getGoodreadsId() != null) ids.add("Goodreads " + r.getGoodreadsId());
+        if (r.getOpenlibraryId() != null) ids.add("Open Library " + r.getOpenlibraryId());
+        return ids.isEmpty() ? "" : " (" + String.join(", ", ids) + ")";
     }
 
     private void applyEnrichmentResult(AuthorEntity author, AuthorSearchResult result) {

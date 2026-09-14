@@ -34,7 +34,7 @@
 
 <h2 id="author-cards">Author Cards</h2>
 <p>Hover over a card and click the three-dot menu for quick actions:</p>
-<div class="table-wrap"><table><thead><tr><th>Action</th><th>Description</th></tr></thead><tbody><tr><td><strong>View Author</strong></td><td>Open the author detail page</td></tr><tr><td><strong>Edit Author</strong></td><td>Jump straight to the Edit Details tab</td></tr><tr><td><strong>Quick Match</strong></td><td>Automatically match the author against metadata providers (picks the first result)</td></tr><tr><td><strong>Delete Author</strong></td><td>Remove the author after a confirmation prompt</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th>Action</th><th>Description</th></tr></thead><tbody><tr><td><strong>View Author</strong></td><td>Open the author detail page</td></tr><tr><td><strong>Edit Author</strong></td><td>Jump straight to the Edit Details tab</td></tr><tr><td><strong>Quick Match</strong></td><td>Looks the author up on Amazon, Goodreads, Open Library and Audible in that order, using only results with the author's name. The first match supplies what it has, and later sources fill in anything missing, such as a photo when Amazon has only a biography.</td></tr><tr><td><strong>Delete Author</strong></td><td>Remove the author after a confirmation prompt</td></tr></tbody></table></div>
 <aside class="note note-info"><p class="note-title">Permissions</p><p>The <strong>Edit Author</strong>, <strong>Quick Match</strong>, and <strong>Delete Author</strong> options are only available to users with metadata editing or admin permissions.</p></aside>
 
 <h2 id="author-detail-page">Author Detail Page</h2>
@@ -57,10 +57,17 @@
 <aside class="note note-tip"><p class="note-title">Locking Fields</p><p>If you've manually curated an author's bio or photo, lock those fields so they aren't replaced the next time metadata is refreshed or a match is performed.</p></aside>
 
 <h3 id="search-author">Search Author</h3>
-<p>Look up author information from online metadata providers. Enter the author's name, select a region, and click <strong>Search</strong>.</p>
+<p>Look up an author online. Enter their name and click <strong>Search</strong>, or enter their Amazon author ASIN to look them up directly.</p>
 <figure><img alt="Search Author" loading="lazy" src="images/authors/search-author.jpg"/></figure>
-<p>Available regions: <strong>US</strong>, <strong>UK</strong>, <strong>AU</strong>, <strong>CA</strong>, <strong>IN</strong>, <strong>FR</strong>, <strong>DE</strong>, <strong>IT</strong>, <strong>ES</strong>, <strong>JP</strong>.</p>
-<p>Each result shows the author's name, ASIN, and biography preview. Click the <strong>Match</strong> button on a result to pull its data into your local author record. Matching respects field locks, so any locked fields will be left untouched.</p>
+<p>Trove asks these sources at once and lists what each one finds:</p>
+<div class="table-wrap"><table><thead><tr><th>Source</th><th>What it has</th></tr></thead><tbody>
+<tr><td><strong>Amazon</strong></td><td>The biography and photo from the author's Amazon page, and their ASIN. Uses the Amazon site and cookie from <a href="metadata/metadata-settings.html">Metadata settings</a>.</td></tr>
+<tr><td><strong>Goodreads</strong></td><td>The biography and photo from the author's Goodreads page, and their Goodreads ID.</td></tr>
+<tr><td><strong>Open Library</strong></td><td>Biographies and photos for many older and public-domain authors, often with their Amazon and Goodreads IDs too.</td></tr>
+<tr><td><strong>Audible</strong></td><td>Authors and narrators of audiobooks. <strong>Audible region</strong> picks which Audible store to search.</td></tr>
+</tbody></table></div>
+<p>Only sources switched on in Metadata settings are searched. Results are limited to people whose name matches what you typed, so initials work ("L. M. Montgomery" finds "Lucy Maud Montgomery"), and empty duplicate records are left out. A search takes up to half a minute, as each site is asked politely.</p>
+<p>Each result shows which source it's from, its IDs, and a preview of the biography. Click <strong>Match</strong> to copy it into the author's record: the biography, photo and IDs it has. Anything the result doesn't have, such as a biography, is left as it was, and locked fields aren't changed.</p>
 
 <h2 id="bulk-actions">Bulk Actions</h2>
 <p>Select multiple authors using the checkboxes on their cards. You can hold <strong>Shift</strong> and click to select a range, or use <strong>Select All</strong> / <strong>Deselect All</strong> in the footer.</p>

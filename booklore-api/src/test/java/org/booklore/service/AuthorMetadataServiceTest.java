@@ -54,6 +54,11 @@ class AuthorMetadataServiceTest {
                 AuthorMetadataSource.AUDNEXUS, authorParser
         );
         service = new AuthorMetadataService(authorRepository, authorParserMap, auditService, fileService, duckDuckGoCoverService, authenticationService, goodReadsParser, openLibraryParser);
+        // A mock doesn't run the interface's default methods: switch the source on, and let a
+        // picked result be fetched by its ASIN as Audnexus does.
+        lenient().when(authorParser.isEnabled()).thenReturn(true);
+        lenient().when(authorParser.getAuthor(any(), any())).thenAnswer(inv ->
+                authorParser.getAuthorByAsin(((AuthorSearchResult) inv.getArgument(0)).getAsin(), inv.getArgument(1)));
 
         BookLoreUser.UserPermissions adminPermissions = new BookLoreUser.UserPermissions();
         adminPermissions.setAdmin(true);

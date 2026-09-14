@@ -151,6 +151,24 @@
   margin: 0;
 }
 
+.result-heading {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.result-source {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  padding: 0.1rem 0.45rem;
+  border-radius: 999px;
+  border: 1px solid #475569;
+  color: #cbd5e1;
+}
+
 .result-asin {
   font-size: 0.8rem;
   color: #64748b;

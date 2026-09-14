@@ -899,6 +899,84 @@ public class GoodReadsParser implements BookParser, DetailedMetadataProvider {
         }
     }
 
+    /** A Goodreads author found by name: their numeric id and name as Goodreads spells it. */
+    public record AuthorRef(String id, String name) {}
+
+    /**
+     * Goodreads authors whose name matches, found through the search box's autocomplete (JSON, and
+     * not behind the WAF that gates the HTML pages): each result book carries its author's id.
+     */
+    public List<AuthorRef> searchAuthors(String name, int limit) {
+        if (name == null || name.isBlank()) {
+            return List.of();
+        }
+        try {
+            String json = fetchJsonBody(BASE_AUTOCOMPLETE_URL + URLEncoder.encode(name, StandardCharsets.UTF_8));
+            if (json == null || !json.startsWith("[")) {
+                return List.of();
+            }
+            JSONArray items = new JSONArray(json);
+            Map<String, AuthorRef> byId = new LinkedHashMap<>();
+            for (int i = 0; i < items.length() && byId.size() < limit; i++) {
+                JSONObject author = items.getJSONObject(i).optJSONObject("author");
+                if (author == null) {
+                    continue;
+                }
+                String id = author.has("id") ? String.valueOf(author.opt("id")) : null;
+                String authorName = blankToNull(author.optString("name"));
+                if (id != null && id.matches("\\d+") && authorName != null && namesMatch(authorName, name)) {
+                    byId.putIfAbsent(id, new AuthorRef(id, authorName));
+                }
+            }
+            return new ArrayList<>(byId.values());
+        } catch (Exception e) {
+            log.warn("GoodReads: author search failed for '{}': {}", name, e.getMessage());
+            return List.of();
+        }
+    }
+
+    /** An author's Goodreads page: name, full biography and photo. Null when it can't be read. */
+    public AuthorSearchResult fetchAuthorPage(String goodreadsAuthorId) {
+        if (goodreadsAuthorId == null || !goodreadsAuthorId.matches("\\d+")) {
+            return null;
+        }
+        try {
+            return extractAuthorPage(fetchDoc(BASE_AUTHOR_URL_PREFIX + "show/" + goodreadsAuthorId), goodreadsAuthorId);
+        } catch (WafChallengeException e) {
+            log.warn("GoodReads: WAF challenge on author page {}", goodreadsAuthorId);
+            return null;
+        } catch (Exception e) {
+            log.warn("GoodReads: author page {} failed: {}", goodreadsAuthorId, e.getMessage());
+            return null;
+        }
+    }
+
+    AuthorSearchResult extractAuthorPage(Document doc, String goodreadsAuthorId) {
+        Element nameElement = doc.selectFirst("h1.authorName [itemprop=name], h1.authorName");
+        String name = nameElement != null ? blankToNull(nameElement.text().trim()) : null;
+        if (name == null) {
+            return null;
+        }
+        // The full biography sits in a hidden span beside the shortened one that's shown.
+        Element bio = doc.selectFirst(".aboutAuthorInfo span[id=freeText" + "author" + goodreadsAuthorId + "]");
+        if (bio == null) {
+            bio = doc.selectFirst(".aboutAuthorInfo span[id^=freeTextContainer], .aboutAuthorInfo span[id^=freeText]");
+        }
+        String description = bio != null ? blankToNull(stripHtml(bio.html())) : null;
+        Element photo = doc.selectFirst("img[itemprop=image]");
+        String imageUrl = photo != null ? blankToNull(photo.absUrl("src")) : null;
+        if (imageUrl != null && imageUrl.contains("nophoto")) {
+            imageUrl = null;
+        }
+        return AuthorSearchResult.builder()
+                .source(AuthorMetadataSource.GOODREADS)
+                .name(name)
+                .description(description)
+                .imageUrl(imageUrl)
+                .goodreadsId(goodreadsAuthorId)
+                .build();
+    }
+
     AuthorSearchResult extractAuthorFromBookDocument(Document document, String authorNameHint) {
         JSONObject apolloStateJson = getApolloState(document);
         if (apolloStateJson == null) {

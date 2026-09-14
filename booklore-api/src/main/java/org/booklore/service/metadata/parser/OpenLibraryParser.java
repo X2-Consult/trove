@@ -23,6 +23,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -205,36 +206,60 @@ public class OpenLibraryParser implements BookParser {
     }
 
     private String searchAuthorKey(String name) throws IOException, InterruptedException {
+        List<String> keys = searchAuthorKeys(name, 5);
+        return keys.isEmpty() ? null : keys.getFirst();
+    }
+
+    /**
+     * Open Library author keys for a name, best first: exact name matches ahead of the rest, then
+     * by how many works each author has (a name shared by several people is usually the prolific one).
+     */
+    public List<String> searchAuthorKeys(String name, int limit) throws IOException, InterruptedException {
         URI uri = UriComponentsBuilder.fromUriString(BASE_URL + "/search/authors.json")
                 .queryParam("q", name)
-                .queryParam("limit", 5)
+                .queryParam("limit", Math.max(limit, 5))
                 .build()
                 .encode()
                 .toUri();
         HttpResponse<String> response = httpClient.send(
                 HttpRequest.newBuilder().uri(uri).GET().build(), HttpResponse.BodyHandlers.ofString());
         if (response.statusCode() != 200) {
-            return null;
+            return List.of();
         }
         JsonNode docs = objectMapper.readTree(response.body()).path("docs");
         if (!docs.isArray() || docs.isEmpty()) {
-            return null;
+            return List.of();
         }
         String target = normalizeName(name);
-        String firstKey = null;
+        record Candidate(String key, boolean exact, long works) {}
+        List<Candidate> candidates = new ArrayList<>();
         for (JsonNode doc : docs) {
             String key = trimToNull(doc.path("key").asString(""));
-            if (key == null) {
-                continue;
-            }
-            if (firstKey == null) {
-                firstKey = key;
-            }
-            if (normalizeName(doc.path("name").asString("")).equals(target)) {
-                return key;
+            if (key != null) {
+                candidates.add(new Candidate(key, normalizeName(doc.path("name").asString("")).equals(target), doc.path("work_count").asLong(0)));
             }
         }
-        return firstKey;
+        return candidates.stream()
+                .sorted(java.util.Comparator.comparing((Candidate c) -> !c.exact()).thenComparing(c -> -c.works()))
+                .map(Candidate::key)
+                .limit(limit)
+                .toList();
+    }
+
+    /** An author's Open Library record by key (such as {@code OL23919A}), or null. */
+    public AuthorSearchResult fetchAuthorByKey(String authorKey) {
+        if (authorKey == null || !authorKey.matches("OL\\d+A")) {
+            return null;
+        }
+        try {
+            return fetchAuthorRecord(authorKey);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return null;
+        } catch (Exception e) {
+            log.warn("Open Library author record {} failed: {}", authorKey, e.getMessage());
+            return null;
+        }
     }
 
     private AuthorSearchResult fetchAuthorRecord(String authorKey) throws IOException, InterruptedException {

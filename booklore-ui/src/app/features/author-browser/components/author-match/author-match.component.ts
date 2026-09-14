@@ -59,6 +59,26 @@ export class AuthorMatchComponent implements OnInit {
     {label: 'JP', value: 'jp'}
   ];
 
+  private static readonly SOURCE_NAMES: Record<string, string> = {
+    AMAZON: 'Amazon',
+    GOODREADS: 'Goodreads',
+    OPEN_LIBRARY: 'Open Library',
+    AUDNEXUS: 'Audible'
+  };
+
+  sourceName(source: string): string {
+    return AuthorMatchComponent.SOURCE_NAMES[source] ?? source;
+  }
+
+  /** The ids a result carries, such as "ASIN B00BKMOZYO · Goodreads 6953499". */
+  resultIds(result: AuthorSearchResult): string {
+    return [
+      result.asin ? `ASIN ${result.asin}` : null,
+      result.goodreadsId ? `Goodreads ${result.goodreadsId}` : null,
+      result.openlibraryId ? `Open Library ${result.openlibraryId}` : null
+    ].filter(Boolean).join(' · ');
+  }
+
   ngOnInit(): void {
     this.searchQuery = this.authorName;
   }
@@ -98,6 +118,8 @@ export class AuthorMatchComponent implements OnInit {
     const request: AuthorMatchRequest = {
       source: result.source,
       asin: result.asin,
+      goodreadsId: result.goodreadsId,
+      openlibraryId: result.openlibraryId,
       region: this.selectedRegion
     };
 
