@@ -65,24 +65,23 @@ class BookRecommendationIdsListConverterTest {
     }
 
     @Test
-    void convertToEntityAttribute_withNull_shouldReturnEmptySet() {
-        Set<BookRecommendationLite> result = converter.convertToEntityAttribute(null);
-
-        assertNotNull(result);
-        assertTrue(result.isEmpty());
+    void convertToEntityAttribute_withNull_shouldReturnNull() {
+        assertNull(converter.convertToEntityAttribute(null));
     }
 
     @Test
-    void convertToEntityAttribute_withEmptyString_shouldReturnEmptySet() {
-        Set<BookRecommendationLite> result = converter.convertToEntityAttribute("");
-
-        assertNotNull(result);
-        assertTrue(result.isEmpty());
+    void convertToEntityAttribute_withEmptyString_shouldReturnNull() {
+        assertNull(converter.convertToEntityAttribute(""));
     }
 
     @Test
-    void convertToEntityAttribute_withBlankString_shouldReturnEmptySet() {
-        Set<BookRecommendationLite> result = converter.convertToEntityAttribute("   ");
+    void convertToEntityAttribute_withBlankString_shouldReturnNull() {
+        assertNull(converter.convertToEntityAttribute("   "));
+    }
+
+    @Test
+    void convertToEntityAttribute_withEmptyArray_shouldReturnEmptySet() {
+        Set<BookRecommendationLite> result = converter.convertToEntityAttribute("[]");
 
         assertNotNull(result);
         assertTrue(result.isEmpty());

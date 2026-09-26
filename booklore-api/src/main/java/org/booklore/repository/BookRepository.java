@@ -103,7 +103,7 @@ public interface BookRepository extends JpaRepository<BookEntity, Long>, JpaSpec
     List<BookEntity> findAllWithMetadataByFileSizeKbIsNull();
 
     @Query("""
-                SELECT DISTINCT b FROM BookEntity b
+                SELECT b FROM BookEntity b
                 LEFT JOIN FETCH b.metadata m
                 LEFT JOIN FETCH m.authors
                 LEFT JOIN FETCH m.categories

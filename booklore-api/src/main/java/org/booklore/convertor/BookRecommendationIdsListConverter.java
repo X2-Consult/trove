@@ -32,8 +32,10 @@ public class BookRecommendationIdsListConverter implements AttributeConverter<Se
 
     @Override
     public Set<BookRecommendationLite> convertToEntityAttribute(String json) {
+        // Null means "never computed"; "[]" means computed with no matches. Keep them apart so
+        // an empty result isn't recomputed (a full library load) every time the book is opened.
         if (json == null || json.trim().isEmpty()) {
-            return Set.of();
+            return null;
         }
         try {
             return objectMapper.readValue(json, SET_TYPE_REF);

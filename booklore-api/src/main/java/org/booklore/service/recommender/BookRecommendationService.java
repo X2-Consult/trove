@@ -35,8 +35,8 @@ public class BookRecommendationService {
         BookEntity book = bookRepository.findById(bookId).orElseThrow(() -> ApiError.BOOK_NOT_FOUND.createException(bookId));
 
         Set<BookRecommendationLite> recommendations = book.getSimilarBooksJson();
-        if (recommendations == null || recommendations.isEmpty()) {
-            log.info("Recommendations for book ID {} are missing or empty. Computing similarity...", bookId);
+        if (recommendations == null) {
+            log.info("Recommendations for book ID {} haven't been computed yet. Computing similarity...", bookId);
             recommendations = findSimilarBookIds(bookId, limit);
             book.setSimilarBooksJson(recommendations);
             bookRepository.save(book);
