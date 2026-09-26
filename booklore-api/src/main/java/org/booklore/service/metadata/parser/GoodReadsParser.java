@@ -568,14 +568,12 @@ public class GoodReadsParser implements BookParser, DetailedMetadataProvider {
             String searchUrl = BASE_SEARCH_URL + URLEncoder.encode(searchTerm, StandardCharsets.UTF_8);
             log.info("GoodReads: Search URL: {}", searchUrl);
             Document doc = fetchDoc(searchUrl);
-            Element tableList = doc.select("table.tableList").first();
-
-            if (tableList == null) {
-                log.warn("GoodReads: No results table found for search term: {}", searchTerm);
+            Elements previewBooks = searchResultRows(doc);
+            if (previewBooks == null) {
+                log.warn("GoodReads: No results list found for search term: {}", searchTerm);
                 return Collections.emptyList();
             }
 
-            Elements previewBooks = tableList.select("tr[itemtype=http://schema.org/Book]");
             FuzzyScore fuzzyScore = new FuzzyScore(Locale.ENGLISH);
             String queryAuthor = request.getAuthor();
             List<SearchTarget> targets = new ArrayList<>();
@@ -804,9 +802,21 @@ public class GoodReadsParser implements BookParser, DetailedMetadataProvider {
                 : null);
     }
 
-    private Integer extractGoodReadsIdPreview(Element book) {
+    // GoodReads serves two search layouts: the classic results table, and (since 2026-09) a Next.js
+    // page with a "ul.Books" list. The new page renders that list twice (for different screen
+    // sizes), so only the first one is read. Null when neither is present.
+    static Elements searchResultRows(Document doc) {
+        Element bookList = doc.selectFirst("ul.Books");
+        if (bookList != null) {
+            return bookList.children();
+        }
+        Element tableList = doc.selectFirst("table.tableList");
+        return tableList != null ? tableList.select("tr[itemtype=http://schema.org/Book]") : null;
+    }
+
+    Integer extractGoodReadsIdPreview(Element book) {
         try {
-            Element bookTitle = book.select("a.bookTitle").first();
+            Element bookTitle = book.selectFirst("a.bookTitle, [data-testid=book-item-title] a");
             if (bookTitle == null) {
                 return null;
             }
@@ -821,10 +831,10 @@ public class GoodReadsParser implements BookParser, DetailedMetadataProvider {
         return null;
     }
 
-    private List<String> extractAuthorsPreview(Element book) {
+    List<String> extractAuthorsPreview(Element book) {
         List<String> authors = new ArrayList<>();
         try {
-            Elements authorsElement = book.select("a.authorName");
+            Elements authorsElement = book.select("a.authorName, .ContributorLink__name");
             for (Element authorElement : authorsElement) {
                 authors.add(authorElement.text());
             }
@@ -835,17 +845,21 @@ public class GoodReadsParser implements BookParser, DetailedMetadataProvider {
         return authors;
     }
 
-    private String extractTitlePreview(Element book) {
+    String extractTitlePreview(Element book) {
         try {
             Element link = book.select("a[title]").first();
-            return link != null ? link.attr("title") : null;
+            if (link != null) {
+                return link.attr("title");
+            }
+            Element titleLink = book.selectFirst("[data-testid=book-item-title] a");
+            return titleLink != null ? titleLink.text() : null;
         } catch (Exception e) {
             log.warn("Error extracting title: {}", e.getMessage());
             return null;
         }
     }
 
-    private String extractThumbnailPreview(Element book) {
+    String extractThumbnailPreview(Element book) {
         try {
             Element img = book.selectFirst("img");
             if (img != null) {
@@ -1243,11 +1257,11 @@ public class GoodReadsParser implements BookParser, DetailedMetadataProvider {
 
     static boolean isWafChallenge(int statusCode, String html) {
         if (statusCode == 202) return true;
-        // Real book pages served to a client holding a WAF token embed AWS WAF's challenge.js
-        // (it refreshes the token), so a page carrying the Next.js payload is content, not a gate.
+        // Real pages load AWS WAF's challenge.js SDK too (it refreshes the token), and the newer
+        // search page has no __NEXT_DATA__, so challenge.js alone doesn't mark a gate: only the
+        // interstitial's own markers do.
         if (html != null && html.contains("__NEXT_DATA__")) return false;
         return html != null && (html.contains("awsWafCookieDomainList")
                 || html.contains("AwsWafIntegration")
-                || html.contains("id=\"challenge-container\"")
-                || html.contains("challenge.js"));
+                || html.contains("id=\"challenge-container\""));
     }}

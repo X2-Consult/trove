@@ -167,4 +167,36 @@ class GoodReadsParserBookTest {
         assertThat(parser.mapAutocompleteItem(autocompleteItem(null, false), "54493401").getDescription())
                 .startsWith("Ryland Grace is the sole survivor");
     }
+
+    @Test
+    void readsTheNextJsSearchResultsListOnce() {
+        Document doc = Jsoup.parse(GoodReadsWafChallengeTest.SEARCH_PAGE_WITH_WAF_SDK, "https://www.goodreads.com/search?q=Hot+Passion");
+
+        var rows = GoodReadsParser.searchResultRows(doc);
+
+        assertThat(rows).hasSize(2);
+        assertThat(parser.extractGoodReadsIdPreview(rows.get(0))).isEqualTo(57970038);
+        assertThat(parser.extractTitlePreview(rows.get(0))).isEqualTo("Hot Passion in Another World");
+        assertThat(parser.extractAuthorsPreview(rows.get(0))).containsExactly("Reed James");
+        assertThat(parser.extractThumbnailPreview(rows.get(0))).isEqualTo("https://images.example/57970038.jpg");
+        assertThat(parser.extractGoodReadsIdPreview(rows.get(1))).isEqualTo(250996870);
+    }
+
+    @Test
+    void readsTheClassicSearchResultsTable() {
+        Document doc = Jsoup.parse("""
+                <table class="tableList"><tr itemtype="http://schema.org/Book">
+                  <td><a title="Dune" href="/book/show/44767458-dune"><img src="https://images.example/dune.jpg"></a></td>
+                  <td><a class="bookTitle" href="/book/show/44767458-dune?from_search=true">Dune</a>
+                      <a class="authorName" href="/author/show/58.Frank_Herbert"><span>Frank Herbert</span></a></td>
+                </tr></table>
+                """);
+
+        var rows = GoodReadsParser.searchResultRows(doc);
+
+        assertThat(rows).hasSize(1);
+        assertThat(parser.extractGoodReadsIdPreview(rows.get(0))).isEqualTo(44767458);
+        assertThat(parser.extractTitlePreview(rows.get(0))).isEqualTo("Dune");
+        assertThat(parser.extractAuthorsPreview(rows.get(0))).containsExactly("Frank Herbert");
+    }
 }
