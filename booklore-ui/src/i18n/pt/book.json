@@ -454,7 +454,7 @@
             "fileTooLargeError": "Arquivo excede o tamanho máximo de {{ maxSize }}",
             "uploadFailedUnknown": "Falha no envio por erro desconhecido."
         },
-        "supplementaryAllFormats": ""
+        "supplementaryFormats": ""
     },
     "filter": {
         "title": "Filtros",

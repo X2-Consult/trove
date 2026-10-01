@@ -455,7 +455,7 @@
             "fileTooLargeError": "文件超过最大大小 {{ maxSize }}",
             "uploadFailedUnknown": "由于未知错误，上传失败。"
         },
-        "supplementaryAllFormats": ""
+        "supplementaryFormats": ""
     },
     "filter": {
         "title": "筛选条件",

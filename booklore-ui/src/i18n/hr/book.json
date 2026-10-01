@@ -461,7 +461,7 @@
             "fileTooLargeError": "Datoteka premašuje maksimalnu veličinu od {{ maxSize }}",
             "uploadFailedUnknown": "Učitavanje nije uspjelo zbog nepoznate pogreške."
         },
-        "supplementaryAllFormats": "Za dodatne datoteke podržani su svi formati datoteka."
+        "supplementaryFormats": "Podržani formati za dodatne datoteke: {{ formats }}"
     },
     "filter": {
         "title": "Filteri",

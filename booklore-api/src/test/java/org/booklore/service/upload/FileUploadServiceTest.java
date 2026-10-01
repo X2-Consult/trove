@@ -25,6 +25,8 @@ import org.booklore.service.monitoring.MonitoringRegistrationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.jupiter.api.io.TempDir;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -298,6 +300,49 @@ class FileUploadServiceTest {
 
             assertThatExceptionOfType(IllegalArgumentException.class)
                     .isThrownBy(() -> service.uploadAdditionalFile(bookId, file, true, BookFileType.PDF, null));
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"shell.jsp", "shell.php", "run.sh", "page.html", "image.svg", "README"})
+    void uploadAdditionalFile_supplementary_rejects_disallowed_extension(String fileName) {
+        MockMultipartFile file = new MockMultipartFile("file", fileName, "application/octet-stream", "payload".getBytes());
+
+        assertThatExceptionOfType(APIException.class)
+                .isThrownBy(() -> service.uploadAdditionalFile(7L, file, false, null, null));
+
+        verifyNoInteractions(bookRepository, bookAdditionalFileRepository);
+    }
+
+    @Test
+    void uploadAdditionalFile_supplementary_accepts_allowed_extension_any_case() {
+        long bookId = 8L;
+        MockMultipartFile file = new MockMultipartFile("file", "Map.JPG", "image/jpeg", "payload".getBytes());
+
+        LibraryPathEntity libPath = new LibraryPathEntity();
+        libPath.setId(3L);
+        libPath.setPath(tempDir.toString());
+        BookEntity book = new BookEntity();
+        book.setId(bookId);
+        book.setLibraryPath(libPath);
+
+        BookFileEntity primaryFile = new BookFileEntity();
+        primaryFile.setBook(book);
+        primaryFile.setFileName("primary.epub");
+        primaryFile.setFileSubPath(".");
+        primaryFile.setBookType(BookFileType.EPUB);
+        book.setBookFiles(new ArrayList<>(List.of(primaryFile)));
+
+        when(bookRepository.findById(bookId)).thenReturn(Optional.of(book));
+        when(bookAdditionalFileRepository.save(any(BookFileEntity.class))).thenAnswer(inv -> inv.getArgument(0));
+        BookFile dto = mock(BookFile.class);
+        when(additionalFileMapper.toAdditionalFile(any(BookFileEntity.class))).thenReturn(dto);
+
+        try (MockedStatic<FileFingerprint> fp = mockStatic(FileFingerprint.class)) {
+            fp.when(() -> FileFingerprint.generateHash(any())).thenReturn("hash-sup");
+
+            assertThat(service.uploadAdditionalFile(bookId, file, false, null, null)).isEqualTo(dto);
+            assertThat(tempDir.resolve("Map.JPG")).exists();
         }
     }
 

@@ -50,6 +50,15 @@ export class AdditionalFileUploaderComponent implements OnInit, OnDestroy {
   isUploading = false;
   readonly AdditionalFileType = AdditionalFileType;
   private static readonly BOOK_FORMAT_ACCEPT = '.pdf,.epub,.cbz,.cbr,.cb7,.fb2,.mobi,.azw,.azw3,.m4b,.m4a,.mp3,.opus';
+  // Mirrors FileUploadService.SUPPLEMENTARY_EXTENSIONS on the server, which enforces it.
+  private static readonly SUPPLEMENTARY_EXTENSIONS = [
+    'pdf', 'epub', 'mobi', 'azw', 'azw3', 'fb2', 'djvu', 'chm', 'lit', 'pdb', 'prc', 'kfx', 'cbz', 'cbr', 'cb7',
+    'txt', 'md', 'rtf', 'doc', 'docx', 'odt', 'xls', 'xlsx', 'ods', 'ppt', 'pptx', 'odp', 'csv', 'json', 'nfo', 'opf',
+    'jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'tif', 'tiff', 'avif', 'heic',
+    'mp3', 'm4a', 'm4b', 'opus', 'flac', 'ogg', 'wav', 'aac', 'cue', 'lrc', 'srt', 'vtt', 'mp4', 'm4v', 'mkv', 'webm',
+    'zip', '7z', 'rar', 'tar', 'gz',
+  ];
+  readonly supplementaryFormatsDisplay = AdditionalFileUploaderComponent.SUPPLEMENTARY_EXTENSIONS.map(e => '.' + e).join(', ');
   maxFileSizeBytes?: number;
   maxFileSizeDisplay: string = '100 MB';
 
@@ -102,7 +111,7 @@ export class AdditionalFileUploaderComponent implements OnInit, OnDestroy {
   get acceptedFormats(): string {
     return this.fileType === AdditionalFileType.ALTERNATIVE_FORMAT
       ? AdditionalFileUploaderComponent.BOOK_FORMAT_ACCEPT
-      : '';
+      : AdditionalFileUploaderComponent.SUPPLEMENTARY_EXTENSIONS.map(e => '.' + e).join(',');
   }
 
   hasPendingFiles(): boolean {

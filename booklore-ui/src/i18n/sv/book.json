@@ -462,7 +462,7 @@
             "fileTooLargeError": "Filen överskrider maximal storlek på {{ maxSize }}",
             "uploadFailedUnknown": "Uppladdning misslyckades på grund av okänt fel."
         },
-        "supplementaryAllFormats": "Alla filformat stöds för kompletterande filer."
+        "supplementaryFormats": "Format som stöds för kompletterande filer: {{ formats }}"
     },
     "filter": {
         "title": "Filter",

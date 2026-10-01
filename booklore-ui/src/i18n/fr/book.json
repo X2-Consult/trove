@@ -457,7 +457,7 @@
             "fileTooLargeError": "Le fichier dépasse la taille maximale de {{ maxSize }}",
             "uploadFailedUnknown": "Échec du téléversement en raison d'une erreur inconnue."
         },
-        "supplementaryAllFormats": ""
+        "supplementaryFormats": ""
     },
     "filter": {
         "title": "Filtres",

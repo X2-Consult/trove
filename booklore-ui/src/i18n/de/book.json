@@ -462,7 +462,7 @@
             "fileTooLargeError": "Datei überschreitet die maximale Größe von {{ maxSize }}",
             "uploadFailedUnknown": "Hochladen aufgrund eines unbekannten Fehlers fehlgeschlagen."
         },
-        "supplementaryAllFormats": "Für Zusatzdateien werden alle Dateiformate unterstützt."
+        "supplementaryFormats": "Unterstützte Formate für Zusatzdateien: {{ formats }}"
     },
     "filter": {
         "title": "Filter",

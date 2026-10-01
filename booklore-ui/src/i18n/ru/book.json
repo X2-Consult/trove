@@ -454,7 +454,7 @@
             "fileTooLargeError": "Файл превышает максимальный размер {{ maxSize }}",
             "uploadFailedUnknown": "Загрузка не удалась из-за неизвестной ошибки."
         },
-        "supplementaryAllFormats": ""
+        "supplementaryFormats": ""
     },
     "filter": {
         "title": "Фильтры",

@@ -454,7 +454,7 @@
             "fileTooLargeError": "",
             "uploadFailedUnknown": ""
         },
-        "supplementaryAllFormats": ""
+        "supplementaryFormats": ""
     },
     "filter": {
         "title": "",

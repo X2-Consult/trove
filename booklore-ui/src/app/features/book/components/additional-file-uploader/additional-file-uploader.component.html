@@ -128,7 +128,7 @@
             <span [innerHTML]="t('supportedFormats')"></span>
             <br/>
           } @else {
-            <span>{{ t('supplementaryAllFormats') }}</span>
+            <span>{{ t('supplementaryFormats', { formats: supplementaryFormatsDisplay }) }}</span>
             <br/>
           }
           {{ t('maxFileSize', { size: maxFileSizeDisplay }) }}

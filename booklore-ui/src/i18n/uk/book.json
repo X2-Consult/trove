@@ -453,7 +453,7 @@
         "statusFailed": "Не вдалося",
         "dragDropText": "Перетягніть файл сюди, щоб завантажити.",
         "supportedFormats": "Підтримувані формати: <strong>.pdf</strong>, <strong>.epub</strong>, <strong>.cbz</strong>, <strong>.cbr</strong>, <strong>.cb7</strong>, <strong>.fb2</strong>, <strong>.mobi</strong>, <strong>.azw3</strong>, <strong>.m4b</strong>, <strong>.mp3</strong>",
-        "supplementaryAllFormats": "Для додаткових файлів підтримуються всі формати.",
+        "supplementaryFormats": "Підтримувані формати додаткових файлів: {{ formats }}",
         "maxFileSize": "Максимальний розмір файлу: {{ size }} на файл",
         "uploadForBook": "Завантажити додатковий файл для <strong>{{ title }}</strong>.",
         "thisBook": "цієї книги",

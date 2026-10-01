@@ -454,7 +454,7 @@
             "fileTooLargeError": "ファイルが最大サイズ{{ maxSize }}を超えています",
             "uploadFailedUnknown": "不明なエラーによりアップロードに失敗しました。"
         },
-        "supplementaryAllFormats": ""
+        "supplementaryFormats": ""
     },
     "filter": {
         "title": "フィルター",

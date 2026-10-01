@@ -462,7 +462,7 @@
             "fileTooLargeError": "Datoteka presega največjo dovoljeno velikost {{ maxSize }}",
             "uploadFailedUnknown": "Nalaganje ni uspelo zaradi neznane napake."
         },
-        "supplementaryAllFormats": "Za dodatne datoteke so podprte vse oblike zapisa datotek."
+        "supplementaryFormats": "Podprte oblike zapisa za dodatne datoteke: {{ formats }}"
     },
     "filter": {
         "title": "Filtri",
