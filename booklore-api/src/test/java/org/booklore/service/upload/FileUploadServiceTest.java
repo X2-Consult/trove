@@ -304,7 +304,7 @@ class FileUploadServiceTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"shell.jsp", "shell.php", "run.sh", "page.html", "image.svg", "README"})
+    @ValueSource(strings = {"shell.jsp", "shell.php", "run.sh", "page.html", "image.svg", "notes.json", "help.chm", "extras.zip", "README"})
     void uploadAdditionalFile_supplementary_rejects_disallowed_extension(String fileName) {
         MockMultipartFile file = new MockMultipartFile("file", fileName, "application/octet-stream", "payload".getBytes());
 

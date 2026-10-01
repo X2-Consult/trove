@@ -34,9 +34,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.booklore.model.enums.AuditAction;
 import org.booklore.service.audit.AuditService;
 import org.booklore.util.SafeFiles;
@@ -53,24 +56,13 @@ public class FileUploadService {
     private static final long BYTES_TO_KB_DIVISOR = 1024L;
     private static final long MB_TO_BYTES_MULTIPLIER = 1024L * 1024L;
 
-    // Supplementary files land next to the book in the library, so only accept content people
-    // actually keep with books. Scripts, server pages and browser-renderable markup (html, svg)
-    // are left out: harmless while downloads are forced to attachments, but a webshell waiting to
-    // happen if anything ever serves a library folder directly.
-    static final Set<String> SUPPLEMENTARY_EXTENSIONS = Set.of(
-            // books and comics
-            "pdf", "epub", "mobi", "azw", "azw3", "fb2", "djvu", "chm", "lit", "pdb", "prc", "kfx",
-            "cbz", "cbr", "cb7",
-            // documents and notes
-            "txt", "md", "rtf", "doc", "docx", "odt", "xls", "xlsx", "ods", "ppt", "pptx", "odp",
-            "csv", "json", "nfo", "opf",
-            // images
-            "jpg", "jpeg", "png", "gif", "webp", "bmp", "tif", "tiff", "avif", "heic",
-            // audio, chapters, subtitles, video
-            "mp3", "m4a", "m4b", "opus", "flac", "ogg", "wav", "aac", "cue", "lrc", "srt", "vtt",
-            "mp4", "m4v", "mkv", "webm",
-            // archives
-            "zip", "7z", "rar", "tar", "gz");
+    // Supplementary files land next to the book in the library, so only accept what an ebook,
+    // comic or audiobook library needs: the book formats themselves plus artwork (covers, maps).
+    // Anything else - scripts, server pages, office documents, archives - has no business here.
+    static final Set<String> SUPPLEMENTARY_EXTENSIONS = Stream.concat(
+                    Arrays.stream(BookFileType.values()).flatMap(type -> type.getExtensions().stream()),
+                    Stream.of("jpg", "jpeg", "png", "webp"))
+            .collect(Collectors.toUnmodifiableSet());
 
     private final LibraryRepository libraryRepository;
     private final BookRepository bookRepository;
