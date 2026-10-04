@@ -3,6 +3,8 @@ package org.booklore.service.opds;
 import jakarta.servlet.http.HttpServletRequest;
 import org.booklore.config.security.service.AuthenticationService;
 import org.booklore.config.security.userdetails.OpdsUserDetails;
+import org.booklore.repository.BookOpdsRepository;
+import org.booklore.model.entity.AuthorEntity;
 import org.booklore.model.dto.*;
 import org.booklore.model.dto.progress.EpubProgress;
 import org.booklore.model.dto.progress.PdfProgress;
@@ -703,5 +705,50 @@ class OpdsFeedServiceTest {
 
         String mimeType = (String) method.invoke(opdsFeedService, bookFile);
         assertThat(mimeType).isEqualTo("application/vnd.comicbook-rar");
+    }
+
+    @Test
+    void generateAuthorsNavigation_pagesTheListWithNavigationLinks() {
+        mockAuthenticatedUser();
+        List<AuthorEntity> authors = new java.util.ArrayList<>();
+        for (int i = 1; i <= 120; i++) {
+            authors.add(AuthorEntity.builder().id((long) i).name(String.format("Author %03d", i)).build());
+        }
+        when(opdsBookService.getDistinctAuthors(TEST_USER_ID)).thenReturn(authors);
+        when(request.getParameter("page")).thenReturn("2");
+        when(request.getParameter("size")).thenReturn(null);
+        when(request.getRequestURI()).thenReturn("/api/v1/opds/authors");
+        when(request.getQueryString()).thenReturn("page=2");
+
+        String xml = opdsFeedService.generateAuthorsNavigation(request);
+
+        assertThat(xml).contains("<opensearch:totalResults>120</opensearch:totalResults>")
+                .contains("<opensearch:startIndex>51</opensearch:startIndex>")
+                .contains("Author 051").contains("Author 100")
+                .doesNotContain("Author 050").doesNotContain("Author 101")
+                .contains("rel=\"next\" href=\"/api/v1/opds/authors?page=3&amp;size=50\" type=\"application/atom+xml;profile=opds-catalog;kind=navigation\"")
+                .contains("rel=\"previous\" href=\"/api/v1/opds/authors?page=1&amp;size=50\"");
+        verify(authorMetadataService, times(50)).hasAuthorThumbnail(anyLong());
+    }
+
+    @Test
+    void generateSeriesNavigation_lastPageHasNoNextLink() {
+        mockAuthenticatedUser();
+        List<BookOpdsRepository.SeriesCoverProjection> series = new java.util.ArrayList<>();
+        for (int i = 1; i <= 60; i++) {
+            BookOpdsRepository.SeriesCoverProjection p = mock(BookOpdsRepository.SeriesCoverProjection.class);
+            when(p.getSeriesName()).thenReturn("Series " + i);
+            series.add(p);
+        }
+        when(opdsBookService.getDistinctSeries(TEST_USER_ID)).thenReturn(series);
+        when(request.getParameter("page")).thenReturn("2");
+        when(request.getParameter("size")).thenReturn(null);
+        when(request.getRequestURI()).thenReturn("/api/v1/opds/series");
+        when(request.getQueryString()).thenReturn(null);
+
+        String xml = opdsFeedService.generateSeriesNavigation(request);
+
+        assertThat(xml).contains("Series 51").contains("Series 60").doesNotContain(">Series 50<")
+                .doesNotContain("rel=\"next\"").contains("rel=\"last\"");
     }
 }

@@ -235,19 +235,26 @@ public class OpdsFeedService {
     public String generateAuthorsNavigation(HttpServletRequest request) {
         Long userId = getUserId();
         List<AuthorEntity> authors = opdsBookService.getDistinctAuthors(userId);
+        int page = Math.max(1, parseLongParam(request, "page", 1L).intValue());
+        int size = Math.min(parseLongParam(request, "size", (long) DEFAULT_PAGE_SIZE).intValue(), MAX_PAGE_SIZE);
 
         var feed = new StringBuilder("""
                 <?xml version="1.0" encoding="UTF-8"?>
-                <feed xmlns="http://www.w3.org/2005/Atom" xmlns:opds="http://opds-spec.org/2010/catalog">
+                <feed xmlns="http://www.w3.org/2005/Atom" xmlns:opds="http://opds-spec.org/2010/catalog" xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/">
                   <id>urn:booklore:navigation:authors</id>
                   <title>Authors</title>
                   <updated>%s</updated>
-                  <link rel="self" href="/api/v1/opds/authors" type="application/atom+xml;profile=opds-catalog;kind=navigation"/>
+                  <opensearch:totalResults>%d</opensearch:totalResults>
+                  <opensearch:startIndex>%d</opensearch:startIndex>
+                  <opensearch:itemsPerPage>%d</opensearch:itemsPerPage>
+                  <link rel="self" href="%s" type="application/atom+xml;profile=opds-catalog;kind=navigation"/>
                   <link rel="start" href="/api/v1/opds" type="application/atom+xml;profile=opds-catalog;kind=navigation"/>
                   <link rel="search" type="application/opensearchdescription+xml" title="Search" href="/api/v1/opds/search.opds"/>
-                """.formatted(now()));
+                """.formatted(now(), authors.size(), ((page - 1) * size) + 1, size, escapeXml(buildCurrentUrl(request, page, size))));
 
-        for (AuthorEntity author : authors) {
+        appendPaginationLinks(feed, request, page, totalPages(authors.size(), size), size, "navigation");
+
+        for (AuthorEntity author : pageOf(authors, page, size)) {
             String authorName = author.getName();
             feed.append("""
                       <entry>
@@ -280,19 +287,26 @@ public class OpdsFeedService {
     public String generateSeriesNavigation(HttpServletRequest request) {
         Long userId = getUserId();
         List<BookOpdsRepository.SeriesCoverProjection> seriesList = opdsBookService.getDistinctSeries(userId);
+        int page = Math.max(1, parseLongParam(request, "page", 1L).intValue());
+        int size = Math.min(parseLongParam(request, "size", (long) DEFAULT_PAGE_SIZE).intValue(), MAX_PAGE_SIZE);
 
         var feed = new StringBuilder("""
                 <?xml version="1.0" encoding="UTF-8"?>
-                <feed xmlns="http://www.w3.org/2005/Atom" xmlns:opds="http://opds-spec.org/2010/catalog">
+                <feed xmlns="http://www.w3.org/2005/Atom" xmlns:opds="http://opds-spec.org/2010/catalog" xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/">
                   <id>urn:booklore:navigation:series</id>
                   <title>Series</title>
                   <updated>%s</updated>
-                  <link rel="self" href="/api/v1/opds/series" type="application/atom+xml;profile=opds-catalog;kind=navigation"/>
+                  <opensearch:totalResults>%d</opensearch:totalResults>
+                  <opensearch:startIndex>%d</opensearch:startIndex>
+                  <opensearch:itemsPerPage>%d</opensearch:itemsPerPage>
+                  <link rel="self" href="%s" type="application/atom+xml;profile=opds-catalog;kind=navigation"/>
                   <link rel="start" href="/api/v1/opds" type="application/atom+xml;profile=opds-catalog;kind=navigation"/>
                   <link rel="search" type="application/opensearchdescription+xml" title="Search" href="/api/v1/opds/search.opds"/>
-                """.formatted(now()));
+                """.formatted(now(), seriesList.size(), ((page - 1) * size) + 1, size, escapeXml(buildCurrentUrl(request, page, size))));
 
-        for (BookOpdsRepository.SeriesCoverProjection series : seriesList) {
+        appendPaginationLinks(feed, request, page, totalPages(seriesList.size(), size), size, "navigation");
+
+        for (BookOpdsRepository.SeriesCoverProjection series : pageOf(seriesList, page, size)) {
             String seriesName = series.getSeriesName();
             feed.append("""
                       <entry>
@@ -482,25 +496,42 @@ public class OpdsFeedService {
     }
 
     private void appendPaginationLinks(StringBuilder feed, HttpServletRequest request, int currentPage, int totalPages, int size) {
+        appendPaginationLinks(feed, request, currentPage, totalPages, size, "acquisition");
+    }
+
+    /**
+     * The Authors and Series lists come back whole (they carry the photo/cover each entry links to)
+     * and are paged here, so OPDS apps get them a page at a time with first/previous/next/last links.
+     */
+    private static <T> List<T> pageOf(List<T> items, int page, int size) {
+        int from = Math.min((page - 1) * size, items.size());
+        return items.subList(from, Math.min(from + size, items.size()));
+    }
+
+    private static int totalPages(int totalItems, int size) {
+        return (int) Math.ceil((double) totalItems / size);
+    }
+
+    private void appendPaginationLinks(StringBuilder feed, HttpServletRequest request, int currentPage, int totalPages, int size, String kind) {
         if (totalPages > 0) {
             feed.append("  <link rel=\"first\" href=\"")
                     .append(escapeXml(buildPaginationUrl(request, 1, size)))
-                    .append("\" type=\"application/atom+xml;profile=opds-catalog;kind=acquisition\"/>\n");
+                    .append("\" type=\"application/atom+xml;profile=opds-catalog;kind=" + kind + "\"/>\n");
         }
         if (currentPage > 1) {
             feed.append("  <link rel=\"previous\" href=\"")
                     .append(escapeXml(buildPaginationUrl(request, currentPage - 1, size)))
-                    .append("\" type=\"application/atom+xml;profile=opds-catalog;kind=acquisition\"/>\n");
+                    .append("\" type=\"application/atom+xml;profile=opds-catalog;kind=" + kind + "\"/>\n");
         }
         if (currentPage < totalPages) {
             feed.append("  <link rel=\"next\" href=\"")
                     .append(escapeXml(buildPaginationUrl(request, currentPage + 1, size)))
-                    .append("\" type=\"application/atom+xml;profile=opds-catalog;kind=acquisition\"/>\n");
+                    .append("\" type=\"application/atom+xml;profile=opds-catalog;kind=" + kind + "\"/>\n");
         }
         if (totalPages > 0) {
             feed.append("  <link rel=\"last\" href=\"")
                     .append(escapeXml(buildPaginationUrl(request, totalPages, size)))
-                    .append("\" type=\"application/atom+xml;profile=opds-catalog;kind=acquisition\"/>\n");
+                    .append("\" type=\"application/atom+xml;profile=opds-catalog;kind=" + kind + "\"/>\n");
         }
     }
 
