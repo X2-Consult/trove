@@ -6,6 +6,7 @@ import {MessageService, PrimeTemplate} from 'primeng/api';
 import {Select} from 'primeng/select';
 import {FormsModule} from '@angular/forms';
 import {
+  CronPreview,
   LibraryRescanOptions,
   MetadataReplaceMode,
   TASK_TYPE_CONFIG,
@@ -19,7 +20,7 @@ import {
   TaskType
 } from './task.service';
 import {MetadataRefreshRequest} from '../../metadata/model/request/metadata-refresh-request.model';
-import {finalize, forkJoin, Subscription} from 'rxjs';
+import {debounceTime, finalize, forkJoin, Subject, Subscription} from 'rxjs';
 import {ExternalDocLinkComponent} from '../../../shared/components/external-doc-link/external-doc-link.component';
 import {ToggleSwitch} from 'primeng/toggleswitch';
 import {Tooltip} from 'primeng/tooltip';
@@ -79,6 +80,11 @@ export class TaskManagementComponent implements OnInit, OnDestroy {
   editingCronTaskType: string | null = null;
   editingCronExpression: string = '';
   cronValidationError: string | null = null;
+  cronPreview: CronPreview | null = null;
+  cronChecking = false;
+  private readonly cronInput$ = new Subject<string>();
+  private cronInputSub?: Subscription;
+  private cronPreviewSub?: Subscription;
 
   // Constants
   private readonly STALE_TASK_THRESHOLD_MS = 5 * 60 * 1000; // 5 minutes
@@ -91,10 +97,13 @@ export class TaskManagementComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.loadTasks();
     this.subscribeToTaskProgress();
+    this.cronInputSub = this.cronInput$.pipe(debounceTime(300)).subscribe(expression => this.checkCron(expression));
   }
 
   ngOnDestroy(): void {
     this.subscription?.unsubscribe();
+    this.cronInputSub?.unsubscribe();
+    this.cronPreviewSub?.unsubscribe();
   }
 
   // ============================================================================
@@ -295,14 +304,15 @@ export class TaskManagementComponent implements OnInit, OnDestroy {
     return taskInfo?.cronSupported || false;
   }
 
-  getCronConfig(taskType: string): { enabled?: boolean; cronExpression?: string } | null | undefined {
+  getCronConfig(taskType: string): { enabled?: boolean; cronExpression?: string; nextRun?: string } | null | undefined {
     const taskInfo = this.taskInfos.find(t => t.taskType === taskType);
     if (!taskInfo?.cronConfig) return null;
 
     const cronConfig = taskInfo.cronConfig;
     return {
       enabled: cronConfig.enabled,
-      cronExpression: cronConfig.cronExpression ?? undefined
+      cronExpression: cronConfig.cronExpression ?? undefined,
+      nextRun: cronConfig.nextRun ?? undefined
     };
   }
 
@@ -333,6 +343,9 @@ export class TaskManagementComponent implements OnInit, OnDestroy {
     this.editingCronTaskType = null;
     this.editingCronExpression = '';
     this.cronValidationError = null;
+    this.cronPreview = null;
+    this.cronChecking = false;
+    this.cronPreviewSub?.unsubscribe();
   }
 
   onCronExpressionChange(): void {
@@ -340,7 +353,7 @@ export class TaskManagementComponent implements OnInit, OnDestroy {
   }
 
   saveCronExpression(taskType: string): void {
-    if (this.cronValidationError) {
+    if (this.cronValidationError || this.cronChecking) {
       return;
     }
 
@@ -380,69 +393,37 @@ export class TaskManagementComponent implements OnInit, OnDestroy {
   // Cron Validation
   // ============================================================================
 
+  /**
+   * Asks the server, which uses the scheduler's own parser, whether the expression is valid; it
+   * also accepts L, W, #, names like MON and standard 5-field cron, and lists the next runs.
+   */
   private validateCronExpression(expression: string): void {
+    this.cronPreview = null;
     if (!expression || expression.trim() === '') {
       this.cronValidationError = null;
+      this.cronChecking = false;
       return;
     }
-
-    const trimmed = expression.trim();
-    const parts = trimmed.split(/\s+/);
-
-    if (parts.length !== 6) {
-      this.cronValidationError = this.t.translate('settingsTasks.cron.validationPrefix');
-      return;
-    }
-
-    const validations = [
-      {field: parts[0], name: 'Seconds', range: [0, 59]},
-      {field: parts[1], name: 'Minutes', range: [0, 59]},
-      {field: parts[2], name: 'Hours', range: [0, 23]},
-      {field: parts[3], name: 'Day of Month', range: [1, 31]},
-      {field: parts[4], name: 'Month', range: [1, 12]},
-      {field: parts[5], name: 'Day of Week', range: [0, 7]}
-    ];
-
-    for (const validation of validations) {
-      if (!this.isValidCronField(validation.field, validation.range[0], validation.range[1])) {
-        this.cronValidationError = this.t.translate('settingsTasks.cron.invalidField', {name: validation.name, value: validation.field});
-        return;
-      }
-    }
-
-    this.cronValidationError = null;
+    this.cronChecking = true;
+    this.cronInput$.next(expression.trim());
   }
 
-  private isValidCronField(field: string, min: number, max: number): boolean {
-    if (field === '*' || field === '?') {
-      return true;
-    }
-
-    if (field.includes('-')) {
-      const [start, end] = field.split('-').map(Number);
-      return !isNaN(start) && !isNaN(end) && start >= min && end <= max && start <= end;
-    }
-
-    if (field.includes('/')) {
-      const [range, step] = field.split('/');
-      const stepNum = Number(step);
-      if (isNaN(stepNum) || stepNum <= 0) return false;
-
-      if (range === '*') return true;
-      if (range.includes('-')) {
-        const [start, end] = range.split('-').map(Number);
-        return !isNaN(start) && !isNaN(end) && start >= min && end <= max;
+  private checkCron(expression: string): void {
+    this.cronPreviewSub?.unsubscribe();
+    this.cronPreviewSub = this.taskService.previewCron(expression).subscribe({
+      next: preview => {
+        if (expression !== this.editingCronExpression.trim()) {
+          return;
+        }
+        this.cronPreview = preview.valid ? preview : null;
+        this.cronValidationError = preview.valid ? null : preview.error;
+        this.cronChecking = false;
+      },
+      error: () => {
+        this.cronValidationError = this.t.translate('settingsTasks.cron.checkFailed');
+        this.cronChecking = false;
       }
-      return false;
-    }
-
-    if (field.includes(',')) {
-      const values = field.split(',').map(Number);
-      return values.every(val => !isNaN(val) && val >= min && val <= max);
-    }
-
-    const num = Number(field);
-    return !isNaN(num) && num >= min && num <= max;
+    });
   }
 
   // ============================================================================

@@ -84,6 +84,16 @@ export interface CronConfig {
   options: Record<string, unknown> | null;
   createdAt: string | null;
   updatedAt: string | null;
+  nextRun?: string | null;
+}
+
+/** The server's reading of a cron expression: valid or not, as it would be saved, and its next runs. */
+export interface CronPreview {
+  valid: boolean;
+  expression: string | null;
+  error: string | null;
+  nextRuns: string[];
+  timeZone: string;
 }
 
 export interface TaskInfo {
@@ -151,6 +161,10 @@ export class TaskService {
 
   cancelTask(taskId: string): Observable<TaskCancelResponse> {
     return this.http.delete<TaskCancelResponse>(`${this.baseUrl}/${taskId}/cancel`);
+  }
+
+  previewCron(expression: string): Observable<CronPreview> {
+    return this.http.get<CronPreview>(`${this.baseUrl}/cron/preview`, {params: {expression}});
   }
 
   updateCronConfig(taskType: string, request: TaskCronConfigRequest): Observable<CronConfig> {

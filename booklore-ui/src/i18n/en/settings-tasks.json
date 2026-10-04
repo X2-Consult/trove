@@ -16,11 +16,13 @@
   "cron": {
     "noSchedule": "No schedule",
     "edit": "Edit",
-    "placeholder": "e.g., 0 2 * * *",
-    "validationPrefix": "Cron expression must have exactly 6 fields (seconds, minutes, hours, day, month, weekday)",
-    "invalidField": "Invalid {{name}} field: {{value}}",
+    "placeholder": "e.g. 0 0 2 * * * (2 AM daily) or 0 0 0 L * * (last day of the month)",
     "updateSuccess": "Scheduled task configuration has been updated successfully.",
-    "updateError": "Failed to update scheduled task configuration."
+    "updateError": "Failed to update scheduled task configuration.",
+    "checkFailed": "Couldn't check the expression with the server.",
+    "nextRun": "Next: {{time}}",
+    "nextRuns": "Next runs:",
+    "savedAs": "Will be saved as {{expression}}"
   },
   "buttons": {
     "run": "Run",

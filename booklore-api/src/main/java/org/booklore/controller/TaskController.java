@@ -4,6 +4,7 @@ import org.booklore.model.dto.TaskInfo;
 import org.booklore.model.dto.request.TaskCreateRequest;
 import org.booklore.model.dto.request.TaskCronConfigRequest;
 import org.booklore.model.dto.response.CronConfig;
+import org.booklore.model.dto.response.CronPreview;
 import org.booklore.model.dto.response.TaskCancelResponse;
 import org.booklore.model.dto.response.TaskCreateResponse;
 import org.booklore.model.dto.response.TasksHistoryResponse;
@@ -57,6 +58,12 @@ public class TaskController {
     public ResponseEntity<TasksHistoryResponse> getLatestTasksForEachType() {
         TasksHistoryResponse response = taskHistoryService.getLatestTasksForEachType();
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/cron/preview")
+    @PreAuthorize("@securityUtil.canAccessTaskManager() or @securityUtil.isAdmin()")
+    public CronPreview previewCron(@RequestParam String expression) {
+        return taskCronService.preview(expression);
     }
 
     @PatchMapping("/{taskType}/cron")

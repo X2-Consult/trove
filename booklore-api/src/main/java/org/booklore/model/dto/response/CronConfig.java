@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 @Data
 @Builder
@@ -19,5 +20,7 @@ public class CronConfig {
     private Boolean enabled;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    /** When the schedule next fires, if it's enabled. */
+    private OffsetDateTime nextRun;
 }
 

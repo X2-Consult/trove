@@ -486,3 +486,28 @@
   min-width: 40px;
   flex-shrink: 0;
 }
+
+.cron-next {
+  font-size: 0.75rem;
+  color: var(--p-text-muted-color);
+  white-space: nowrap;
+}
+
+.cron-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--p-text-muted-color);
+  padding: 0.375rem 0.5rem;
+  background: color-mix(in srgb, var(--p-primary-color) 6%, transparent);
+  border: 1px solid var(--p-content-border-color);
+  border-radius: 4px;
+  line-height: 1.5;
+}
+
+.cron-run {
+  color: var(--p-text-color);
+  white-space: nowrap;
+}

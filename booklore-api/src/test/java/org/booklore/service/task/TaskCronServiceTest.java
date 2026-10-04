@@ -5,6 +5,7 @@ import org.booklore.exception.APIException;
 import org.booklore.model.dto.BookLoreUser;
 import org.booklore.model.dto.request.TaskCronConfigRequest;
 import org.booklore.model.dto.response.CronConfig;
+import org.booklore.model.dto.response.CronPreview;
 import org.booklore.model.entity.TaskCronConfigurationEntity;
 import org.booklore.model.enums.TaskType;
 import org.booklore.repository.TaskCronConfigurationRepository;
@@ -195,7 +196,7 @@ class TaskCronServiceTest {
 
     @Test
     void testValidateCronExpression_invalidFieldCount() {
-        String cron = "0 0 1 * *";
+        String cron = "0 0 1 *";
         Exception ex = assertThrows(Exception.class, () -> {
             var method = TaskCronService.class.getDeclaredMethod("validateCronExpression", String.class);
             method.setAccessible(true);
@@ -219,6 +220,58 @@ class TaskCronServiceTest {
         assertNotNull(cause);
         assertInstanceOf(APIException.class, cause);
         assertTrue(cause.getMessage().contains("Invalid cron expression format"));
+    }
+
+    @Test
+    void springOnlySyntaxIsAccepted() {
+        for (String cron : List.of("0 0 0 L * *", "0 0 0 L-3 * *", "0 0 0 LW * *", "0 0 0 * * 5L", "0 0 0 * * FRI#2",
+                "0 30 2 * JAN-MAR MON-FRI", "0 0/15 * * * *", "@daily")) {
+            CronPreview preview = service.preview(cron);
+            assertTrue(preview.isValid(), cron + ": " + preview.getError());
+            assertEquals(5, preview.getNextRuns().size(), cron);
+        }
+    }
+
+    @Test
+    void lastDayExpressionsRunWhereExpected() {
+        assertTrue(service.preview("0 0 0 L * *").getNextRuns().stream()
+                .allMatch(run -> run.getDayOfMonth() == run.toLocalDate().lengthOfMonth()));
+        assertTrue(service.preview("0 0 0 L-3 * *").getNextRuns().stream()
+                .allMatch(run -> run.getDayOfMonth() == run.toLocalDate().lengthOfMonth() - 3));
+    }
+
+    @Test
+    void standardFiveFieldCronGetsASecondsField() {
+        CronPreview preview = service.preview("  30 2 * * MON ");
+
+        assertTrue(preview.isValid());
+        assertEquals("0 30 2 * * MON", preview.getExpression());
+    }
+
+    @Test
+    void previewExplainsAnInvalidExpression() {
+        CronPreview preview = service.preview("0 0 0 L-x * *");
+
+        assertFalse(preview.isValid());
+        assertNotNull(preview.getError());
+        assertTrue(preview.getNextRuns().isEmpty());
+    }
+
+    @Test
+    void patchStoresTheNormalisedExpressionAndReportsTheNextRun() {
+        TaskType type = TaskType.CLEANUP_DELETED_BOOKS;
+        when(authService.getAuthenticatedUser()).thenReturn(BookLoreUser.builder().id(10L).isDefaultPassword(false).build());
+        when(repository.findByTaskType(type)).thenReturn(Optional.empty());
+        when(repository.save(any(TaskCronConfigurationEntity.class))).thenAnswer(inv -> inv.getArgument(0));
+        TaskCronConfigRequest req = new TaskCronConfigRequest();
+        req.setCronExpression("0 0 L * *");
+        req.setEnabled(true);
+
+        CronConfig config = service.patchCronConfig(type, req);
+
+        assertEquals("0 0 0 L * *", config.getCronExpression());
+        assertNotNull(config.getNextRun());
+        assertEquals(config.getNextRun().toLocalDate().lengthOfMonth(), config.getNextRun().getDayOfMonth());
     }
 
     @Test
