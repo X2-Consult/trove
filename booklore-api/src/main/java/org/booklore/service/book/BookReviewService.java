@@ -3,6 +3,7 @@ package org.booklore.service.book;
 import org.booklore.config.security.service.AuthenticationService;
 import org.booklore.exception.ApiError;
 import org.booklore.mapper.BookReviewMapper;
+import org.booklore.model.dto.Book;
 import org.booklore.model.dto.BookLoreUser;
 import org.booklore.model.dto.BookMetadata;
 import org.booklore.model.dto.BookReview;
@@ -20,6 +21,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +40,15 @@ public class BookReviewService {
     private final AppSettingService appSettingService;
     private final MetadataRefreshService metadataRefreshService;
     private final AuthenticationService authenticationService;
+
+    /** How long a book whose review sources had nothing for it is left before they're asked again. */
+    public static final Duration RECHECK_AFTER = Duration.ofDays(90);
+
+    /** True if the review sources were asked about this book within {@link #RECHECK_AFTER}. */
+    public static boolean checkedRecently(BookEntity book) {
+        Instant fetchedAt = book.getMetadata() != null ? book.getMetadata().getReviewsFetchedAt() : null;
+        return fetchedAt != null && fetchedAt.isAfter(Instant.now().minus(RECHECK_AFTER));
+    }
 
     public List<BookReview> getByBookId(Long bookId) {
         BookEntity bookEntity = bookRepository.findById(bookId).orElseThrow(() -> ApiError.BOOK_NOT_FOUND.createException(bookId));
@@ -56,15 +68,16 @@ public class BookReviewService {
         BookLoreUser currentUser = authenticationService.getAuthenticatedUser();
         boolean hasPermission = currentUser.getPermissions().isAdmin() || currentUser.getPermissions().isCanManageLibrary();
 
-        if (!hasPermission || !reviewSettings.isAutoDownloadEnabled()) {
+        if (!hasPermission || !reviewSettings.isAutoDownloadEnabled() || checkedRecently(bookEntity)) {
             return existingReviews;
         }
 
         try {
             List<BookReview> fetchedReviews = fetchBookReviews(bookEntity);
+            bookReviewUpdateService.addReviewsToBook(fetchedReviews, bookEntity.getMetadata());
+            bookEntity.getMetadata().setReviewsFetchedAt(Instant.now());
+            bookRepository.save(bookEntity);
             if (!fetchedReviews.isEmpty()) {
-                bookReviewUpdateService.addReviewsToBook(fetchedReviews, bookEntity.getMetadata());
-                bookRepository.save(bookEntity);
                 return bookReviewRepository.findByBookMetadataBookId(bookId).stream()
                         .map(mapper::toDto)
                         .collect(Collectors.toList());
@@ -77,19 +90,35 @@ public class BookReviewService {
     }
 
     public List<BookReview> fetchBookReviews(BookEntity bookEntity) {
-
-        MetadataPublicReviewsSettings settings = appSettingService.getAppSettings().getMetadataPublicReviewsSettings();
-        if (!settings.isDownloadEnabled()) {
+        List<MetadataProvider> providers = enabledReviewProviders();
+        if (providers.isEmpty()) {
             return Collections.emptyList();
         }
+        return reviewsOf(metadataRefreshService.fetchMetadataForBook(providers, bookEntity));
+    }
 
-        List<MetadataProvider> providers = settings.getProviders().stream()
+    /** {@link #fetchBookReviews(BookEntity)} for a book read in an earlier transaction. */
+    public List<BookReview> fetchBookReviews(Book book) {
+        List<MetadataProvider> providers = enabledReviewProviders();
+        if (providers.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return reviewsOf(metadataRefreshService.fetchMetadataForBook(providers, book));
+    }
+
+    /** The review sources turned on in settings, or none if review downloads are off. */
+    public List<MetadataProvider> enabledReviewProviders() {
+        MetadataPublicReviewsSettings settings = appSettingService.getAppSettings().getMetadataPublicReviewsSettings();
+        if (settings == null || !settings.isDownloadEnabled() || settings.getProviders() == null) {
+            return Collections.emptyList();
+        }
+        return settings.getProviders().stream()
                 .filter(MetadataPublicReviewsSettings.ReviewProviderConfig::isEnabled)
                 .map(MetadataPublicReviewsSettings.ReviewProviderConfig::getProvider)
                 .collect(Collectors.toList());
+    }
 
-        Map<MetadataProvider, BookMetadata> metadataMap = metadataRefreshService.fetchMetadataForBook(providers, bookEntity);
-
+    private static List<BookReview> reviewsOf(Map<MetadataProvider, BookMetadata> metadataMap) {
         return metadataMap.values().stream()
                 .filter(meta -> meta.getBookReviews() != null)
                 .flatMap(meta -> meta.getBookReviews().stream())
@@ -116,6 +145,7 @@ public class BookReviewService {
 
         List<BookReview> freshReviews = fetchBookReviews(bookEntity);
         bookReviewUpdateService.addReviewsToBook(freshReviews, bookEntity.getMetadata());
+        bookEntity.getMetadata().setReviewsFetchedAt(Instant.now());
         bookRepository.save(bookEntity);
 
         return bookReviewRepository.findByBookMetadataBookId(bookId).stream()

@@ -90,6 +90,14 @@ public enum TaskType {
             false,
             "Remove Website Ads from EPUBs",
             "Strips the OceanofPDF website link from every chapter of the EPUBs that have it, plus the stray oceanofpdf.com file. Each book is checked before it replaces the original, and the original is kept in the ad-cleaner-backups folder."
+    ),
+    FETCH_MISSING_REVIEWS(
+            false,
+            true,
+            true,
+            false,
+            "Fetch Missing Reviews",
+            "Downloads reviews for books that have none, from the sources enabled under Public Reviews. Books with no reviews online are checked again after 90 days. Each run stops after 3 hours, or when the sources start blocking requests, and the next run carries on."
     );
 
     @Getter

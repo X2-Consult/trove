@@ -210,6 +210,45 @@ class BookReviewServiceTest {
     }
 
     @Test
+    void getByBookId_skipsFetch_whenSourcesWereAskedWithinNinetyDays() {
+        Long bookId = 1L;
+        AppSettings appSettings = new AppSettings();
+        appSettings.setMetadataPublicReviewsSettings(createReviewSettings(true, MetadataProvider.Amazon));
+        BookEntity bookEntity = new BookEntity();
+        bookEntity.setMetadata(new BookMetadataEntity());
+        bookEntity.getMetadata().setReviewsFetchedAt(Instant.now().minus(java.time.Duration.ofDays(30)));
+
+        when(bookReviewRepository.findByBookMetadataBookId(bookId)).thenReturn(Collections.emptyList());
+        when(appSettingService.getAppSettings()).thenReturn(appSettings);
+        when(authenticationService.getAuthenticatedUser()).thenReturn(createUser(true, false));
+        when(bookRepository.findById(bookId)).thenReturn(Optional.of(bookEntity));
+
+        assertTrue(service.getByBookId(bookId).isEmpty());
+        verifyNoInteractions(metadataRefreshService);
+        verify(bookRepository, never()).save(any());
+    }
+
+    @Test
+    void getByBookId_recordsTheCheck_whenSourcesHaveNoReviews() {
+        Long bookId = 1L;
+        AppSettings appSettings = new AppSettings();
+        appSettings.setMetadataPublicReviewsSettings(createReviewSettings(true, MetadataProvider.Amazon));
+        BookEntity bookEntity = new BookEntity();
+        bookEntity.setMetadata(new BookMetadataEntity());
+        bookEntity.getMetadata().setReviewsFetchedAt(Instant.now().minus(java.time.Duration.ofDays(120)));
+
+        when(bookReviewRepository.findByBookMetadataBookId(bookId)).thenReturn(Collections.emptyList());
+        when(appSettingService.getAppSettings()).thenReturn(appSettings);
+        when(authenticationService.getAuthenticatedUser()).thenReturn(createUser(true, false));
+        when(bookRepository.findById(bookId)).thenReturn(Optional.of(bookEntity));
+        when(metadataRefreshService.fetchMetadataForBook(anyList(), eq(bookEntity))).thenReturn(Map.of());
+
+        assertTrue(service.getByBookId(bookId).isEmpty());
+        assertTrue(bookEntity.getMetadata().getReviewsFetchedAt().isAfter(Instant.now().minusSeconds(60)));
+        verify(bookRepository).save(bookEntity);
+    }
+
+    @Test
     void getByBookId_fetchesAndSavesReviews_whenLibraryManipulatorAndNoExistingReviews() {
         Long bookId = 1L;
         AppSettings appSettings = new AppSettings();

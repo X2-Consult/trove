@@ -7,6 +7,10 @@ import {SettingsHelperService} from '../../../../shared/service/settings-helper.
 import {Observable} from 'rxjs';
 import {filter, take} from 'rxjs/operators';
 import {TranslocoDirective, TranslocoService} from '@jsverse/transloco';
+import {TaskService, TaskType} from '../../task-management/task.service';
+
+/** Every night at 3 AM, when the schedule is first turned on here; it can be changed under Tasks. */
+const DEFAULT_REVIEW_SCHEDULE = '0 0 3 * * *';
 
 const DEFAULT_PROVIDERS: readonly ReviewProviderConfig[] = [
   {provider: 'Amazon', enabled: true, maxReviews: 5},
@@ -30,7 +34,13 @@ export class PublicReviewsSettingsComponent implements OnInit {
     providers: [...DEFAULT_PROVIDERS]
   };
 
+  scheduledFetchEnabled = false;
+  scheduleCron: string | null = null;
+  scheduleUpdating = false;
+  readonly DEFAULT_REVIEW_SCHEDULE = DEFAULT_REVIEW_SCHEDULE;
+
   private readonly appSettingsService = inject(AppSettingsService);
+  private readonly taskService = inject(TaskService);
   private readonly settingsHelper = inject(SettingsHelperService);
   private t = inject(TranslocoService);
 
@@ -38,6 +48,7 @@ export class PublicReviewsSettingsComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadSettings();
+    this.loadSchedule();
   }
 
   onPublicReviewsToggle(checked: boolean): void {
@@ -48,6 +59,38 @@ export class PublicReviewsSettingsComponent implements OnInit {
   onAutoDownloadToggle(checked: boolean): void {
     this.publicReviewSettings.autoDownloadEnabled = checked;
     this.settingsHelper.saveSetting(AppSettingKey.METADATA_PUBLIC_REVIEWS_SETTINGS, this.publicReviewSettings);
+  }
+
+  onScheduledFetchToggle(checked: boolean): void {
+    this.scheduleUpdating = true;
+    this.taskService.updateCronConfig(TaskType.FETCH_MISSING_REVIEWS, {
+      enabled: checked,
+      cronExpression: this.scheduleCron || DEFAULT_REVIEW_SCHEDULE
+    }).subscribe({
+      next: (config) => {
+        this.scheduledFetchEnabled = config.enabled;
+        this.scheduleCron = config.cronExpression;
+        this.scheduleUpdating = false;
+        this.settingsHelper.showMessage('success', this.t.translate('common.success'), this.t.translate('settingsMeta.publicReviews.scheduleSaved'));
+      },
+      error: (error) => {
+        console.error('Failed to update review schedule:', error);
+        this.scheduledFetchEnabled = !checked;
+        this.scheduleUpdating = false;
+        this.settingsHelper.showMessage('error', this.t.translate('common.error'), this.t.translate('settingsMeta.publicReviews.scheduleError'));
+      }
+    });
+  }
+
+  private loadSchedule(): void {
+    this.taskService.getAvailableTasks().subscribe({
+      next: (tasks) => {
+        const config = tasks.find(task => task.taskType === TaskType.FETCH_MISSING_REVIEWS)?.cronConfig;
+        this.scheduledFetchEnabled = !!config?.enabled;
+        this.scheduleCron = config?.cronExpression ?? null;
+      },
+      error: (error) => console.error('Failed to load review schedule:', error)
+    });
   }
 
   onProviderToggle(providerName: string, enabled: boolean): void {

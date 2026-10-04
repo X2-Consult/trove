@@ -34,6 +34,23 @@
         </div>
 
         <div class="setting-item">
+          <div class="setting-header">
+            <p-toggleswitch
+              [(ngModel)]="scheduledFetchEnabled"
+              [disabled]="scheduleUpdating"
+              (onChange)="onScheduledFetchToggle($event.checked)">
+            </p-toggleswitch>
+            <label class="setting-label">{{ t('scheduledLabel') }}</label>
+          </div>
+          <p class="setting-description">
+            {{ t('scheduledDesc') }}
+            @if (scheduledFetchEnabled && scheduleCron && scheduleCron !== DEFAULT_REVIEW_SCHEDULE) {
+              {{ t('scheduledCustom', {cron: scheduleCron}) }}
+            }
+          </p>
+        </div>
+
+        <div class="setting-item">
           <div class="setting-header-standalone">
             <label class="setting-label">{{ t('reviewSources') }}</label>
           </div>

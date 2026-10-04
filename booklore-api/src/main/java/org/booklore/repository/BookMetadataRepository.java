@@ -76,6 +76,28 @@ public interface BookMetadataRepository extends JpaRepository<BookMetadataEntity
             """)
     List<Long> findBookIdsWithKnownPageCountAndText();
 
+    /**
+     * Books with no reviews whose reviews aren't locked and that weren't asked about since
+     * {@code askedBefore}, never-asked books first.
+     */
+    @Query("""
+            SELECT m.bookId FROM BookMetadataEntity m JOIN m.book b
+            WHERE (b.deleted IS NULL OR b.deleted = false)
+              AND (m.reviewsLocked IS NULL OR m.reviewsLocked = false)
+              AND (m.reviewsFetchedAt IS NULL OR m.reviewsFetchedAt < :askedBefore)
+              AND NOT EXISTS (SELECT r.id FROM BookReviewEntity r WHERE r.bookMetadata = m)
+            ORDER BY CASE WHEN m.reviewsFetchedAt IS NULL THEN 0 ELSE 1 END, m.reviewsFetchedAt, m.bookId
+            """)
+    List<Long> findBookIdsMissingReviews(@Param("askedBefore") Instant askedBefore);
+
+    @Query("""
+            SELECT COUNT(m) FROM BookMetadataEntity m JOIN m.book b
+            WHERE (b.deleted IS NULL OR b.deleted = false)
+              AND (m.reviewsLocked IS NULL OR m.reviewsLocked = false)
+              AND NOT EXISTS (SELECT r.id FROM BookReviewEntity r WHERE r.bookMetadata = m)
+            """)
+    long countBooksMissingReviews();
+
     /** Fills in a worked-out page count, unless one has appeared or the field was locked meanwhile. */
     @Modifying
     @Transactional

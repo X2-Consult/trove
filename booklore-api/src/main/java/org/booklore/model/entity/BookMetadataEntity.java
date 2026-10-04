@@ -295,6 +295,10 @@ public class BookMetadataEntity {
     @Builder.Default
     private Boolean reviewsLocked = Boolean.FALSE;
 
+    /** When the Fetch Missing Reviews task last asked the review sources about this book. */
+    @Column(name = "reviews_fetched_at")
+    private Instant reviewsFetchedAt;
+
     @Column(name = "narrator_locked")
     @Builder.Default
     private Boolean narratorLocked = Boolean.FALSE;
