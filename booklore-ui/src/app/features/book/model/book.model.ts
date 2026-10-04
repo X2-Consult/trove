@@ -333,6 +333,7 @@ export interface EbookViewerSetting {
   fontFamily: string | null;
   isDark: boolean;
   flow: 'paginated' | 'scrolled';
+  tapToTurnPage?: boolean;
 }
 
 export interface CbxViewerSetting {

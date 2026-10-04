@@ -237,6 +237,15 @@ export class EpubReaderPreferencesComponent implements OnInit, OnDestroy {
     this.readerPreferencesService.updatePreference(['ebookReaderSetting', 'flow'], value);
   }
 
+  get tapToTurnPage(): boolean {
+    return this.userSettings.ebookReaderSetting.tapToTurnPage ?? true;
+  }
+
+  set tapToTurnPage(value: boolean) {
+    this.userSettings.ebookReaderSetting.tapToTurnPage = value;
+    this.readerPreferencesService.updatePreference(['ebookReaderSetting', 'tapToTurnPage'], value);
+  }
+
   increaseFontSize() {
     if (this.fontSize < 72) {
       this.fontSize += 1;

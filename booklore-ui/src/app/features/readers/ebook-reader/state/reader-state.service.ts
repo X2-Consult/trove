@@ -19,6 +19,7 @@ export interface ReaderState {
   fontFamily: string | null;
   isDark: boolean;
   flow: 'paginated' | 'scrolled';
+  tapToTurnPage: boolean;
 }
 
 @Injectable({
@@ -53,6 +54,7 @@ export class ReaderStateService {
     fontFamily: null,
     isDark: true,
     flow: 'paginated',
+    tapToTurnPage: true,
   };
 
   private stateSubject = new BehaviorSubject<ReaderState>(this.defaultState);
@@ -130,6 +132,8 @@ export class ReaderStateService {
         if (settings.maxBlockSize != null) newState.maxBlockSize = settings.maxBlockSize;
         if (settings.isDark != null) newState.isDark = settings.isDark;
         if (settings.flow) newState.flow = settings.flow;
+        // An account-wide preference, not a per-book one.
+        newState.tapToTurnPage = globalSettings.tapToTurnPage ?? true;
         if (settings.theme) {
           const theme = this.themes.find(t => t.name === settings.theme);
           if (theme) {

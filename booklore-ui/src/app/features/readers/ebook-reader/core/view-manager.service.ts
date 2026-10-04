@@ -4,6 +4,7 @@ import {catchError, map, switchMap} from 'rxjs/operators';
 import {ReaderAnnotationService, Annotation} from '../features/annotations/annotation-renderer.service';
 import {ReaderEventService, ViewEvent, TextSelection} from './event.service';
 import {PageInfo, ThemeInfo, PageDecorator} from '../shared/header-footer.util';
+import {ReaderStateService} from '../state/reader-state.service';
 import {EpubStreamingService, EpubBookInfo} from './epub-streaming.service';
 
 export type {ViewEvent, TextSelection} from './event.service';
@@ -34,6 +35,7 @@ export class ReaderViewManagerService {
   private annotationService = inject(ReaderAnnotationService);
   private eventService = inject(ReaderEventService);
   private epubStreamingService = inject(EpubStreamingService);
+  private readerStateService = inject(ReaderStateService);
   private view: any;
 
   public get events$(): Observable<ViewEvent> {
@@ -51,7 +53,8 @@ export class ReaderViewManagerService {
       prev: () => this.prev(),
       next: () => this.next(),
       getCFI: (index: number, range: Range) => this.view?.getCFI(index, range),
-      getContents: () => this.view?.renderer?.getContents() ?? null
+      getContents: () => this.view?.renderer?.getContents() ?? null,
+      isTapToTurnEnabled: () => this.readerStateService.currentState.tapToTurnPage
     });
   }
 
