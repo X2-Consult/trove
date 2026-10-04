@@ -21,7 +21,7 @@ public interface BookOpdsRepository extends JpaRepository<BookEntity, Long>, Jpa
     // ALL BOOKS - Two Query Pattern
     // ============================================
 
-    @Query("SELECT b.id FROM BookEntity b WHERE (b.deleted IS NULL OR b.deleted = false) ORDER BY b.addedOn DESC")
+    @Query("SELECT b.id FROM BookEntity b WHERE (b.deleted IS NULL OR b.deleted = false) ORDER BY b.addedOn DESC, b.id DESC")
     Page<Long> findBookIds(Pageable pageable);
 
     @EntityGraph(attributePaths = {"metadata", "bookFiles", "shelves"})
@@ -32,7 +32,7 @@ public interface BookOpdsRepository extends JpaRepository<BookEntity, Long>, Jpa
     // RECENT BOOKS - Two Query Pattern
     // ============================================
 
-    @Query("SELECT b.id FROM BookEntity b WHERE (b.deleted IS NULL OR b.deleted = false) ORDER BY b.addedOn DESC")
+    @Query("SELECT b.id FROM BookEntity b WHERE (b.deleted IS NULL OR b.deleted = false) ORDER BY b.addedOn DESC, b.id DESC")
     Page<Long> findRecentBookIds(Pageable pageable);
 
     // Uses same findAllWithMetadataByIds for second query
@@ -41,7 +41,7 @@ public interface BookOpdsRepository extends JpaRepository<BookEntity, Long>, Jpa
     // BOOKS BY LIBRARY IDs - Two Query Pattern
     // ============================================
 
-    @Query("SELECT b.id FROM BookEntity b WHERE b.library.id IN :libraryIds AND (b.deleted IS NULL OR b.deleted = false) ORDER BY b.addedOn DESC")
+    @Query("SELECT b.id FROM BookEntity b WHERE b.library.id IN :libraryIds AND (b.deleted IS NULL OR b.deleted = false) ORDER BY b.addedOn DESC, b.id DESC")
     Page<Long> findBookIdsByLibraryIds(@Param("libraryIds") Collection<Long> libraryIds, Pageable pageable);
 
     @EntityGraph(attributePaths = {"metadata", "bookFiles", "shelves"})
@@ -52,10 +52,13 @@ public interface BookOpdsRepository extends JpaRepository<BookEntity, Long>, Jpa
     // RECENT BOOKS BY LIBRARY IDs - Two Query Pattern
     // ============================================
 
-    @Query("SELECT b.id FROM BookEntity b WHERE b.library.id IN :libraryIds AND (b.deleted IS NULL OR b.deleted = false) ORDER BY b.addedOn DESC")
+    @Query("SELECT b.id FROM BookEntity b WHERE b.library.id IN :libraryIds AND (b.deleted IS NULL OR b.deleted = false) ORDER BY b.addedOn DESC, b.id DESC")
     Page<Long> findRecentBookIdsByLibraryIds(@Param("libraryIds") Collection<Long> libraryIds, Pageable pageable);
 
     // Uses findAllWithMetadataByIdsAndLibraryIds for second query
+
+    // Every ORDER BY ends on b.id: books added in the same import share addedOn, and without a unique
+    // last key the database may order them differently per page, so OPDS paging repeats or skips them.
 
     // ============================================
     // BOOKS BY SHELF ID - Two Query Pattern
@@ -71,7 +74,7 @@ public interface BookOpdsRepository extends JpaRepository<BookEntity, Long>, Jpa
                 SELECT DISTINCT b2.id FROM BookEntity b2 JOIN b2.shelves s
                 WHERE s.id = :shelfId AND (b2.deleted IS NULL OR b2.deleted = false)
             )
-            ORDER BY b.addedOn DESC
+            ORDER BY b.addedOn DESC, b.id DESC
             """)
     Page<Long> findBookIdsByShelfId(@Param("shelfId") Long shelfId, Pageable pageable);
 
@@ -90,7 +93,7 @@ public interface BookOpdsRepository extends JpaRepository<BookEntity, Long>, Jpa
             WHERE (b.deleted IS NULL OR b.deleted = false) AND (
                   m.searchText LIKE CONCAT('%', :text, '%')
             )
-            ORDER BY b.addedOn DESC
+            ORDER BY b.addedOn DESC, b.id DESC
             """)
     Page<Long> findBookIdsByMetadataSearch(@Param("text") String text, Pageable pageable);
 
@@ -110,7 +113,7 @@ public interface BookOpdsRepository extends JpaRepository<BookEntity, Long>, Jpa
               AND (
                   m.searchText LIKE CONCAT('%', :text, '%')
               )
-            ORDER BY b.addedOn DESC
+            ORDER BY b.addedOn DESC, b.id DESC
             """)
     Page<Long> findBookIdsByMetadataSearchAndLibraryIds(@Param("text") String text, @Param("libraryIds") Collection<Long> libraryIds, Pageable pageable);
 
@@ -137,7 +140,7 @@ public interface BookOpdsRepository extends JpaRepository<BookEntity, Long>, Jpa
                       m.searchText LIKE CONCAT('%', :text, '%')
                   )
             )
-            ORDER BY b.addedOn DESC
+            ORDER BY b.addedOn DESC, b.id DESC
             """)
     Page<Long> findBookIdsByMetadataSearchAndShelfIds(@Param("text") String text, @Param("libraryIds") Collection<Long> libraryIds, @Param("shelfIds") Collection<Long> shelfIds, Pageable pageable);
 
@@ -155,7 +158,7 @@ public interface BookOpdsRepository extends JpaRepository<BookEntity, Long>, Jpa
                 SELECT DISTINCT b2.id FROM BookEntity b2 JOIN b2.shelves s
                 WHERE s.id IN :shelfIds AND b2.library.id IN :libraryIds AND (b2.deleted IS NULL OR b2.deleted = false)
             )
-            ORDER BY b.addedOn DESC
+            ORDER BY b.addedOn DESC, b.id DESC
             """)
     Page<Long> findBookIdsByShelfIds(@Param("libraryIds") Collection<Long> libraryIds, @Param("shelfIds") Collection<Long> shelfIds, Pageable pageable);
 
@@ -211,7 +214,7 @@ public interface BookOpdsRepository extends JpaRepository<BookEntity, Long>, Jpa
                 WHERE a.name = :authorName
                   AND (b2.deleted IS NULL OR b2.deleted = false)
             )
-            ORDER BY b.addedOn DESC
+            ORDER BY b.addedOn DESC, b.id DESC
             """)
     Page<Long> findBookIdsByAuthorName(@Param("authorName") String authorName, Pageable pageable);
 
@@ -225,7 +228,7 @@ public interface BookOpdsRepository extends JpaRepository<BookEntity, Long>, Jpa
                   AND b2.library.id IN :libraryIds
                   AND (b2.deleted IS NULL OR b2.deleted = false)
             )
-            ORDER BY b.addedOn DESC
+            ORDER BY b.addedOn DESC, b.id DESC
             """)
     Page<Long> findBookIdsByAuthorNameAndLibraryIds(@Param("authorName") String authorName, @Param("libraryIds") Collection<Long> libraryIds, Pageable pageable);
 
@@ -246,7 +249,7 @@ public interface BookOpdsRepository extends JpaRepository<BookEntity, Long>, Jpa
             WHERE (b.deleted IS NULL OR b.deleted = false)
               AND m.series_name IS NOT NULL
               AND m.series_name != ''
-            ORDER BY m.series_name, COALESCE(m.series_number, 999999), b.added_on DESC
+            ORDER BY m.series_name, COALESCE(m.series_number, 999999), b.added_on DESC, b.id DESC
             """, nativeQuery = true)
     List<SeriesCoverProjection> findDistinctSeriesWithCover();
 
@@ -261,7 +264,7 @@ public interface BookOpdsRepository extends JpaRepository<BookEntity, Long>, Jpa
               AND b.library_id IN :libraryIds
               AND m.series_name IS NOT NULL
               AND m.series_name != ''
-            ORDER BY m.series_name, COALESCE(m.series_number, 999999), b.added_on DESC
+            ORDER BY m.series_name, COALESCE(m.series_number, 999999), b.added_on DESC, b.id DESC
             """, nativeQuery = true)
     List<SeriesCoverProjection> findDistinctSeriesWithCoverByLibraryIds(@Param("libraryIds") Collection<Long> libraryIds);
 
@@ -284,7 +287,7 @@ public interface BookOpdsRepository extends JpaRepository<BookEntity, Long>, Jpa
             JOIN b.metadata m
             WHERE m.seriesName = :seriesName
               AND (b.deleted IS NULL OR b.deleted = false)
-            ORDER BY COALESCE(m.seriesNumber, 999999), b.addedOn DESC
+            ORDER BY COALESCE(m.seriesNumber, 999999), b.addedOn DESC, b.id DESC
             """)
     Page<Long> findBookIdsBySeriesName(@Param("seriesName") String seriesName, Pageable pageable);
 
@@ -294,7 +297,7 @@ public interface BookOpdsRepository extends JpaRepository<BookEntity, Long>, Jpa
             WHERE m.seriesName = :seriesName
               AND b.library.id IN :libraryIds
               AND (b.deleted IS NULL OR b.deleted = false)
-            ORDER BY COALESCE(m.seriesNumber, 999999), b.addedOn DESC
+            ORDER BY COALESCE(m.seriesNumber, 999999), b.addedOn DESC, b.id DESC
             """)
     Page<Long> findBookIdsBySeriesNameAndLibraryIds(@Param("seriesName") String seriesName, @Param("libraryIds") Collection<Long> libraryIds, Pageable pageable);
 }

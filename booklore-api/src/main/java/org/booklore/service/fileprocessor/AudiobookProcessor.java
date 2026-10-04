@@ -25,6 +25,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.time.Instant;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -256,13 +257,39 @@ public class AudiobookProcessor extends AbstractFileProcessor implements BookFil
             return;
         }
 
-        audiobookFile.setDurationSeconds(audiobookDto.getDurationSeconds());
+        // A folder audiobook's metadata comes from its first track; its length is all the tracks together.
+        Long durationSeconds = audiobookFile.isFolderBased()
+                ? calculateFolderDurationSeconds(audiobookFile, audiobookDto.getDurationSeconds())
+                : audiobookDto.getDurationSeconds();
+
+        audiobookFile.setDurationSeconds(durationSeconds);
         audiobookFile.setBitrate(audiobookDto.getBitrate());
         audiobookFile.setSampleRate(audiobookDto.getSampleRate());
         audiobookFile.setChannels(audiobookDto.getChannels());
         audiobookFile.setCodec(truncate(audiobookDto.getCodec(), 50));
         audiobookFile.setChapterCount(audiobookDto.getChapterCount());
         audiobookFile.setChapters(mapChapters(audiobookDto.getChapters()));
+    }
+
+    private Long calculateFolderDurationSeconds(BookFileEntity audiobookFile, Long firstTrackDurationSeconds) {
+        List<Path> audioFiles = FileUtils.listAudioFilesInFolder(audiobookFile.getFullFilePath());
+        if (audioFiles.isEmpty()) {
+            return firstTrackDurationSeconds;
+        }
+
+        long totalDurationMillis = 0;
+        boolean hasDuration = false;
+        for (int i = 0; i < audioFiles.size(); i++) {
+            Long trackDurationMillis = audiobookMetadataExtractor.extractDurationMillis(audioFiles.get(i).toFile());
+            if (trackDurationMillis == null && i == 0 && firstTrackDurationSeconds != null) {
+                trackDurationMillis = firstTrackDurationSeconds * 1000;
+            }
+            if (trackDurationMillis != null && trackDurationMillis > 0) {
+                totalDurationMillis += trackDurationMillis;
+                hasDuration = true;
+            }
+        }
+        return hasDuration ? Math.round(totalDurationMillis / 1000.0) : firstTrackDurationSeconds;
     }
 
     private List<BookFileEntity.AudioFileChapter> mapChapters(List<AudiobookMetadata.ChapterInfo> chapters) {

@@ -996,6 +996,40 @@ class BookCoverServiceTest {
         }
 
         @Test
+        void ebookCoverGoesToTheEbookFileWhenTheAudiobookIsPrimary() {
+            BookEntity book = buildBook(1L, false);
+            BookFileEntity audiobook = BookFileEntity.builder()
+                    .bookType(BookFileType.AUDIOBOOK).isBookFormat(true)
+                    .fileName("book.m4b").fileSubPath("sub")
+                    .build();
+            BookFileEntity epub = BookFileEntity.builder()
+                    .bookType(BookFileType.EPUB).isBookFormat(true)
+                    .fileName("book.epub").fileSubPath("sub")
+                    .build();
+            book.setBookFiles(new ArrayList<>(List.of(audiobook, epub)));
+            book.setLibrary(LibraryEntity.builder().formatPriority(List.of(BookFileType.AUDIOBOOK, BookFileType.EPUB)).build());
+            book.setLibraryPath(LibraryPathEntity.builder().path("/lib").build());
+            audiobook.setBook(book);
+            epub.setBook(book);
+
+            AppSettings appSettings = mock(AppSettings.class);
+            MetadataPersistenceSettings persistSettings = mock(MetadataPersistenceSettings.class);
+            when(appSettingService.getAppSettings()).thenReturn(appSettings);
+            when(appSettings.getMetadataPersistenceSettings()).thenReturn(persistSettings);
+
+            MetadataWriter writer = mock(MetadataWriter.class);
+            when(writer.replaceCoverImageFromUrl(any(), any())).thenReturn(CoverWriteResult.skipped("off"));
+            when(metadataWriterFactory.getWriter(BookFileType.EPUB)).thenReturn(Optional.of(writer));
+            when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
+            when(bookRepository.findCoverUpdateInfoByIds(any())).thenReturn(List.of());
+
+            service.updateCoverFromUrl(1L, "https://example.com/cover.jpg");
+
+            verify(writer).replaceCoverImageFromUrl(argThat(file -> file.getName().equals("book.epub")), eq("https://example.com/cover.jpg"));
+            verify(metadataWriterFactory, never()).getWriter(BookFileType.AUDIOBOOK);
+        }
+
+        @Test
         void failedWriteKeepsTheHashAndWarns() {
             BookEntity book = buildBook(1L, false);
             BookFileEntity primaryFile = BookFileEntity.builder()

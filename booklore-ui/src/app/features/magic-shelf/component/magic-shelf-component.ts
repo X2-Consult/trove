@@ -212,6 +212,14 @@ const FIELD_GROUPS: FieldGroup[] = [
   { translationKey: 'fileIdentifiers', fields: ['fileType', 'fileSize', 'isbn13', 'isbn10', 'isPhysical'] }
 ];
 
+const DATE_UNITS = ['days', 'weeks', 'months', 'years'];
+const DATE_PERIODS = ['week', 'month', 'year'];
+
+function isRelativeAmount(value: unknown): boolean {
+  if (typeof value !== 'number' && typeof value !== 'string') return false;
+  return String(value).trim() !== '' && Number.isFinite(Number(value));
+}
+
 const READ_STATUS_KEYS: Record<string, string> = {
   UNREAD: 'unread',
   READING: 'reading',
@@ -714,16 +722,20 @@ export class MagicShelfComponent implements OnInit {
     const valueStartCtrl = ruleCtrl.get('valueStart');
     const valueEndCtrl = ruleCtrl.get('valueEnd');
 
+    const value = valueCtrl?.value;
+
+    // Keep the value when the new operator's input can still show it (e.g. equals -> contains),
+    // instead of making the user type it again.
     if (operator === 'within_last' || operator === 'older_than') {
-      valueCtrl?.setValue(null);
+      if (!isRelativeAmount(value)) valueCtrl?.setValue(null);
       valueStartCtrl?.setValue(null);
-      valueEndCtrl?.setValue('days');
+      if (!DATE_UNITS.includes(valueEndCtrl?.value)) valueEndCtrl?.setValue('days');
     } else if (operator === 'this_period') {
-      valueCtrl?.setValue(null);
+      if (!DATE_PERIODS.includes(value)) valueCtrl?.setValue(null);
       valueStartCtrl?.setValue(null);
       valueEndCtrl?.setValue(null);
     } else if (MULTI_VALUE_OPERATORS.includes(operator)) {
-      valueCtrl?.setValue([]);
+      if (!Array.isArray(value)) valueCtrl?.setValue([]);
       valueStartCtrl?.setValue(null);
       valueEndCtrl?.setValue(null);
     } else if (EMPTY_CHECK_OPERATORS.includes(operator)) {
@@ -731,10 +743,18 @@ export class MagicShelfComponent implements OnInit {
       valueStartCtrl?.setValue(null);
       valueEndCtrl?.setValue(null);
     } else {
-      valueCtrl?.setValue('');
+      // in_between edits valueStart/valueEnd, so it never keeps the single value
+      if (operator === 'in_between' || !this.isSingleValue(ruleCtrl, value)) valueCtrl?.setValue('');
       valueStartCtrl?.setValue(null);
       valueEndCtrl?.setValue(null);
     }
+  }
+
+  /** A value survives an operator change only when the input the new operator renders can still edit it. */
+  private isSingleValue(ruleCtrl: FormGroup, value: unknown): boolean {
+    if (value == null || value === '' || Array.isArray(value)) return false;
+    const type = FIELD_CONFIGS[ruleCtrl.get('field')?.value as RuleField]?.type;
+    return type !== 'date' || value instanceof Date;
   }
 
   onFieldChange(ruleCtrl: RuleFormGroup) {

@@ -5,8 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.booklore.model.MetadataClearFlags;
 import org.booklore.model.dto.settings.MetadataPersistenceSettings;
-import org.booklore.model.entity.BookEntity;
-import org.booklore.model.entity.BookFileEntity;
 import org.booklore.model.entity.BookMetadataEntity;
 import org.booklore.model.enums.BookFileType;
 import org.booklore.service.appsettings.AppSettingService;
@@ -205,31 +203,24 @@ public class AudiobookMetadataWriter implements MetadataWriter {
     }
 
     @Override
-    public CoverWriteResult replaceCoverImageFromBytes(BookEntity bookEntity, byte[] coverData) {
+    public CoverWriteResult replaceCoverImageFromBytes(File bookFile, byte[] coverData) {
         if (coverData == null || coverData.length == 0) {
             log.warn("Cover update failed: empty or null byte array.");
             return CoverWriteResult.failed("The cover image was empty");
         }
 
-        BookFileEntity audioFile = getAudiobookFile(bookEntity);
-        if (audioFile == null) {
-            return CoverWriteResult.skipped("The book has no audiobook file");
-        }
-
-        if (audioFile.isFolderBased()) {
-            Path folderPath = audioFile.getFullFilePath();
-            saveCoverToFolder(folderPath, coverData);
+        if (bookFile.isDirectory()) {
+            saveCoverToFolder(bookFile.toPath(), coverData);
             return CoverWriteResult.written("Cover saved to the audiobook folder");
         }
-        File file = audioFile.getFullFilePath().toFile();
-        if (!shouldSaveMetadataToFile(file)) {
+        if (!shouldSaveMetadataToFile(bookFile)) {
             return CoverWriteResult.skipped("Saving to audiobook files is turned off, or the file is over the size limit");
         }
-        return replaceCoverImageInternal(file, coverData, "byte array");
+        return replaceCoverImageInternal(bookFile, coverData, "byte array");
     }
 
     @Override
-    public CoverWriteResult replaceCoverImageFromUpload(BookEntity bookEntity, MultipartFile multipartFile) {
+    public CoverWriteResult replaceCoverImageFromUpload(File bookFile, MultipartFile multipartFile) {
         if (multipartFile == null || multipartFile.isEmpty()) {
             log.warn("Cover upload failed: empty or null file.");
             return CoverWriteResult.failed("The uploaded cover was empty");
@@ -237,7 +228,7 @@ public class AudiobookMetadataWriter implements MetadataWriter {
 
         try {
             byte[] coverData = multipartFile.getBytes();
-            return replaceCoverImageFromBytes(bookEntity, coverData);
+            return replaceCoverImageFromBytes(bookFile, coverData);
         } catch (IOException e) {
             log.warn("Failed to read uploaded cover image: {}", e.getMessage(), e);
             return CoverWriteResult.failed("The uploaded cover couldn't be read");
@@ -245,7 +236,7 @@ public class AudiobookMetadataWriter implements MetadataWriter {
     }
 
     @Override
-    public CoverWriteResult replaceCoverImageFromUrl(BookEntity bookEntity, String url) {
+    public CoverWriteResult replaceCoverImageFromUrl(File bookFile, String url) {
         if (url == null || url.isBlank()) {
             log.warn("Cover update via URL failed: empty or null URL.");
             return CoverWriteResult.failed("No cover URL was given");
@@ -257,7 +248,7 @@ public class AudiobookMetadataWriter implements MetadataWriter {
             return CoverWriteResult.failed("The cover couldn't be downloaded");
         }
 
-        return replaceCoverImageFromBytes(bookEntity, coverData);
+        return replaceCoverImageFromBytes(bookFile, coverData);
     }
 
     private CoverWriteResult replaceCoverImageInternal(File audioFile, byte[] coverData, String source) {
@@ -278,16 +269,6 @@ public class AudiobookMetadataWriter implements MetadataWriter {
             log.warn("Failed to update audiobook cover image from {}: {}", source, e.getMessage(), e);
             return CoverWriteResult.failed("Couldn't write the cover into the audiobook file: " + e.getMessage());
         }
-    }
-
-    private BookFileEntity getAudiobookFile(BookEntity bookEntity) {
-        if (bookEntity == null || bookEntity.getBookFiles() == null) {
-            return null;
-        }
-        return bookEntity.getBookFiles().stream()
-                .filter(bf -> bf.getBookType() == BookFileType.AUDIOBOOK)
-                .findFirst()
-                .orElse(null);
     }
 
     @Override

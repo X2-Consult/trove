@@ -1,5 +1,8 @@
 package org.booklore.service.library;
 
+import org.booklore.mapper.BookMapper;
+import java.util.ArrayList;
+import org.booklore.service.file.FileFingerprint;
 import org.booklore.exception.APIException;
 import org.booklore.model.dto.settings.LibraryFile;
 import org.booklore.model.entity.BookEntity;
@@ -55,6 +58,8 @@ class LibraryProcessingServiceTest {
     @Mock
     private BookGroupingService bookGroupingService;
     @Mock
+    private BookMapper bookMapper;
+    @Mock
     private EntityManager entityManager;
 
     private LibraryProcessingService libraryProcessingService;
@@ -70,6 +75,7 @@ class LibraryProcessingServiceTest {
                 bookDeletionService,
                 libraryFileHelper,
                 bookGroupingService,
+                bookMapper,
                 entityManager
         );
     }
@@ -637,5 +643,30 @@ class LibraryProcessingServiceTest {
                 .isEqualTo("5 files failed to import (a.epub, b.pdf, c.cbz and 2 more); see Settings > Server Logs");
         assertThat(LibraryProcessingService.describeImportFailures(List.of("a.epub", "b.pdf")))
                 .isEqualTo("2 files failed to import (a.epub, b.pdf); see Settings > Server Logs");
+    }
+
+    @Test
+    void syncModifiedBookFiles_refreshesSizeAndHashOfFilesChangedInPlace(@TempDir Path tempDir) throws IOException {
+        Path changed = Files.write(tempDir.resolve("changed.epub"), new byte[5 * 1024]);
+        Path same = Files.write(tempDir.resolve("same.epub"), new byte[3 * 1024]);
+        LibraryPathEntity libraryPath = LibraryPathEntity.builder().path(tempDir.toString()).build();
+        BookFileEntity changedFile = BookFileEntity.builder().fileName("changed.epub").fileSubPath("").fileSizeKb(2L).currentHash("old").build();
+        BookFileEntity sameFile = BookFileEntity.builder().fileName("same.epub").fileSubPath("").fileSizeKb(3L).currentHash("kept").build();
+        BookFileEntity missingFile = BookFileEntity.builder().fileName("gone.epub").fileSubPath("").fileSizeKb(9L).currentHash("gone").build();
+        BookEntity changedBook = BookEntity.builder().id(1L).libraryPath(libraryPath).bookFiles(new ArrayList<>(List.of(changedFile))).build();
+        BookEntity sameBook = BookEntity.builder().id(2L).libraryPath(libraryPath).bookFiles(new ArrayList<>(List.of(sameFile, missingFile))).build();
+        changedFile.setBook(changedBook);
+        sameFile.setBook(sameBook);
+        missingFile.setBook(sameBook);
+
+        List<BookEntity> modified = libraryProcessingService.syncModifiedBookFiles(List.of(changedBook, sameBook));
+
+        assertThat(modified).containsExactly(changedBook);
+        assertThat(changedFile.getFileSizeKb()).isEqualTo(5L);
+        assertThat(changedFile.getCurrentHash()).isEqualTo(FileFingerprint.generateHash(changed)).isNotEqualTo("old");
+        assertThat(sameFile.getCurrentHash()).isEqualTo("kept");
+        assertThat(missingFile.getCurrentHash()).isEqualTo("gone");
+        verify(bookAdditionalFileRepository).save(changedFile);
+        verify(bookAdditionalFileRepository, never()).save(sameFile);
     }
 }

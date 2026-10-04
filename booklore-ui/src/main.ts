@@ -12,6 +12,7 @@ import { AppComponent } from './app/app.component';
 import Aura from '@primeuix/themes/aura';
 import { routes } from './app/app.routes';
 import { AuthInterceptorService } from './app/core/security/auth-interceptor.service';
+import { webkitUploadInterceptor } from './app/core/http/webkit-upload.interceptor';
 import { AuthService, websocketInitializer } from './app/shared/service/auth.service';
 import { inject, isDevMode, provideAppInitializer, provideZoneChangeDetection } from '@angular/core';
 import { initializeAuthFactory } from './app/core/security/auth-initializer';
@@ -35,7 +36,7 @@ bootstrapApplication(AppComponent, {
       const startup = inject(StartupService);
       return startup.load();
     }),
-    provideHttpClient(withInterceptors([AuthInterceptorService])),
+    provideHttpClient(withInterceptors([AuthInterceptorService, webkitUploadInterceptor])),
     provideAppInitializer(initializeAuthFactory()),
     provideRouter(routes),
     DialogService,

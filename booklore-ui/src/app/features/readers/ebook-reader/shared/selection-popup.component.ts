@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {Component, EventEmitter, HostListener, Input, Output} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {TranslocoDirective} from '@jsverse/transloco';
 import {ReaderIconComponent} from './icon.component';
@@ -128,9 +128,24 @@ export class TextSelectionPopupComponent {
     this.hasPreview = false;
   }
 
-  onDismiss(event: MouseEvent): void {
-    event.stopPropagation();
-    event.preventDefault();
+  @HostListener('document:touchend', ['$event'])
+  onDocumentTouchEnd(event: TouchEvent): void {
+    if (!window.matchMedia('(pointer: coarse)').matches) {
+      return;
+    }
+    const target = event.target;
+    if (target instanceof Element && target.closest('.text-selection-popup, foliate-view')) {
+      return;
+    }
+    this.onDismiss();
+  }
+
+  onDismiss(event?: Event): void {
+    if (!this.visible) {
+      return;
+    }
+    event?.stopPropagation();
+    event?.preventDefault();
 
     if (this.hasPreview) {
       this.action.emit({

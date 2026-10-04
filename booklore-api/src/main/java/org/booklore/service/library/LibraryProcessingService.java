@@ -1,6 +1,7 @@
 package org.booklore.service.library;
 
 import org.booklore.exception.ApiError;
+import org.booklore.mapper.BookMapper;
 import org.booklore.model.dto.settings.LibraryFile;
 import org.booklore.model.entity.BookEntity;
 import org.booklore.model.entity.BookFileEntity;
@@ -26,6 +27,8 @@ import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -49,6 +52,7 @@ public class LibraryProcessingService {
     private final BookDeletionService bookDeletionService;
     private final LibraryFileHelper libraryFileHelper;
     private final BookGroupingService bookGroupingService;
+    private final BookMapper bookMapper;
     @PersistenceContext
     private final EntityManager entityManager;
 
@@ -110,6 +114,10 @@ public class LibraryProcessingService {
         libraryEntity = libraryRepository.findById(context.getLibraryId())
                 .orElseThrow(() -> ApiError.LIBRARY_NOT_FOUND.createException(context.getLibraryId()));
 
+        // Files changed in place (same path, new content, e.g. edited in Calibre) keep their book; refresh
+        // the stored size and hash, which KOReader sync matches on. detectNewBookPaths skips them.
+        List<BookEntity> modifiedBooks = syncModifiedBookFiles(libraryEntity.getBookEntities());
+
         List<LibraryFile> newFiles = detectNewBookPaths(filteredFiles, libraryEntity);
 
         // Use BookGroupingService to determine what to attach vs create new
@@ -125,7 +133,71 @@ public class LibraryProcessingService {
         // Process new book groups
         List<String> failedFiles = fileAsBookProcessor.processLibraryFilesGrouped(groupingResult.newBookGroups(), libraryEntity);
 
+        for (BookEntity modifiedBook : modifiedBooks) {
+            notificationService.sendMessage(Topic.BOOK_UPDATE, bookMapper.toBookWithDescription(modifiedBook, false));
+        }
+
         sendFinished("Finished refreshing library: " + libraryEntity.getName(), failedFiles);
+    }
+
+    List<BookEntity> syncModifiedBookFiles(Collection<BookEntity> books) {
+        List<BookEntity> modifiedBooks = new ArrayList<>();
+        if (books == null) {
+            return modifiedBooks;
+        }
+        for (BookEntity book : books) {
+            if (book.getBookFiles() == null || Boolean.TRUE.equals(book.getDeleted())) {
+                continue;
+            }
+            boolean bookModified = false;
+            for (BookFileEntity bookFile : book.getBookFiles()) {
+                bookModified |= syncBookFileIfModified(bookFile);
+            }
+            if (bookModified) {
+                modifiedBooks.add(book);
+            }
+        }
+        if (!modifiedBooks.isEmpty()) {
+            log.info("Refreshed size and hash of {} book(s) whose files changed in place", modifiedBooks.size());
+        }
+        return modifiedBooks;
+    }
+
+    /**
+     * Spots a file modified in place by its size on disk differing from the stored size (cheap, so
+     * every rescan can check), and then refreshes the stored size and hash. Missing files are left to
+     * the deletion handling, and a failure only affects that file.
+     */
+    private boolean syncBookFileIfModified(BookFileEntity bookFile) {
+        Path fullPath;
+        try {
+            fullPath = bookFile.getFullFilePath();
+        } catch (IllegalStateException e) {
+            return false;
+        }
+        if (!Files.exists(fullPath)) {
+            return false;
+        }
+        try {
+            Long actualSizeKb = bookFile.isFolderBased()
+                    ? FileUtils.getFolderSizeInKb(fullPath)
+                    : FileUtils.getFileSizeInKb(fullPath);
+            Long storedSizeKb = bookFile.getFileSizeKb();
+            if (actualSizeKb == null || actualSizeKb.equals(storedSizeKb)) {
+                return false;
+            }
+            String newHash = bookFile.isFolderBased()
+                    ? FileFingerprint.generateFolderHash(fullPath)
+                    : FileFingerprint.generateHash(fullPath);
+            bookFile.setFileSizeKb(actualSizeKb);
+            bookFile.setCurrentHash(newHash);
+            bookAdditionalFileRepository.save(bookFile);
+            log.info("Refreshed size and hash of '{}' ({} KB -> {} KB)", bookFile.getFileName(), storedSizeKb, actualSizeKb);
+            return true;
+        } catch (Exception e) {
+            log.error("Failed to refresh size and hash of '{}': {}", bookFile.getFileName(), e.getMessage());
+            return false;
+        }
     }
 
     /**

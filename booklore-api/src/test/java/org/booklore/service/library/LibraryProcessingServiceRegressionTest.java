@@ -1,5 +1,6 @@
 package org.booklore.service.library;
 
+import org.booklore.mapper.BookMapper;
 import org.booklore.model.dto.settings.LibraryFile;
 import org.booklore.model.entity.BookEntity;
 import org.booklore.model.entity.LibraryEntity;
@@ -46,6 +47,8 @@ class LibraryProcessingServiceRegressionTest {
     @Mock
     private BookGroupingService bookGroupingService;
     @Mock
+    private BookMapper bookMapper;
+    @Mock
     private EntityManager entityManager;
 
     private LibraryProcessingService libraryProcessingService;
@@ -61,6 +64,7 @@ class LibraryProcessingServiceRegressionTest {
                 bookDeletionService,
                 libraryFileHelper,
                 bookGroupingService,
+                bookMapper,
                 entityManager
         );
     }

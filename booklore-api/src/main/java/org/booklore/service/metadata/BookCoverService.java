@@ -30,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -80,7 +81,7 @@ public class BookCoverService {
         byte[] coverBytes = coverImageGenerator.generateCover(title, author);
 
         fileService.createThumbnailFromBytes(bookId, coverBytes);
-        CoverWriteResult fileResult = writeCoverToBookFile(bookEntity, (writer, book) -> writer.replaceCoverImageFromBytes(book, coverBytes));
+        CoverWriteResult fileResult = writeCoverToBookFile(bookEntity, (writer, target) -> writer.replaceCoverImageFromBytes(target, coverBytes));
         updateBookCoverMetadata(bookEntity);
         bookRepository.save(bookEntity);
         notifyBookCoverUpdate(bookEntity);
@@ -99,7 +100,7 @@ public class BookCoverService {
         }
 
         fileService.createThumbnailFromFile(bookId, file);
-        CoverWriteResult fileResult = writeCoverToBookFile(bookEntity, (writer, book) -> writer.replaceCoverImageFromUpload(book, file));
+        CoverWriteResult fileResult = writeCoverToBookFile(bookEntity, (writer, target) -> writer.replaceCoverImageFromUpload(target, file));
         updateBookCoverMetadata(bookEntity);
         bookRepository.save(bookEntity);
         notifyBookCoverUpdate(bookEntity);
@@ -118,7 +119,7 @@ public class BookCoverService {
         }
 
         fileService.createThumbnailFromUrl(bookId, url);
-        CoverWriteResult fileResult = writeCoverToBookFile(bookEntity, (writer, book) -> writer.replaceCoverImageFromUrl(book, url));
+        CoverWriteResult fileResult = writeCoverToBookFile(bookEntity, (writer, target) -> writer.replaceCoverImageFromUrl(target, url));
         updateBookCoverMetadata(bookEntity);
         bookRepository.save(bookEntity);
         notifyBookCoverUpdate(bookEntity);
@@ -141,7 +142,7 @@ public class BookCoverService {
         }
 
         fileService.createAudiobookThumbnailFromFile(bookId, file);
-        writeAudiobookCoverToFile(bookEntity, (writer, book) -> writer.replaceCoverImageFromUpload(book, file));
+        writeAudiobookCoverToFile(bookEntity, (writer, target) -> writer.replaceCoverImageFromUpload(target, file));
         updateAudiobookCoverMetadata(bookEntity);
         bookRepository.save(bookEntity);
         notifyBookCoverUpdate(bookEntity);
@@ -159,7 +160,7 @@ public class BookCoverService {
         }
 
         fileService.createAudiobookThumbnailFromUrl(bookId, url);
-        writeAudiobookCoverToFile(bookEntity, (writer, book) -> writer.replaceCoverImageFromUrl(book, url));
+        writeAudiobookCoverToFile(bookEntity, (writer, target) -> writer.replaceCoverImageFromUrl(target, url));
         updateAudiobookCoverMetadata(bookEntity);
         bookRepository.save(bookEntity);
         notifyBookCoverUpdate(bookEntity);
@@ -206,7 +207,7 @@ public class BookCoverService {
         byte[] coverBytes = coverImageGenerator.generateSquareCover(title, author);
 
         fileService.createAudiobookThumbnailFromBytes(bookId, coverBytes);
-        writeAudiobookCoverToFile(bookEntity, (writer, book) -> writer.replaceCoverImageFromBytes(book, coverBytes));
+        writeAudiobookCoverToFile(bookEntity, (writer, target) -> writer.replaceCoverImageFromBytes(target, coverBytes));
         updateAudiobookCoverMetadata(bookEntity);
         bookRepository.save(bookEntity);
         notifyBookCoverUpdate(bookEntity);
@@ -378,7 +379,7 @@ public class BookCoverService {
                     transactionTemplate.execute(status -> {
                         bookRepository.findById(bookInfo.id()).ifPresent(book -> {
                             fileService.createThumbnailFromBytes(bookInfo.id(), coverImageBytes);
-                            writeCoverToBookFile(book, (writer, b) -> writer.replaceCoverImageFromBytes(b, coverImageBytes));
+                            writeCoverToBookFile(book, (writer, target) -> writer.replaceCoverImageFromBytes(target, coverImageBytes));
                             updateBookCoverMetadata(book);
                             bookRepository.save(book);
                             refreshedIds.add(book.getId());
@@ -463,7 +464,7 @@ public class BookCoverService {
                             byte[] coverBytes = coverImageGenerator.generateCover(title, author);
 
                             fileService.createThumbnailFromBytes(book.getId(), coverBytes);
-                            writeCoverToBookFile(book, (writer, b) -> writer.replaceCoverImageFromBytes(b, coverBytes));
+                            writeCoverToBookFile(book, (writer, target) -> writer.replaceCoverImageFromBytes(target, coverBytes));
                             updateBookCoverMetadata(book);
                             bookRepository.save(book);
                             refreshedIds.add(book.getId());
@@ -549,26 +550,31 @@ public class BookCoverService {
      * Writes the new cover into the book's file. The EPUB writer reads the saved file back to confirm
      * the cover is there; the hash is only updated when the file was actually changed.
      */
-    private CoverWriteResult writeCoverToBookFile(BookEntity bookEntity, BiFunction<MetadataWriter, BookEntity, CoverWriteResult> writerAction) {
+    /**
+     * Writes the new cover into the book's ebook file (not an audiobook that happens to be primary).
+     * The EPUB writer reads the saved file back to confirm the cover is there; the hash is only
+     * updated when the file was actually changed.
+     */
+    private CoverWriteResult writeCoverToBookFile(BookEntity bookEntity, BiFunction<MetadataWriter, File, CoverWriteResult> writerAction) {
         if (!appProperties.isLocalStorage()) {
             return CoverWriteResult.skipped("Book files aren't changed with DISK_TYPE=" + appProperties.getDiskType());
         }
-        var primaryFile = bookEntity.getPrimaryBookFile();
-        if (primaryFile == null) {
-            return CoverWriteResult.skipped("The book has no file");
+        BookFileEntity ebookFile = findEbookFile(bookEntity);
+        if (ebookFile == null) {
+            return CoverWriteResult.skipped("The book has no ebook file");
         }
 
         MetadataPersistenceSettings settings = appSettingService.getAppSettings().getMetadataPersistenceSettings();
         boolean convertCbrCb7ToCbz = settings.isConvertCbrCb7ToCbz();
-        if (primaryFile.getBookType() == BookFileType.CBX && !convertCbrCb7ToCbz) {
+        if (ebookFile.getBookType() == BookFileType.CBX && !convertCbrCb7ToCbz) {
             return MetadataWriter.NO_COVER_IN_FILE;
         }
 
-        CoverWriteResult result = metadataWriterFactory.getWriter(primaryFile.getBookType())
-                .map(writer -> writerAction.apply(writer, bookEntity))
+        CoverWriteResult result = metadataWriterFactory.getWriter(ebookFile.getBookType())
+                .map(writer -> writerAction.apply(writer, ebookFile.getFullFilePath().toFile()))
                 .orElse(MetadataWriter.NO_COVER_IN_FILE);
         if (result.status() == CoverWriteResult.Status.WRITTEN) {
-            primaryFile.setCurrentHash(FileFingerprint.generateHash(bookEntity.getFullFilePath()));
+            ebookFile.setCurrentHash(FileFingerprint.generateHash(ebookFile.getFullFilePath()));
         } else if (result.isFailed()) {
             log.warn("Cover for book {} wasn't saved to its file: {}", bookEntity.getId(), result.message());
             notificationService.sendMessage(Topic.LOG, LogNotification.warn("Cover for \"" + titleOf(bookEntity)
@@ -581,7 +587,7 @@ public class BookCoverService {
         return book.getMetadata() != null && book.getMetadata().getTitle() != null ? book.getMetadata().getTitle() : "book " + book.getId();
     }
 
-    private void writeAudiobookCoverToFile(BookEntity bookEntity, BiFunction<MetadataWriter, BookEntity, CoverWriteResult> writerAction) {
+    private void writeAudiobookCoverToFile(BookEntity bookEntity, BiFunction<MetadataWriter, File, CoverWriteResult> writerAction) {
         if (!appProperties.isLocalStorage()) {
             return;
         }
@@ -596,7 +602,7 @@ public class BookCoverService {
 
         metadataWriterFactory.getWriter(BookFileType.AUDIOBOOK)
                 .ifPresent(writer -> {
-                    CoverWriteResult result = writerAction.apply(writer, bookEntity);
+                    CoverWriteResult result = writerAction.apply(writer, audiobookFile.getFullFilePath().toFile());
                     if (result.status() == CoverWriteResult.Status.WRITTEN && !audiobookFile.isFolderBased()) {
                         String newHash = FileFingerprint.generateHash(audiobookFile.getFullFilePath());
                         audiobookFile.setCurrentHash(newHash);

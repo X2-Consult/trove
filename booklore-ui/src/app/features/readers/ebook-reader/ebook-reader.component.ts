@@ -1,4 +1,4 @@
-import {Component, CUSTOM_ELEMENTS_SCHEMA, HostListener, inject, OnDestroy, OnInit} from '@angular/core';
+import {Component, CUSTOM_ELEMENTS_SCHEMA, HostListener, inject, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {Observable, of, Subject, throwError} from 'rxjs';
 import {catchError, map, switchMap, takeUntil, tap} from 'rxjs/operators';
@@ -70,6 +70,9 @@ import {TranslocoPipe} from '@jsverse/transloco';
   styleUrls: ['./ebook-reader.component.scss']
 })
 export class EbookReaderComponent implements OnInit, OnDestroy {
+  @ViewChild(TextSelectionPopupComponent, {static: true})
+  private selectionPopup?: TextSelectionPopupComponent;
+
   private destroy$ = new Subject<void>();
   private loaderService = inject(ReaderLoaderService);
   private styleService = inject(ReaderStyleService);
@@ -329,6 +332,9 @@ export class EbookReaderComponent implements OnInit, OnDestroy {
             break;
           case 'text-selected':
             this.selectionService.handleTextSelected(event.detail, event.popupPosition);
+            break;
+          case 'text-deselected':
+            this.selectionPopup?.onDismiss();
             break;
           case 'toggle-fullscreen':
             this.toggleFullscreen();

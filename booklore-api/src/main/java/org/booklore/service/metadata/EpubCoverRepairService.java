@@ -71,7 +71,7 @@ public class EpubCoverRepairService {
             }
             CoverWriteResult result;
             try {
-                result = epubMetadataWriter.replaceCoverImageFromBytes(book, Files.readAllBytes(troveCover));
+                result = epubMetadataWriter.replaceCoverImageFromBytes(path.toFile(), Files.readAllBytes(troveCover));
             } catch (Exception e) {
                 result = CoverWriteResult.failed(e.getMessage());
             }

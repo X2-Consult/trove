@@ -8,6 +8,14 @@
   background: transparent;
 }
 
+// On touch screens the backdrop would swallow the drag on the selection handles; taps outside
+// dismiss the popup through onDocumentTouchEnd instead.
+@media (pointer: coarse) {
+  .popup-backdrop {
+    pointer-events: none;
+  }
+}
+
 .text-selection-popup {
   position: fixed;
   display: flex;

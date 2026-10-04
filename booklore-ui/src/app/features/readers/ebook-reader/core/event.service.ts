@@ -3,7 +3,7 @@ import {Subject} from 'rxjs';
 import {ReaderAnnotationService} from '../features/annotations/annotation-renderer.service';
 
 export interface ViewEvent {
-  type: 'load' | 'relocate' | 'error' | 'middle-single-tap' | 'draw-annotation' | 'show-annotation' | 'text-selected' | 'toggle-fullscreen' | 'toggle-shortcuts-help' | 'escape-pressed' | 'go-first-section' | 'go-last-section' | 'toggle-toc' | 'toggle-search' | 'toggle-notes';
+  type: 'load' | 'relocate' | 'error' | 'middle-single-tap' | 'draw-annotation' | 'show-annotation' | 'text-selected' | 'text-deselected' | 'toggle-fullscreen' | 'toggle-shortcuts-help' | 'escape-pressed' | 'go-first-section' | 'go-last-section' | 'toggle-toc' | 'toggle-search' | 'toggle-notes';
   detail?: any;
   popupPosition?: { x: number; y: number; showBelow?: boolean };
 }
@@ -243,6 +243,7 @@ export class ReaderEventService {
     this.selectionChangeTimeout = setTimeout(() => {
       const selection = doc.defaultView?.getSelection();
       if (!selection || selection.isCollapsed || selection.rangeCount === 0) {
+        this.eventSubject.next({type: 'text-deselected'});
         return;
       }
 
@@ -315,7 +316,7 @@ export class ReaderEventService {
 
     if (hasSelection) {
       this.isTextSelectionInProgress = false;
-      event.preventDefault();
+      // Not preventDefault(): on mobile that stopped the selection handles from being dragged.
 
       setTimeout(() => {
         this.handleSelectionEnd(doc);
@@ -328,7 +329,9 @@ export class ReaderEventService {
       const deltaX = touch.clientX - this.touchStartX;
       const deltaY = Math.abs(touch.clientY - this.touchStartY);
 
-      if (Math.abs(deltaX) >= this.SWIPE_THRESHOLD_PX && Math.abs(deltaX) > deltaY) {
+      // Reflowable books turn pages on swipe in foliate's own paginator; handling it here as well made
+      // them jump a page while scrolling. Fixed-layout books need it.
+      if (this.view?.isFixedLayout && Math.abs(deltaX) >= this.SWIPE_THRESHOLD_PX && Math.abs(deltaX) > deltaY) {
         if (this.isNavigating) return;
 
         this.isNavigating = true;
