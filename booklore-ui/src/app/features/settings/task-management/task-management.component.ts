@@ -476,7 +476,9 @@ export class TaskManagementComponent implements OnInit, OnDestroy {
       [TaskType.SYNC_LIBRARY_FILES]: 'pi-sync',
       [TaskType.BOOKDROP_PERIODIC_SCANNING]: 'pi-inbox',
       [TaskType.CLEANUP_TEMP_METADATA]: 'pi-file',
-      [TaskType.FILL_MISSING_PAGE_COUNTS]: 'pi-book'
+      [TaskType.FILL_MISSING_PAGE_COUNTS]: 'pi-book',
+      [TaskType.FIND_EBOOK_ADS]: 'pi-search',
+      [TaskType.REMOVE_EBOOK_ADS]: 'pi-eraser'
     };
     return icons[taskType] || 'pi-cog';
   }

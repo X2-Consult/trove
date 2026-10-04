@@ -74,6 +74,22 @@ public enum TaskType {
             false,
             "Fill Missing Page Counts",
             "Gives books without a page count one from their files: exact for PDFs, comics and EPUBs with print page numbers, otherwise estimated from the word count, measured against your books that have one. Existing and locked counts are kept."
+    ),
+    FIND_EBOOK_ADS(
+            false,
+            true,
+            true,
+            false,
+            "Find Website Ads in EPUBs",
+            "Dry run: lists the EPUBs that OceanofPDF has stamped with its website link, and how many times, without changing anything."
+    ),
+    REMOVE_EBOOK_ADS(
+            false,
+            true,
+            false,
+            false,
+            "Remove Website Ads from EPUBs",
+            "Strips the OceanofPDF website link from every chapter of the EPUBs that have it, plus the stray oceanofpdf.com file. Each book is checked before it replaces the original, and the original is kept in the ad-cleaner-backups folder."
     );
 
     @Getter

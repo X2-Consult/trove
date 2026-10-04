@@ -3,9 +3,11 @@ package org.booklore.repository;
 import org.booklore.model.entity.BookFileEntity;
 import org.booklore.model.enums.BookFileType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.List;
@@ -33,4 +35,9 @@ public interface BookFileRepository extends JpaRepository<BookFileEntity, Long> 
 
     @Query("SELECT bf FROM BookFileEntity bf WHERE bf.currentHash = :currentHash AND bf.isBookFormat = true")
     Optional<BookFileEntity> findByCurrentHashAndIsBookFormatTrue(@Param("currentHash") String currentHash);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE BookFileEntity bf SET bf.currentHash = :currentHash, bf.fileSizeKb = :fileSizeKb WHERE bf.id = :id")
+    void updateCurrentHashAndSize(@Param("id") Long id, @Param("currentHash") String currentHash, @Param("fileSizeKb") Long fileSizeKb);
 }

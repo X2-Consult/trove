@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.booklore.model.enums.TaskType;
+import org.booklore.task.options.EbookAdOptions;
 import org.booklore.task.options.LibraryRescanOptions;
 import tools.jackson.databind.ObjectMapper;
 
@@ -27,6 +28,8 @@ public class TaskCreateRequest {
     @JsonSubTypes({
             @JsonSubTypes.Type(value = LibraryRescanOptions.class, name = "REFRESH_LIBRARY_METADATA"),
             @JsonSubTypes.Type(value = MetadataRefreshRequest.class, name = "REFRESH_METADATA_MANUAL"),
+            @JsonSubTypes.Type(value = EbookAdOptions.class, name = "FIND_EBOOK_ADS"),
+            @JsonSubTypes.Type(value = EbookAdOptions.class, name = "REMOVE_EBOOK_ADS"),
     })
     private Object options;
 
