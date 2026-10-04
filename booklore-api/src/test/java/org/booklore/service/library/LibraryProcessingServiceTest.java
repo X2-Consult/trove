@@ -588,7 +588,7 @@ class LibraryProcessingServiceTest {
 
         verify(notificationService).sendMessageToPermissions(eq(Topic.LOG),
                 argThat((LogNotification n) -> n.getSeverity() == Severity.WARN
-                        && n.getMessage().equals("Finished processing library: Comics - 1 file failed to import (broken.cbz); see the server log")),
+                        && n.getMessage().equals("Finished processing library: Comics - 1 file failed to import (broken.cbz); see Settings > Server Logs")),
                 eq(Set.of(ADMIN, MANAGE_LIBRARY)));
         verify(notificationService, never()).sendMessage(eq(Topic.LOG),
                 argThat((LogNotification n) -> n != null && n.getMessage().startsWith("Finished")));
@@ -634,8 +634,8 @@ class LibraryProcessingServiceTest {
     @Test
     void describeImportFailures_namesTheFirstThreeAndCountsTheRest() {
         assertThat(LibraryProcessingService.describeImportFailures(List.of("a.epub", "b.pdf", "c.cbz", "d.cbz", "e.cbz")))
-                .isEqualTo("5 files failed to import (a.epub, b.pdf, c.cbz and 2 more); see the server log");
+                .isEqualTo("5 files failed to import (a.epub, b.pdf, c.cbz and 2 more); see Settings > Server Logs");
         assertThat(LibraryProcessingService.describeImportFailures(List.of("a.epub", "b.pdf")))
-                .isEqualTo("2 files failed to import (a.epub, b.pdf); see the server log");
+                .isEqualTo("2 files failed to import (a.epub, b.pdf); see Settings > Server Logs");
     }
 }

@@ -64,7 +64,7 @@ public class RemoveEbookAdsTask extends EbookAdTask {
             text += " " + plural(tally.otherMentions, "other mention") + " of OceanofPDF were left in.";
         }
         if (tally.failed > 0) {
-            text += " " + plural(tally.failed, "file") + " couldn't be cleaned; see the server log.";
+            text += " " + plural(tally.failed, "file") + " couldn't be cleaned; see Settings > Server Logs.";
         }
         return text;
     }

@@ -159,7 +159,7 @@ public class LibraryProcessingService {
         int count = failedFiles.size();
         String shown = failedFiles.stream().limit(MAX_FAILED_FILES_NAMED).collect(Collectors.joining(", "));
         String more = count > MAX_FAILED_FILES_NAMED ? " and " + (count - MAX_FAILED_FILES_NAMED) + " more" : "";
-        return count + (count == 1 ? " file" : " files") + " failed to import (" + shown + more + "); see the server log";
+        return count + (count == 1 ? " file" : " files") + " failed to import (" + shown + more + "); see Settings > Server Logs";
     }
 
     private void validateLibraryPathsAccessible(LibraryEntity libraryEntity) {

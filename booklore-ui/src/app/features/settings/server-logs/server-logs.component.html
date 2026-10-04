@@ -1,0 +1,85 @@
+<ng-container *transloco="let t; prefix: 'settingsServerLogs'">
+  <div class="main-container">
+    <div class="settings-header">
+      <h2 class="settings-title">
+        <i class="pi pi-file"></i>
+        {{ t('title') }}
+      </h2>
+      <p class="settings-description">{{ t('description') }}</p>
+    </div>
+
+    <div class="settings-card">
+      <div class="section-header">
+        <div class="filter-controls">
+          <input
+            type="search"
+            class="search-input"
+            [ngModel]="query"
+            (ngModelChange)="onQueryChange($event)"
+            [placeholder]="t('searchPlaceholder')"
+            [attr.aria-label]="t('searchPlaceholder')">
+          <p-select [options]="levelOptions" [(ngModel)]="selectedLevel" optionLabel="label" optionValue="value"
+                    (onChange)="load()" class="level-filter" [attr.aria-label]="t('level')"></p-select>
+          <p-select [options]="limitOptions" [(ngModel)]="limit" optionLabel="label" optionValue="value"
+                    (onChange)="load()" class="limit-filter" [attr.aria-label]="t('limit')"></p-select>
+          @if (fileOptions.length > 1) {
+            <p-select [options]="fileOptions" [(ngModel)]="selectedFile" optionLabel="label" optionValue="value"
+                      (onChange)="load()" class="file-filter" [attr.aria-label]="t('file')"></p-select>
+          }
+          <button (click)="load()" class="icon-btn" [title]="t('refresh')" [attr.aria-label]="t('refresh')">
+            <i class="pi pi-refresh" [class.pi-spin]="loading"></i>
+          </button>
+          <button (click)="toggleAutoRefresh()" class="icon-btn" [class.active]="autoRefresh"
+                  [title]="t('autoRefresh')" [attr.aria-label]="t('autoRefresh')" [attr.aria-pressed]="autoRefresh">
+            <i class="pi pi-sync" [class.pi-spin]="autoRefresh"></i>
+          </button>
+          <button (click)="download()" class="icon-btn" [title]="t('download')" [attr.aria-label]="t('download')">
+            <i class="pi pi-download"></i>
+          </button>
+        </div>
+        <div class="quick-filters">
+          @for (filter of quickFilters; track filter) {
+            <button class="chip" [class.active]="isQuickFilterActive(filter)" (click)="applyQuickFilter(filter)"
+                    [attr.aria-pressed]="isQuickFilterActive(filter)">
+              {{ filter === 'WARN' ? t('warningsOnly') : filter }}
+            </button>
+          }
+        </div>
+      </div>
+
+      <div class="section-body">
+        @if (unavailable) {
+          <div class="empty-message"><i class="pi pi-info-circle"></i><span>{{ t('unavailable') }}</span></div>
+        } @else {
+          <p class="summary">
+            @if (truncated) {
+              {{ t('showingNewest', {shown: entries.length, matched: matched}) }}
+            } @else {
+              {{ t('showing', {shown: entries.length}) }}
+            }
+          </p>
+          <div class="log-list" role="log">
+            @for (entry of entries; track $index; let i = $index) {
+              <div class="log-entry" [class]="levelClass(entry)" [class.has-detail]="!!entry.detail"
+                   (click)="entry.detail && toggle(i)">
+                <span class="time" [title]="entry.timestamp">{{ entry.timestamp ? (entry.timestamp | date:'MMM d, HH:mm:ss') : '' }}</span>
+                <span class="level">{{ entry.level }}</span>
+                <span class="logger" [title]="entry.logger + ' [' + entry.thread + ']'">{{ entry.logger }}</span>
+                <span class="message">{{ entry.message }}
+                  @if (entry.detail && !expanded.has(i)) {
+                    <span class="more">{{ t('showDetail') }}</span>
+                  }
+                </span>
+                @if (entry.detail && expanded.has(i)) {
+                  <pre class="detail">{{ entry.detail }}</pre>
+                }
+              </div>
+            } @empty {
+              <div class="empty-message"><i class="pi pi-inbox"></i><span>{{ t('empty') }}</span></div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</ng-container>

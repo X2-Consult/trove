@@ -11,6 +11,7 @@
     "authentication": "OIDC",
     "tasks": "Tasks",
     "auditLogs": "Audit Logs",
+    "serverLogs": "Server Logs",
     "opds": "OPDS",
     "apiTokens": "API Tokens",
     "devices": "Devices"

@@ -44,7 +44,7 @@ public class FindEbookAdsTask extends EbookAdTask {
         if (tally.failed > 0) {
             text += " " + plural(tally.failed, "file") + " couldn't be read.";
         }
-        return text + " The books are listed in the server log.";
+        return text + " The books are listed under Settings > Server Logs.";
     }
 
     @Override

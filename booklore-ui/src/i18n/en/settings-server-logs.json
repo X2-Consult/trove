@@ -1,0 +1,24 @@
+{
+  "title": "Server Logs",
+  "description": "Trove's own log: what tasks did book by book, warnings and errors. Kept for 14 days (up to 200 MB) in the logs folder of Trove's data directory.",
+  "searchPlaceholder": "Search, e.g. a book title or FIX_EPUB_COVERS",
+  "level": "Level",
+  "limit": "Entries",
+  "file": "Log file",
+  "refresh": "Refresh",
+  "autoRefresh": "Refresh every 5 seconds",
+  "download": "Download log file",
+  "warningsOnly": "Warnings & errors",
+  "currentFile": "Current log ({{size}})",
+  "levels": {
+    "all": "All levels",
+    "info": "Info and above",
+    "warn": "Warnings & errors",
+    "error": "Errors only"
+  },
+  "showing": "{{shown}} entries, newest first. Click an entry with more to see the details.",
+  "showingNewest": "Newest {{shown}} of {{matched}} matching entries. Narrow the search or show more entries to see older ones.",
+  "showDetail": "more…",
+  "empty": "No log entries match.",
+  "unavailable": "The log file isn't available. File logging may be turned off, or Trove hasn't written to it yet since it was updated."
+}

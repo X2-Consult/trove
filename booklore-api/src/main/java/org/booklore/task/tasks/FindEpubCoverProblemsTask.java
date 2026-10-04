@@ -30,7 +30,7 @@ public class FindEpubCoverProblemsTask extends EpubCoverTask {
         if (tally.broken() == 0) {
             return String.format("All %d EPUBs have a cover readers can show. Nothing was changed.", tally.checked);
         }
-        String text = String.format("%d of %d EPUBs have a cover readers may not show: %s. Nothing was changed; the books are listed in the server log.",
+        String text = String.format("%d of %d EPUBs have a cover readers may not show: %s. Nothing was changed; the books are listed under Settings > Server Logs.",
                 tally.broken(), tally.checked, tally.describeProblems());
         return tally.failed > 0 ? text + " " + tally.failed + " couldn't be checked." : text;
     }

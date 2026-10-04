@@ -63,7 +63,7 @@ public class FixEpubCoversTask extends EpubCoverTask {
         String text = String.format("Fixed the cover in %d of %d EPUBs that needed it (%s), each confirmed by reading the file back.",
                 tally.repaired, tally.broken(), tally.describeProblems());
         if (tally.notRepaired > 0) {
-            text += " " + tally.notRepaired + " couldn't be fixed; see the server log.";
+            text += " " + tally.notRepaired + " couldn't be fixed; see Settings > Server Logs.";
         }
         return tally.failed > 0 ? text + " " + tally.failed + " couldn't be checked." : text;
     }

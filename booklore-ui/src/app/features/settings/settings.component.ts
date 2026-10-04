@@ -12,6 +12,7 @@ import {ReaderPreferences} from './reader-preferences/reader-preferences.compone
 import {FileNamingPatternComponent} from './file-naming-pattern/file-naming-pattern.component';
 import {TaskManagementComponent} from './task-management/task-management.component';
 import {AuditLogsComponent} from './audit-logs/audit-logs.component';
+import {ServerLogsComponent} from './server-logs/server-logs.component';
 import {OpdsSettings} from './opds-settings/opds-settings';
 import {ApiTokensSettings} from './api-tokens/api-tokens-settings';
 import {MetadataSettingsComponent} from './metadata-settings/metadata-settings-component';
@@ -36,6 +37,7 @@ export enum SettingsTab {
   ApiTokens = 'api-tokens',
   Tasks = 'task',
   AuditLogs = 'audit-logs',
+  ServerLogs = 'server-logs',
 }
 
 @Component({
@@ -60,6 +62,7 @@ export enum SettingsTab {
     LibraryMetadataSettingsComponent,
     TaskManagementComponent,
     AuditLogsComponent,
+    ServerLogsComponent,
     EmailV2Component,
     TranslocoDirective
   ],
