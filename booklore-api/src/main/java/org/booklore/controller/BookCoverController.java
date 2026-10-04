@@ -5,6 +5,7 @@ import org.booklore.model.dto.CoverImage;
 import org.booklore.model.dto.request.BulkBookIdsRequest;
 import org.booklore.model.dto.request.CoverFetchRequest;
 import org.booklore.service.metadata.BookCoverService;
+import org.booklore.service.metadata.writer.CoverWriteResult;
 import org.booklore.service.metadata.DuckDuckGoCoverService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -34,10 +35,10 @@ public class BookCoverController {
     @PostMapping("/{bookId}/metadata/cover/upload")
     @PreAuthorize("@securityUtil.canEditMetadata() or @securityUtil.isAdmin()")
     @CheckBookAccess(bookIdParam = "bookId")
-    public void uploadCoverFromFile(
+    public CoverWriteResult uploadCoverFromFile(
             @Parameter(description = "ID of the book") @PathVariable Long bookId,
             @Parameter(description = "Cover image file") @RequestParam("file") MultipartFile file) {
-        bookCoverService.updateCoverFromFile(bookId, file);
+        return bookCoverService.updateCoverFromFile(bookId, file);
     }
 
     @Operation(summary = "Upload cover image from URL", description = "Upload a cover image for a book from a URL. Requires metadata edit permission or admin.")
@@ -45,10 +46,10 @@ public class BookCoverController {
     @PostMapping("/{bookId}/metadata/cover/from-url")
     @PreAuthorize("@securityUtil.canEditMetadata() or @securityUtil.isAdmin()")
     @CheckBookAccess(bookIdParam = "bookId")
-    public void uploadCoverFromUrl(
+    public CoverWriteResult uploadCoverFromUrl(
             @Parameter(description = "ID of the book") @PathVariable Long bookId,
             @Parameter(description = "URL body") @RequestBody Map<String, String> body) {
-        bookCoverService.updateCoverFromUrl(bookId, body.get("url"));
+        return bookCoverService.updateCoverFromUrl(bookId, body.get("url"));
     }
 
     @Operation(summary = "Upload audiobook cover image from file", description = "Upload an audiobook cover image for a book from a file. Requires metadata edit permission or admin.")
@@ -113,8 +114,8 @@ public class BookCoverController {
     @PostMapping("/{bookId}/generate-custom-cover")
     @PreAuthorize("@securityUtil.canEditMetadata() or @securityUtil.isAdmin()")
     @CheckBookAccess(bookIdParam = "bookId")
-    public void generateCustomCover(@Parameter(description = "ID of the book") @PathVariable Long bookId) {
-        bookCoverService.generateCustomCover(bookId);
+    public CoverWriteResult generateCustomCover(@Parameter(description = "ID of the book") @PathVariable Long bookId) {
+        return bookCoverService.generateCustomCover(bookId);
     }
 
     @Operation(summary = "Regenerate covers for selected books", description = "Regenerate covers for a list of books. Requires metadata edit permission or admin.")

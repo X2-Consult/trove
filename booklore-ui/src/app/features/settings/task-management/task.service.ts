@@ -17,7 +17,9 @@ export enum TaskType {
   FILL_MISSING_PAGE_COUNTS = 'FILL_MISSING_PAGE_COUNTS',
   FIND_EBOOK_ADS = 'FIND_EBOOK_ADS',
   REMOVE_EBOOK_ADS = 'REMOVE_EBOOK_ADS',
-  FETCH_MISSING_REVIEWS = 'FETCH_MISSING_REVIEWS'
+  FETCH_MISSING_REVIEWS = 'FETCH_MISSING_REVIEWS',
+  FIND_EPUB_COVER_PROBLEMS = 'FIND_EPUB_COVER_PROBLEMS',
+  FIX_EPUB_COVERS = 'FIX_EPUB_COVERS'
 }
 
 export const TASK_TYPE_CONFIG: Record<TaskType, { parallel: boolean; async: boolean; displayOrder: number }> = {
@@ -34,6 +36,8 @@ export const TASK_TYPE_CONFIG: Record<TaskType, { parallel: boolean; async: bool
   [TaskType.FIND_EBOOK_ADS]: {parallel: false, async: true, displayOrder: 11},
   [TaskType.REMOVE_EBOOK_ADS]: {parallel: false, async: true, displayOrder: 12},
   [TaskType.FETCH_MISSING_REVIEWS]: {parallel: false, async: true, displayOrder: 13},
+  [TaskType.FIND_EPUB_COVER_PROBLEMS]: {parallel: false, async: true, displayOrder: 14},
+  [TaskType.FIX_EPUB_COVERS]: {parallel: false, async: true, displayOrder: 15},
 };
 
 export enum MetadataReplaceMode {

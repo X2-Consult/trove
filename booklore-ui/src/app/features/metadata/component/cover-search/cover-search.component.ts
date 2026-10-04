@@ -1,5 +1,7 @@
 import {Component, inject, Input, OnInit} from '@angular/core';
 import {MessageService} from 'primeng/api';
+import {Observable} from 'rxjs';
+import {CoverWriteResult, reportCoverFileResult} from '../../../book/service/cover-file-result';
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {BookCoverService, CoverFetchRequest, CoverImage} from '../../../../shared/services/book-cover.service';
 import {finalize} from 'rxjs/operators';
@@ -108,12 +110,12 @@ export class CoverSearchComponent implements OnInit {
   }
 
   selectAndSave(image: CoverImage) {
-    const uploadObservable = this.coverType === 'audiobook'
+    const uploadObservable: Observable<unknown> = this.coverType === 'audiobook'
       ? this.bookMetadataManageService.uploadAudiobookCoverFromUrl(this.bookId, image.url)
       : this.bookMetadataManageService.uploadCoverFromUrl(this.bookId, image.url);
 
     uploadObservable.subscribe({
-      next: () => {
+      next: (result) => {
         this.messageService.add({
           severity: 'success',
           summary: this.t.translate('metadata.coverSearch.toast.coverUpdatedSummary'),
@@ -121,6 +123,9 @@ export class CoverSearchComponent implements OnInit {
             ? this.t.translate('metadata.coverSearch.toast.audiobookCoverUpdatedDetail')
             : this.t.translate('metadata.coverSearch.toast.ebookCoverUpdatedDetail')
         });
+        if (this.coverType !== 'audiobook') {
+          reportCoverFileResult(result as CoverWriteResult, this.messageService, this.t);
+        }
         this.dynamicDialogRef.close(true);
       },
       error: err => {

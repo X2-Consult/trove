@@ -599,5 +599,9 @@
   },
   "fetchOptions": {
     "startRefresh": "Start Refresh"
+  },
+  "coverFile": {
+    "writtenSummary": "Saved to Book File",
+    "failedSummary": "Cover Not Saved to Book File"
   }
 }

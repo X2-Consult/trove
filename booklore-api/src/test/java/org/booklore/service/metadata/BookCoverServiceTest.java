@@ -14,6 +14,9 @@ import org.booklore.service.book.BookQueryService;
 import org.booklore.service.fileprocessor.BookFileProcessor;
 import org.booklore.service.fileprocessor.BookFileProcessorRegistry;
 import org.booklore.service.metadata.writer.MetadataWriter;
+import org.booklore.model.websocket.Topic;
+import org.booklore.model.websocket.LogNotification;
+import org.booklore.service.metadata.writer.CoverWriteResult;
 import org.booklore.service.metadata.writer.MetadataWriterFactory;
 import org.booklore.service.file.FileFingerprint;
 import org.booklore.util.FileService;
@@ -976,6 +979,7 @@ class BookCoverServiceTest {
             when(persistSettings.isConvertCbrCb7ToCbz()).thenReturn(false);
 
             MetadataWriter writer = mock(MetadataWriter.class);
+            when(writer.replaceCoverImageFromUrl(any(), any())).thenReturn(CoverWriteResult.written("ok"));
             when(metadataWriterFactory.getWriter(BookFileType.EPUB)).thenReturn(Optional.of(writer));
             when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
             when(bookRepository.findCoverUpdateInfoByIds(any())).thenReturn(List.of());
@@ -983,11 +987,41 @@ class BookCoverServiceTest {
             try (MockedStatic<FileFingerprint> fpMock = mockStatic(FileFingerprint.class)) {
                 fpMock.when(() -> FileFingerprint.generateHash(any())).thenReturn("abc123");
 
-                service.updateCoverFromUrl(1L, "https://example.com/cover.jpg");
+                CoverWriteResult result = service.updateCoverFromUrl(1L, "https://example.com/cover.jpg");
 
                 verify(metadataWriterFactory).getWriter(BookFileType.EPUB);
                 assertThat(primaryFile.getCurrentHash()).isEqualTo("abc123");
+                assertThat(result.status()).isEqualTo(CoverWriteResult.Status.WRITTEN);
             }
+        }
+
+        @Test
+        void failedWriteKeepsTheHashAndWarns() {
+            BookEntity book = buildBook(1L, false);
+            BookFileEntity primaryFile = BookFileEntity.builder()
+                    .bookType(BookFileType.EPUB).isBookFormat(true)
+                    .fileName("test.epub").fileSubPath("sub").currentHash("old")
+                    .build();
+            book.setBookFiles(List.of(primaryFile));
+            book.setLibrary(LibraryEntity.builder().build());
+            book.setLibraryPath(LibraryPathEntity.builder().path("/lib").build());
+
+            AppSettings appSettings = mock(AppSettings.class);
+            MetadataPersistenceSettings persistSettings = mock(MetadataPersistenceSettings.class);
+            when(appSettingService.getAppSettings()).thenReturn(appSettings);
+            when(appSettings.getMetadataPersistenceSettings()).thenReturn(persistSettings);
+
+            MetadataWriter writer = mock(MetadataWriter.class);
+            when(writer.replaceCoverImageFromUrl(any(), any())).thenReturn(CoverWriteResult.failed("no room"));
+            when(metadataWriterFactory.getWriter(BookFileType.EPUB)).thenReturn(Optional.of(writer));
+            when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
+            when(bookRepository.findCoverUpdateInfoByIds(any())).thenReturn(List.of());
+
+            CoverWriteResult result = service.updateCoverFromUrl(1L, "https://example.com/cover.jpg");
+
+            assertThat(result.isFailed()).isTrue();
+            assertThat(primaryFile.getCurrentHash()).isEqualTo("old");
+            verify(notificationService).sendMessage(eq(Topic.LOG), any(LogNotification.class));
         }
 
         @Test

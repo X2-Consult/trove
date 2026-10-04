@@ -205,61 +205,62 @@ public class AudiobookMetadataWriter implements MetadataWriter {
     }
 
     @Override
-    public void replaceCoverImageFromBytes(BookEntity bookEntity, byte[] coverData) {
+    public CoverWriteResult replaceCoverImageFromBytes(BookEntity bookEntity, byte[] coverData) {
         if (coverData == null || coverData.length == 0) {
             log.warn("Cover update failed: empty or null byte array.");
-            return;
+            return CoverWriteResult.failed("The cover image was empty");
         }
 
         BookFileEntity audioFile = getAudiobookFile(bookEntity);
         if (audioFile == null) {
-            return;
+            return CoverWriteResult.skipped("The book has no audiobook file");
         }
 
         if (audioFile.isFolderBased()) {
             Path folderPath = audioFile.getFullFilePath();
             saveCoverToFolder(folderPath, coverData);
-        } else {
-            File file = audioFile.getFullFilePath().toFile();
-            if (!shouldSaveMetadataToFile(file)) {
-                return;
-            }
-            replaceCoverImageInternal(file, coverData, "byte array");
+            return CoverWriteResult.written("Cover saved to the audiobook folder");
         }
+        File file = audioFile.getFullFilePath().toFile();
+        if (!shouldSaveMetadataToFile(file)) {
+            return CoverWriteResult.skipped("Saving to audiobook files is turned off, or the file is over the size limit");
+        }
+        return replaceCoverImageInternal(file, coverData, "byte array");
     }
 
     @Override
-    public void replaceCoverImageFromUpload(BookEntity bookEntity, MultipartFile multipartFile) {
+    public CoverWriteResult replaceCoverImageFromUpload(BookEntity bookEntity, MultipartFile multipartFile) {
         if (multipartFile == null || multipartFile.isEmpty()) {
             log.warn("Cover upload failed: empty or null file.");
-            return;
+            return CoverWriteResult.failed("The uploaded cover was empty");
         }
 
         try {
             byte[] coverData = multipartFile.getBytes();
-            replaceCoverImageFromBytes(bookEntity, coverData);
+            return replaceCoverImageFromBytes(bookEntity, coverData);
         } catch (IOException e) {
             log.warn("Failed to read uploaded cover image: {}", e.getMessage(), e);
+            return CoverWriteResult.failed("The uploaded cover couldn't be read");
         }
     }
 
     @Override
-    public void replaceCoverImageFromUrl(BookEntity bookEntity, String url) {
+    public CoverWriteResult replaceCoverImageFromUrl(BookEntity bookEntity, String url) {
         if (url == null || url.isBlank()) {
             log.warn("Cover update via URL failed: empty or null URL.");
-            return;
+            return CoverWriteResult.failed("No cover URL was given");
         }
 
         byte[] coverData = loadImage(url);
         if (coverData == null) {
             log.warn("Failed to load image from URL: {}", url);
-            return;
+            return CoverWriteResult.failed("The cover couldn't be downloaded");
         }
 
-        replaceCoverImageFromBytes(bookEntity, coverData);
+        return replaceCoverImageFromBytes(bookEntity, coverData);
     }
 
-    private void replaceCoverImageInternal(File audioFile, byte[] coverData, String source) {
+    private CoverWriteResult replaceCoverImageInternal(File audioFile, byte[] coverData, String source) {
         try {
             AudioFile f = AudioFileIO.read(audioFile);
             Tag tag = f.getTagOrCreateAndSetDefault();
@@ -272,8 +273,10 @@ public class AudiobookMetadataWriter implements MetadataWriter {
             f.commit();
 
             log.info("Cover image updated in audiobook from {}: {}", source, audioFile.getName());
+            return CoverWriteResult.written("Cover saved to the audiobook file");
         } catch (Exception e) {
             log.warn("Failed to update audiobook cover image from {}: {}", source, e.getMessage(), e);
+            return CoverWriteResult.failed("Couldn't write the cover into the audiobook file: " + e.getMessage());
         }
     }
 

@@ -4,6 +4,7 @@ import {AdditionalFile, Book, BookType, ReadStatus} from '../../../model/book.mo
 import {Button} from 'primeng/button';
 import {MenuModule} from 'primeng/menu';
 import {ConfirmationService, MenuItem, MessageService} from 'primeng/api';
+import {reportCoverFileResult} from '../../../service/cover-file-result';
 import {BookService} from '../../../service/book.service';
 import {BookFileService} from '../../../service/book-file.service';
 import {BookMetadataManageService} from '../../../service/book-metadata-manage.service';
@@ -553,11 +554,14 @@ export class BookCardComponent implements OnInit, OnChanges, OnDestroy {
             icon: 'pi pi-palette',
             command: () => {
               this.bookMetadataManageService.generateCustomCover(this.book.id).subscribe({
-                next: () => this.messageService.add({
-                  severity: 'success',
-                  summary: this.t.translate('common.success'),
-                  detail: this.t.translate('book.card.toast.customCoverSuccessDetail')
-                }),
+                next: (result) => {
+                  this.messageService.add({
+                    severity: 'success',
+                    summary: this.t.translate('common.success'),
+                    detail: this.t.translate('book.card.toast.customCoverSuccessDetail')
+                  });
+                  reportCoverFileResult(result, this.messageService, this.t);
+                },
                 error: (err) => this.messageService.add({
                   severity: 'error',
                   summary: this.t.translate('common.error'),

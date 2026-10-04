@@ -10,6 +10,7 @@ import {BookSocketService} from './book-socket.service';
 import {TranslocoService} from '@jsverse/transloco';
 import {BookService} from './book.service';
 
+import {CoverWriteResult} from './cover-file-result';
 @Injectable({
   providedIn: 'root',
 })
@@ -126,8 +127,8 @@ export class BookMetadataManageService {
     return this.url + '/' + bookId + "/metadata/cover/upload"
   }
 
-  uploadCoverFromUrl(bookId: number, url: string): Observable<BookMetadata> {
-    return this.http.post<BookMetadata>(`${this.url}/${bookId}/metadata/cover/from-url`, {url});
+  uploadCoverFromUrl(bookId: number, url: string): Observable<CoverWriteResult> {
+    return this.http.post<CoverWriteResult>(`${this.url}/${bookId}/metadata/cover/from-url`, {url});
   }
 
   regenerateCovers(missingOnly = false): Observable<void> {
@@ -142,8 +143,8 @@ export class BookMetadataManageService {
     return this.http.get<BookMetadata>(`${this.url}/${bookId}/file-metadata`);
   }
 
-  generateCustomCover(bookId: number): Observable<void> {
-    return this.http.post<void>(`${this.url}/${bookId}/generate-custom-cover`, {});
+  generateCustomCover(bookId: number): Observable<CoverWriteResult> {
+    return this.http.post<CoverWriteResult>(`${this.url}/${bookId}/generate-custom-cover`, {});
   }
 
   generateCustomCoversForBooks(bookIds: number[]): Observable<void> {

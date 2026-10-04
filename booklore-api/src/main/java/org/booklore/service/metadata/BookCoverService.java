@@ -17,6 +17,7 @@ import org.booklore.service.book.BookQueryService;
 import org.booklore.service.file.FileFingerprint;
 import org.booklore.service.fileprocessor.BookFileProcessor;
 import org.booklore.service.fileprocessor.BookFileProcessorRegistry;
+import org.booklore.service.metadata.writer.CoverWriteResult;
 import org.booklore.service.metadata.writer.MetadataWriter;
 import org.booklore.service.metadata.writer.MetadataWriterFactory;
 import org.booklore.util.BookCoverUtils;
@@ -33,7 +34,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -67,7 +68,7 @@ public class BookCoverService {
     /**
      * Generate a custom cover for a single book.
      */
-    public void generateCustomCover(long bookId) {
+    public CoverWriteResult generateCustomCover(long bookId) {
         BookEntity bookEntity = bookRepository.findById(bookId).orElseThrow(() -> ApiError.BOOK_NOT_FOUND.createException(bookId));
 
         if (isCoverLocked(bookEntity)) {
@@ -79,17 +80,18 @@ public class BookCoverService {
         byte[] coverBytes = coverImageGenerator.generateCover(title, author);
 
         fileService.createThumbnailFromBytes(bookId, coverBytes);
-        writeCoverToBookFile(bookEntity, (writer, book) -> writer.replaceCoverImageFromBytes(book, coverBytes));
+        CoverWriteResult fileResult = writeCoverToBookFile(bookEntity, (writer, book) -> writer.replaceCoverImageFromBytes(book, coverBytes));
         updateBookCoverMetadata(bookEntity);
         bookRepository.save(bookEntity);
         notifyBookCoverUpdate(bookEntity);
+        return fileResult;
     }
 
     /**
      * Update cover image from uploaded file for a single book.
      */
     @Transactional
-    public void updateCoverFromFile(Long bookId, MultipartFile file) {
+    public CoverWriteResult updateCoverFromFile(Long bookId, MultipartFile file) {
         BookEntity bookEntity = bookRepository.findById(bookId).orElseThrow(() -> ApiError.BOOK_NOT_FOUND.createException(bookId));
 
         if (isCoverLocked(bookEntity)) {
@@ -97,17 +99,18 @@ public class BookCoverService {
         }
 
         fileService.createThumbnailFromFile(bookId, file);
-        writeCoverToBookFile(bookEntity, (writer, book) -> writer.replaceCoverImageFromUpload(book, file));
+        CoverWriteResult fileResult = writeCoverToBookFile(bookEntity, (writer, book) -> writer.replaceCoverImageFromUpload(book, file));
         updateBookCoverMetadata(bookEntity);
         bookRepository.save(bookEntity);
         notifyBookCoverUpdate(bookEntity);
+        return fileResult;
     }
 
     /**
      * Update cover image from a URL for a single book.
      */
     @Transactional
-    public void updateCoverFromUrl(Long bookId, String url) {
+    public CoverWriteResult updateCoverFromUrl(Long bookId, String url) {
         BookEntity bookEntity = bookRepository.findById(bookId).orElseThrow(() -> ApiError.BOOK_NOT_FOUND.createException(bookId));
 
         if (isCoverLocked(bookEntity)) {
@@ -115,10 +118,11 @@ public class BookCoverService {
         }
 
         fileService.createThumbnailFromUrl(bookId, url);
-        writeCoverToBookFile(bookEntity, (writer, book) -> writer.replaceCoverImageFromUrl(book, url));
+        CoverWriteResult fileResult = writeCoverToBookFile(bookEntity, (writer, book) -> writer.replaceCoverImageFromUrl(book, url));
         updateBookCoverMetadata(bookEntity);
         bookRepository.save(bookEntity);
         notifyBookCoverUpdate(bookEntity);
+        return fileResult;
     }
 
     // =========================
@@ -541,29 +545,43 @@ public class BookCoverService {
         return null;
     }
 
-    private void writeCoverToBookFile(BookEntity bookEntity, BiConsumer<MetadataWriter, BookEntity> writerAction) {
+    /**
+     * Writes the new cover into the book's file. The EPUB writer reads the saved file back to confirm
+     * the cover is there; the hash is only updated when the file was actually changed.
+     */
+    private CoverWriteResult writeCoverToBookFile(BookEntity bookEntity, BiFunction<MetadataWriter, BookEntity, CoverWriteResult> writerAction) {
         if (!appProperties.isLocalStorage()) {
-            return;
+            return CoverWriteResult.skipped("Book files aren't changed with DISK_TYPE=" + appProperties.getDiskType());
         }
         var primaryFile = bookEntity.getPrimaryBookFile();
         if (primaryFile == null) {
-            return;
+            return CoverWriteResult.skipped("The book has no file");
         }
 
         MetadataPersistenceSettings settings = appSettingService.getAppSettings().getMetadataPersistenceSettings();
         boolean convertCbrCb7ToCbz = settings.isConvertCbrCb7ToCbz();
-
-        if ((primaryFile.getBookType() != BookFileType.CBX || convertCbrCb7ToCbz)) {
-            metadataWriterFactory.getWriter(primaryFile.getBookType())
-                    .ifPresent(writer -> {
-                        writerAction.accept(writer, bookEntity);
-                        String newHash = FileFingerprint.generateHash(bookEntity.getFullFilePath());
-                        primaryFile.setCurrentHash(newHash);
-                    });
+        if (primaryFile.getBookType() == BookFileType.CBX && !convertCbrCb7ToCbz) {
+            return MetadataWriter.NO_COVER_IN_FILE;
         }
+
+        CoverWriteResult result = metadataWriterFactory.getWriter(primaryFile.getBookType())
+                .map(writer -> writerAction.apply(writer, bookEntity))
+                .orElse(MetadataWriter.NO_COVER_IN_FILE);
+        if (result.status() == CoverWriteResult.Status.WRITTEN) {
+            primaryFile.setCurrentHash(FileFingerprint.generateHash(bookEntity.getFullFilePath()));
+        } else if (result.isFailed()) {
+            log.warn("Cover for book {} wasn't saved to its file: {}", bookEntity.getId(), result.message());
+            notificationService.sendMessage(Topic.LOG, LogNotification.warn("Cover for \"" + titleOf(bookEntity)
+                    + "\" was updated in Trove but not saved to the book file: " + result.message()));
+        }
+        return result;
     }
 
-    private void writeAudiobookCoverToFile(BookEntity bookEntity, BiConsumer<MetadataWriter, BookEntity> writerAction) {
+    private static String titleOf(BookEntity book) {
+        return book.getMetadata() != null && book.getMetadata().getTitle() != null ? book.getMetadata().getTitle() : "book " + book.getId();
+    }
+
+    private void writeAudiobookCoverToFile(BookEntity bookEntity, BiFunction<MetadataWriter, BookEntity, CoverWriteResult> writerAction) {
         if (!appProperties.isLocalStorage()) {
             return;
         }
@@ -578,8 +596,8 @@ public class BookCoverService {
 
         metadataWriterFactory.getWriter(BookFileType.AUDIOBOOK)
                 .ifPresent(writer -> {
-                    writerAction.accept(writer, bookEntity);
-                    if (!audiobookFile.isFolderBased()) {
+                    CoverWriteResult result = writerAction.apply(writer, bookEntity);
+                    if (result.status() == CoverWriteResult.Status.WRITTEN && !audiobookFile.isFolderBased()) {
                         String newHash = FileFingerprint.generateHash(audiobookFile.getFullFilePath());
                         audiobookFile.setCurrentHash(newHash);
                     }

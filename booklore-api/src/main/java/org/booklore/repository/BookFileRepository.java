@@ -36,6 +36,14 @@ public interface BookFileRepository extends JpaRepository<BookFileEntity, Long> 
     @Query("SELECT bf FROM BookFileEntity bf WHERE bf.currentHash = :currentHash AND bf.isBookFormat = true")
     Optional<BookFileEntity> findByCurrentHashAndIsBookFormatTrue(@Param("currentHash") String currentHash);
 
+    @Query("""
+            SELECT DISTINCT bf.book.id FROM BookFileEntity bf
+            WHERE bf.bookType = org.booklore.model.enums.BookFileType.EPUB AND bf.isBookFormat = true
+              AND (bf.book.deleted IS NULL OR bf.book.deleted = false)
+            ORDER BY bf.book.id
+            """)
+    List<Long> findBookIdsWithEpub();
+
     @Modifying
     @Transactional
     @Query("UPDATE BookFileEntity bf SET bf.currentHash = :currentHash, bf.fileSizeKb = :fileSizeKb WHERE bf.id = :id")

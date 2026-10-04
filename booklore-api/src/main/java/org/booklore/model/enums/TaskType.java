@@ -98,6 +98,22 @@ public enum TaskType {
             false,
             "Fetch Missing Reviews",
             "Downloads reviews for books that have none, from the sources enabled under Public Reviews. Books with no reviews online are checked again after 90 days. Each run stops after 3 hours, or when the sources start blocking requests, and the next run carries on."
+    ),
+    FIND_EPUB_COVER_PROBLEMS(
+            false,
+            true,
+            true,
+            false,
+            "Find Missing EPUB Covers",
+            "Dry run: lists the EPUBs whose own cover readers may not show - none declared, the image missing or unreadable, or saved as a different image type than declared - without changing anything."
+    ),
+    FIX_EPUB_COVERS(
+            false,
+            true,
+            false,
+            false,
+            "Fix Missing EPUB Covers",
+            "Writes Trove's cover into the EPUBs whose own cover readers may not show, so downloaded copies have it. Each fixed file is read back to confirm the cover is there."
     );
 
     @Getter

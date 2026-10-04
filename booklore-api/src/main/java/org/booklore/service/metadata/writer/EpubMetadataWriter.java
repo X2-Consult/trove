@@ -13,6 +13,7 @@ import org.booklore.model.entity.BookMetadataEntity;
 import org.booklore.model.enums.BookFileType;
 import org.booklore.service.appsettings.AppSettingService;
 import org.booklore.util.FileService;
+import org.booklore.util.EpubCover;
 import org.booklore.util.SafeFiles;
 import org.booklore.util.SecureXmlUtils;
 import org.springframework.stereotype.Component;
@@ -21,10 +22,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
@@ -37,7 +36,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -51,6 +49,8 @@ import java.util.UUID;
 public class EpubMetadataWriter implements MetadataWriter {
 
     private static final String OPF_NS = "http://www.idpf.org/2007/opf";
+    private static final CoverWriteResult SAVING_OFF =
+            CoverWriteResult.skipped("Saving to EPUB files is turned off, or the file is over the size limit");
     private final AppSettingService appSettingService;
     private final FileService fileService;
 
@@ -197,11 +197,17 @@ public class EpubMetadataWriter implements MetadataWriter {
                 hasChanges[0] = true;
             });
 
+            EpubCover.Written cover = null;
             if (StringUtils.isNotBlank(thumbnailUrl)) {
                 byte[] coverData = loadImage(thumbnailUrl);
                 if (coverData != null) {
-                    applyCoverImageToEpub(tempDir, opfDoc, coverData);
-                    hasChanges[0] = true;
+                    // A cover that can't be written mustn't stop the rest of the metadata being saved.
+                    try {
+                        cover = EpubCover.apply(tempDir, opfFile.toPath(), opfDoc, coverData);
+                        hasChanges[0] = true;
+                    } catch (IOException e) {
+                        log.warn("Couldn't write the cover into EPUB {}: {}", epubFile.getName(), e.getMessage());
+                    }
                 }
             }
 
@@ -218,6 +224,12 @@ public class EpubMetadataWriter implements MetadataWriter {
                 replaceEpub(epubFile, tempDir);
 
                 log.info("Metadata updated in EPUB: {}", epubFile.getName());
+                if (cover != null) {
+                    String problem = EpubCover.confirm(epubFile.toPath(), cover);
+                    if (problem != null) {
+                        log.warn("The cover written into EPUB {} didn't check out: {}", epubFile.getName(), problem);
+                    }
+                }
             } else {
                 log.info("No changes detected. Skipping EPUB write for: {}", epubFile.getName());
             }
@@ -278,58 +290,65 @@ public class EpubMetadataWriter implements MetadataWriter {
     }
 
 
-    public void replaceCoverImageFromBytes(BookEntity bookEntity, byte[] file) {
+    @Override
+    public CoverWriteResult replaceCoverImageFromBytes(BookEntity bookEntity, byte[] file) {
         if (!shouldSaveMetadataToFile(bookEntity.getFullFilePath().toFile())) {
-            return;
+            return SAVING_OFF;
         }
         if (file == null || file.length == 0) {
             log.warn("Cover update failed: empty or null byte array.");
-            return;
+            return CoverWriteResult.failed("The cover image was empty");
         }
 
-        replaceCoverImageInternal(bookEntity, file, "byte array");
+        return replaceCoverImageInternal(bookEntity, file, "byte array");
     }
 
-    public void replaceCoverImageFromUpload(BookEntity bookEntity, MultipartFile multipartFile) {
+    @Override
+    public CoverWriteResult replaceCoverImageFromUpload(BookEntity bookEntity, MultipartFile multipartFile) {
         if (!shouldSaveMetadataToFile(bookEntity.getFullFilePath().toFile())) {
-            return;
+            return SAVING_OFF;
         }
         if (multipartFile == null || multipartFile.isEmpty()) {
             log.warn("Cover upload failed: empty or null file.");
-            return;
+            return CoverWriteResult.failed("The uploaded cover was empty");
         }
 
         try {
             byte[] coverData = multipartFile.getBytes();
-            replaceCoverImageInternal(bookEntity, coverData, "upload");
+            return replaceCoverImageInternal(bookEntity, coverData, "upload");
         } catch (IOException e) {
             log.warn("Failed to read uploaded cover image: {}", e.getMessage(), e);
+            return CoverWriteResult.failed("The uploaded cover couldn't be read");
         }
     }
 
     @Override
-    public void replaceCoverImageFromUrl(BookEntity bookEntity, String url) {
+    public CoverWriteResult replaceCoverImageFromUrl(BookEntity bookEntity, String url) {
         if (!shouldSaveMetadataToFile(bookEntity.getFullFilePath().toFile())) {
-            return;
+            return SAVING_OFF;
         }
         if (url == null || url.isBlank()) {
             log.warn("Cover update via URL failed: empty or null URL.");
-            return;
+            return CoverWriteResult.failed("No cover URL was given");
         }
 
         byte[] coverData = loadImage(url);
         if (coverData == null) {
             log.warn("Failed to load image from URL: {}", url);
-            return;
+            return CoverWriteResult.failed("The cover couldn't be downloaded");
         }
 
-        replaceCoverImageInternal(bookEntity, coverData, "URL");
+        return replaceCoverImageInternal(bookEntity, coverData, "URL");
     }
 
-    private void replaceCoverImageInternal(BookEntity bookEntity, byte[] coverData, String source) {
+    /**
+     * Writes the cover, then reads the saved file back to confirm it now carries exactly that image
+     * as a cover readers can find and decode.
+     */
+    private CoverWriteResult replaceCoverImageInternal(BookEntity bookEntity, byte[] coverData, String source) {
         Path tempDir = null;
+        File epubFile = new File(bookEntity.getFullFilePath().toUri());
         try {
-            File epubFile = new File(bookEntity.getFullFilePath().toUri());
             tempDir = Files.createTempDirectory("epub_cover_" + UUID.randomUUID());
 
             try (ZipFile zipFile = new ZipFile(epubFile)) {
@@ -339,13 +358,13 @@ public class EpubMetadataWriter implements MetadataWriter {
             File opfFile = findOpfFile(tempDir.toFile());
             if (opfFile == null) {
                 log.warn("OPF file not found in EPUB: {}", epubFile.getName());
-                return;
+                return CoverWriteResult.failed("The EPUB has no package file to record the cover in");
             }
 
             DocumentBuilder builder = SecureXmlUtils.createSecureDocumentBuilder(true);
             Document opfDoc = builder.parse(opfFile);
 
-            applyCoverImageToEpub(tempDir, opfDoc, coverData);
+            EpubCover.Written written = EpubCover.apply(tempDir, opfFile.toPath(), opfDoc, coverData);
 
             removeEmptyTextNodes(opfDoc);
             Transformer transformer = TransformerFactory.newInstance().newTransformer();
@@ -355,10 +374,17 @@ public class EpubMetadataWriter implements MetadataWriter {
 
             replaceEpub(epubFile, tempDir);
 
-            log.info("Cover image updated in EPUB from {}: {}", source, epubFile.getName());
-
+            String problem = EpubCover.confirm(epubFile.toPath(), written);
+            if (problem != null) {
+                log.warn("Cover written into EPUB {} from {} didn't check out: {}", epubFile.getName(), source, problem);
+                return CoverWriteResult.failed("The cover was written but the file doesn't show it: " + problem);
+            }
+            log.info("Cover image updated and confirmed in EPUB from {}: {} ({}x{})", source, epubFile.getName(),
+                    written.width(), written.height());
+            return CoverWriteResult.written("Cover saved to the EPUB and confirmed (" + written.width() + "x" + written.height() + ")");
         } catch (Exception e) {
             log.warn("Failed to update EPUB cover image from {}: {}", source, e.getMessage(), e);
+            return CoverWriteResult.failed("Couldn't write the cover into the EPUB: " + e.getMessage());
         } finally {
             if (tempDir != null) {
                 deleteDirectoryRecursively(tempDir);
@@ -369,105 +395,6 @@ public class EpubMetadataWriter implements MetadataWriter {
     @Override
     public BookFileType getSupportedBookType() {
         return BookFileType.EPUB;
-    }
-
-    private void applyCoverImageToEpub(Path tempDir, Document opfDoc, byte[] coverData) throws IOException {
-        NodeList manifestList = opfDoc.getElementsByTagNameNS(OPF_NS, "manifest");
-        if (manifestList.getLength() == 0) {
-            throw new IOException("No <manifest> element found in OPF document.");
-        }
-
-        Element manifest = (Element) manifestList.item(0);
-        Element existingCoverItem = null;
-
-        // First, try to find cover via metadata reference (EPUB 3 style)
-        NodeList metadataList = opfDoc.getElementsByTagNameNS(OPF_NS, "metadata");
-        if (metadataList.getLength() > 0) {
-            Element metadataElement = (Element) metadataList.item(0);
-            String coverItemId = getMetaContentByName(metadataElement, "cover");
-
-            if (coverItemId != null && !coverItemId.isBlank()) {
-                // Find the item with this id
-                NodeList items = manifest.getElementsByTagNameNS(OPF_NS, "item");
-                for (int i = 0; i < items.getLength(); i++) {
-                    Element item = (Element) items.item(i);
-                    if (coverItemId.equals(item.getAttribute("id"))) {
-                        existingCoverItem = item;
-                        break;
-                    }
-                }
-            }
-        }
-
-        // If not found, try looking for properties="cover-image" (EPUB 3)
-        if (existingCoverItem == null) {
-            NodeList items = manifest.getElementsByTagNameNS(OPF_NS, "item");
-            for (int i = 0; i < items.getLength(); i++) {
-                Element item = (Element) items.item(i);
-                String properties = item.getAttribute("properties");
-                if (properties != null && properties.contains("cover-image")) {
-                    existingCoverItem = item;
-                    break;
-                }
-            }
-        }
-
-        // If still not found, try common id values (EPUB 2 fallback)
-        if (existingCoverItem == null) {
-            NodeList items = manifest.getElementsByTagNameNS(OPF_NS, "item");
-            for (int i = 0; i < items.getLength(); i++) {
-                Element item = (Element) items.item(i);
-                String itemId = item.getAttribute("id");
-                if ("cover-image".equals(itemId) || "cover".equals(itemId) || "coverimg".equals(itemId)) {
-                    existingCoverItem = item;
-                    break;
-                }
-            }
-        }
-
-        if (existingCoverItem == null) {
-            throw new IOException("No cover item found in manifest");
-        }
-
-        String coverHref = existingCoverItem.getAttribute("href");
-        String decodedCoverHref = URLDecoder.decode(coverHref, StandardCharsets.UTF_8);
-        if (decodedCoverHref == null || decodedCoverHref.isBlank()) {
-            throw new IOException("Cover item has no href attribute");
-        }
-
-        Path opfPath;
-        try {
-            opfPath = findOpfPath(tempDir);
-        } catch (ParserConfigurationException | SAXException e) {
-            throw new IOException("Failed to parse container.xml to locate OPF path", e);
-        }
-
-        Path opfDir = opfPath.getParent();
-        Path coverFilePath = opfDir.resolve(decodedCoverHref).normalize();
-
-        Files.createDirectories(coverFilePath.getParent());
-        Files.write(coverFilePath, coverData);
-    }
-
-    private Path findOpfPath(Path tempDir) throws IOException, ParserConfigurationException, SAXException {
-        Path containerXml = tempDir.resolve("META-INF/container.xml");
-        if (!Files.exists(containerXml)) {
-            throw new IOException("container.xml not found at expected location: " + containerXml);
-        }
-
-        DocumentBuilder builder = SecureXmlUtils.createSecureDocumentBuilder(false);
-        Document containerDoc = builder.parse(containerXml.toFile());
-        Node rootfile = containerDoc.getElementsByTagName("rootfile").item(0);
-        if (rootfile == null) {
-            throw new IOException("No <rootfile> found in container.xml");
-        }
-
-        String opfPath = ((Element) rootfile).getAttribute("full-path");
-        if (opfPath.isBlank()) {
-            throw new IOException("Missing or empty 'full-path' attribute in <rootfile>");
-        }
-
-        return tempDir.resolve(opfPath).normalize();
     }
 
     private File findOpfFile(File rootDir) {

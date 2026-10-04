@@ -1,4 +1,5 @@
 import {Component, DestroyRef, EventEmitter, inject, Input, OnInit, Output,} from "@angular/core";
+import {CoverWriteResult, reportCoverFileResult} from '../../../../book/service/cover-file-result';
 import {InputText} from "primeng/inputtext";
 import {Button} from "primeng/button";
 import {Divider} from "primeng/divider";
@@ -937,6 +938,7 @@ export class MetadataEditorComponent implements OnInit {
       event.originalEvent as HttpResponse<unknown>;
     if (response && response.status === 200) {
       this.isUploading = false;
+      reportCoverFileResult(response.body as CoverWriteResult, this.messageService, this.t);
     } else {
       this.isUploading = false;
       this.messageService.add({
@@ -983,8 +985,12 @@ export class MetadataEditorComponent implements OnInit {
 
   generateCustomCover(bookId: number) {
     this.isGeneratingCover = true;
+    let fileResult: CoverWriteResult | null = null;
     this.bookMetadataManageService.generateCustomCover(bookId).pipe(
-      switchMap(() => this.bookService.getBookByIdFromAPI(bookId, false)),
+      switchMap(result => {
+        fileResult = result;
+        return this.bookService.getBookByIdFromAPI(bookId, false);
+      }),
       finalize(() => this.isGeneratingCover = false),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe({
@@ -995,6 +1001,7 @@ export class MetadataEditorComponent implements OnInit {
           summary: this.t.translate('metadata.editor.toast.successSummary'),
           detail: this.t.translate('metadata.editor.toast.customCoverGenerated'),
         });
+        reportCoverFileResult(fileResult, this.messageService, this.t);
       },
       error: (err) => {
         this.messageService.add({
