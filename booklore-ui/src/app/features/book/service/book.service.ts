@@ -1,7 +1,7 @@
 import {inject, Injectable} from '@angular/core';
-import {first, Observable, of, throwError} from 'rxjs';
+import {first, from, Observable, of, throwError} from 'rxjs';
 import {HttpClient, HttpParams} from '@angular/common/http';
-import {catchError, distinctUntilChanged, filter, finalize, map, shareReplay, tap} from 'rxjs/operators';
+import {catchError, concatMap, distinctUntilChanged, filter, finalize, map, reduce, shareReplay, tap} from 'rxjs/operators';
 import {Book, BookDeletionResponse, BookRecommendation, BookSetting, BookStatusUpdateResponse, BookType, CreatePhysicalBookRequest, PersonalRatingUpdateResponse, ReadStatus} from '../model/book.model';
 import {BookState} from '../model/state/book-state.model';
 import {API_CONFIG} from '../../../core/config/api-config';
@@ -13,6 +13,9 @@ import {BookStateService} from './book-state.service';
 import {BookSocketService} from './book-socket.service';
 import {BookPatchService} from './book-patch.service';
 import {TranslocoService} from '@jsverse/transloco';
+
+/** Books deleted per request; keeps the id list in the URL well under server limits. */
+const DELETE_BATCH_SIZE = 500;
 
 @Injectable({
   providedIn: 'root',
@@ -181,20 +184,30 @@ export class BookService {
 
   deleteBooks(ids: Set<number>): Observable<BookDeletionResponse> {
     const idList = Array.from(ids);
-    const params = new HttpParams().set('ids', idList.join(','));
+    // The ids go in the URL, and servers cap URL length (nginx at 8 KB by default), so a large
+    // selection is deleted a batch at a time; each batch leaves the library view as it completes.
+    const batches: number[][] = [];
+    for (let i = 0; i < idList.length; i += DELETE_BATCH_SIZE) {
+      batches.push(idList.slice(i, i + DELETE_BATCH_SIZE));
+    }
 
-    return this.http.delete<BookDeletionResponse>(this.url, {params}).pipe(
+    return from(batches).pipe(
+      concatMap(batch => this.http.delete<BookDeletionResponse>(this.url, {params: new HttpParams().set('ids', batch.join(','))}).pipe(
+        tap(() => {
+          const batchIds = new Set(batch);
+          const currentState = this.bookStateService.getCurrentBookState();
+          this.bookStateService.updateBookState({
+            books: (currentState.books || []).filter(book => !batchIds.has(book.id)),
+            loaded: true,
+            error: null,
+          });
+        })
+      )),
+      reduce<BookDeletionResponse, BookDeletionResponse>((all, response) => ({
+        deleted: [...all.deleted, ...(response.deleted || [])],
+        failedFileDeletions: [...all.failedFileDeletions, ...(response.failedFileDeletions || [])],
+      }), {deleted: [], failedFileDeletions: []}),
       tap(response => {
-        const currentState = this.bookStateService.getCurrentBookState();
-        const remainingBooks = (currentState.books || []).filter(
-          book => !ids.has(book.id)
-        );
-
-        this.bookStateService.updateBookState({
-          books: remainingBooks,
-          loaded: true,
-          error: null,
-        });
 
         if (response.failedFileDeletions?.length > 0) {
           this.messageService.add({

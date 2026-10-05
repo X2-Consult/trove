@@ -66,7 +66,7 @@ app:
     enabled: ${METADATA_BROWSER_ENABLED:true}
 
 server:
-  max-http-header-size: 128KB
+  max-http-request-header-size: 128KB
   forward-headers-strategy: native
   port: ${TROVE_PORT:${BOOKLORE_PORT:6060}}
   compression:
