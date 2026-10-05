@@ -36,6 +36,25 @@
 
       <div class="setting-item">
         <div class="setting-header-standalone">
+          <label class="setting-label">{{ t('layoutLabel') }}</label>
+        </div>
+        <p class="setting-description">{{ t('layoutDesc') }}</p>
+        <div class="setting-options">
+          <div class="select-group">
+            <p-select size="small" [options]="layoutOptions" [ngModel]="paging.isPaged() ? 'pages' : 'scroll'"
+                      (ngModelChange)="paging.setMode($event)"
+                      optionLabel="label" optionValue="value" [ariaLabel]="t('layoutLabel')" appendTo="body"></p-select>
+            @if (paging.isPaged()) {
+              <p-select size="small" [options]="pageSizeOptions" [ngModel]="paging.pageSize()"
+                        (ngModelChange)="paging.setPageSize($event)"
+                        optionLabel="label" optionValue="value" [ariaLabel]="t('pageSizeLabel')" appendTo="body"></p-select>
+            }
+          </div>
+        </div>
+      </div>
+
+      <div class="setting-item">
+        <div class="setting-header-standalone">
           <label class="setting-label">{{ t('visibleSortFields') }}</label>
         </div>
         <p class="setting-description">

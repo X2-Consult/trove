@@ -63,6 +63,7 @@ public class BookLoreUserTransformer {
                         }));
                         case VISIBLE_SORT_FIELDS -> userSettings.setVisibleSortFields(objectMapper.readValue(value, new TypeReference<>() {
                         }));
+                        case BROWSE_PAGINATION -> userSettings.setBrowsePagination(objectMapper.readValue(value, BookLoreUser.UserSettings.BrowsePagination.class));
                     }
                 } else {
                     switch (settingKey) {

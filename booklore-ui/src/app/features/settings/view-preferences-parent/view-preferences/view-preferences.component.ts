@@ -1,3 +1,4 @@
+import {BrowsePaginationService, PAGE_SIZE_OPTIONS} from '../../../../shared/service/browse-pagination.service';
 import {Component, ElementRef, inject, OnDestroy, OnInit, viewChild} from '@angular/core';
 import {Button} from 'primeng/button';
 
@@ -43,6 +44,8 @@ import {CdkDrag, CdkDragDrop, CdkDragHandle, CdkDropList, moveItemInArray} from 
   styleUrl: './view-preferences.component.scss'
 })
 export class ViewPreferencesComponent implements OnInit, OnDestroy {
+  protected readonly paging = inject(BrowsePaginationService);
+
   private t = inject(TranslocoService);
 
   private readonly sortOptionDefs: {field: string; translationKey: string}[] = [
@@ -82,6 +85,8 @@ export class ViewPreferencesComponent implements OnInit, OnDestroy {
   entityTypeOptions: {label: string; value: string; translationKey: string}[] = [];
 
   viewModeOptions: {label: string; value: string; translationKey: string}[] = [];
+  layoutOptions: {label: string; value: string}[] = [];
+  pageSizeOptions: {label: string; value: number}[] = [];
 
   libraryOptions: { label: string; value: number }[] = [];
   shelfOptions: { label: string; value: number }[] = [];
@@ -222,6 +227,13 @@ export class ViewPreferencesComponent implements OnInit, OnDestroy {
       {label: this.t.translate('settingsView.librarySort.viewGrid'), value: 'GRID', translationKey: 'viewGrid'},
       {label: this.t.translate('settingsView.librarySort.viewTable'), value: 'TABLE', translationKey: 'viewTable'}
     ];
+    this.layoutOptions = [
+      {label: this.t.translate('settingsView.librarySort.layoutScroll'), value: 'scroll'},
+      {label: this.t.translate('settingsView.librarySort.layoutPages'), value: 'pages'}
+    ];
+    this.pageSizeOptions = PAGE_SIZE_OPTIONS.map(size => ({
+      label: this.t.translate('settingsView.librarySort.perPage', {count: size}), value: size
+    }));
   }
 
   ngOnDestroy(): void {

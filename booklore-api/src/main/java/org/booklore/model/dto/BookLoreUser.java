@@ -80,6 +80,7 @@ public class BookLoreUser {
         public List<String> visibleFilters;
         public List<String> visibleSortFields;
         public DashboardConfig dashboardConfig;
+        public BrowsePagination browsePagination;
 
         @Data
         @Builder
@@ -230,6 +231,16 @@ public class BookLoreUser {
             public enum GlobalOrIndividual {
                 Global, Individual
             }
+        }
+
+        /** How book grids are laid out: "scroll" (one continuous list, the default) or "pages". */
+        @Data
+        @Builder
+        @AllArgsConstructor
+        @NoArgsConstructor
+        public static class BrowsePagination {
+            private String mode;
+            private Integer pageSize;
         }
 
         @Data

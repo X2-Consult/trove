@@ -534,3 +534,12 @@
 .book-state-wrapper {
   position: relative;
 }
+
+// Pages mode: one page of cards, then the pager, scrolling within the same space as the virtual scroller.
+.paged-books {
+  width: 100%;
+  height: calc(100dvh - 10.9rem);
+  padding: 1rem;
+  box-sizing: border-box;
+  overflow-y: auto;
+}

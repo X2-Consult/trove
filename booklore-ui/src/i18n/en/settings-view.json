@@ -68,7 +68,13 @@
     "visibleSortFields": "Visible Sort Fields",
     "visibleSortFieldsDesc": "Choose which sort fields appear in the book browser's sort dropdown and drag to reorder.",
     "sortFieldCount": "{{count}} of {{total}} selected",
-    "resetToDefaults": "Reset to defaults"
+    "resetToDefaults": "Reset to defaults",
+    "layoutLabel": "Book list layout",
+    "layoutDesc": "Show books as one continuous scrolling list, or in numbered pages. Applies to the library and series pages, and can also be switched from the library toolbar.",
+    "layoutScroll": "Scrolling",
+    "layoutPages": "Pages",
+    "pageSizeLabel": "Books per page",
+    "perPage": "{{count}} per page"
   },
   "filter": {
     "sectionTitle": "Filter Preferences",

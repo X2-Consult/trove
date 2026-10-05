@@ -70,7 +70,9 @@
       "moreActions": "More actions",
       "selectAll": "Select all books",
       "deselectAll": "Deselect all books",
-      "deleteSelected": "Delete selected books"
+      "deleteSelected": "Delete selected books",
+      "switchToPages": "Show in pages",
+      "switchToScroll": "Show as one scrolling list"
     },
     "placeholder": {
       "selectColumns": "Select Columns",
@@ -853,7 +855,9 @@
       "selectAll": "Select all books",
       "deselectAll": "Deselect all books",
       "deleteSelected": "Delete selected books"
-    }
+    },
+    "switchToPages": "Show in pages",
+    "switchToScroll": "Show as one scrolling list"
   },
   "duplicateMerger": {
     "title": "Find Duplicates",
@@ -902,5 +906,8 @@
       "mergeFailedDetail": "Could not merge this group.",
       "mergePartialDetail": "{{ success }} merged, {{ failed }} failed."
     }
+  },
+  "pager": {
+    "report": "{first}–{last} of {totalRecords} books"
   }
 }

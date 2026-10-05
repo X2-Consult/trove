@@ -241,14 +241,19 @@
                 <h3 class="section-title">
                   <i class="pi pi-objects-column"></i>
                   {{ t('booksInSeries') }}
+                  <p-button class="paging-toggle" size="small" [text]="true" [rounded]="true" severity="secondary"
+                            [icon]="paging.isPaged() ? 'pi pi-arrows-v' : 'pi pi-book'"
+                            [pTooltip]="paging.isPaged() ? t('switchToScroll') : t('switchToPages')"
+                            [ariaLabel]="paging.isPaged() ? t('switchToScroll') : t('switchToPages')"
+                            (onClick)="togglePaging()"></p-button>
                 </h3>
                 <div class="series-items-grid" #Container
                   [ngStyle]="{'grid-template-columns': 'repeat(auto-fill, minmax(' + gridColumnMinWidth + ', 1fr))'}">
-                  @for (book of books; track book; let i = $index) {
+                  @for (book of visibleBooks(books); track book) {
                     <div class="grid-item"
                       [ngStyle]="{width: currentCardSize.width + 'px', height: currentCardSize.height + 'px'}">
                       <app-book-card
-                          [index]="i"
+                          [index]="books.indexOf(book)"
                           [book]="book"
                           [isCheckboxEnabled]="true"
                           [isSelected]="selectedBooks.has(book.id)"
@@ -263,6 +268,9 @@
                     <div class="empty-state">{{ t('noBooksFound') }}</div>
                   }
                 </div>
+                @if (paging.isPaged() && books.length > 0) {
+                  <app-book-pager [totalRecords]="books.length" [page]="pageFor(books)" (pageChange)="onPageChange($event)"></app-book-pager>
+                }
 
               </div>
 
@@ -274,7 +282,7 @@
       <!-- BOOK LIST TAB -->
       <p-tabpanel value="list">
         <div class="book-list-container">
-          @for (book of books; track book.id; let i = $index) {
+          @for (book of visibleBooks(books); track book.id) {
             <div class="book-list-card">
               <div class="list-number-col">
                 <span class="list-series-number">
@@ -351,6 +359,9 @@
             <div class="empty-state">{{ t('noBooksFound') }}</div>
           }
         </div>
+        @if (paging.isPaged() && books.length > 0) {
+          <app-book-pager [totalRecords]="books.length" [page]="pageFor(books)" (pageChange)="onPageChange($event)"></app-book-pager>
+        }
       </p-tabpanel>
 
     </p-tabpanels>

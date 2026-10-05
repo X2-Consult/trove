@@ -186,6 +186,15 @@
             </p-popover>
           </div>
 
+          <a class="topbar-items topbar-item" (click)="togglePaging()"
+             [attr.aria-label]="paging.isPaged() ? t('tooltip.switchToScroll') : t('tooltip.switchToPages')">
+            <i
+              [ngClass]="paging.isPaged() ? 'pi pi-arrows-v' : 'pi pi-book'"
+              [pTooltip]="paging.isPaged() ? t('tooltip.switchToScroll') : t('tooltip.switchToPages')"
+              tooltipPosition="top">
+            </i>
+          </a>
+
           <a class="topbar-items topbar-item" (click)="toggleTableGrid()">
             <i
               [ngClass]="viewIcon"
@@ -286,14 +295,44 @@
           @if (bookState?.books; as books) {
             @if (currentViewMode === 'table' && books.length > 0) {
               <app-book-table
-                [books]="books"
+                [books]="visibleBooks(books)"
                 [preselectedBookIds]="selectedBooks"
                 (selectedBooksChange)="onSelectedBooksChange($event)"
                 [sortOption]="this.bookSorter.selectedSort!"
                 [visibleColumns]="visibleColumns"
               ></app-book-table>
+              @if (paging.isPaged()) {
+                <app-book-pager [totalRecords]="books.length" [page]="pageFor(books)" (pageChange)="onPageChange($event)"></app-book-pager>
+              }
             }
-            @if (currentViewMode === 'grid') {
+            @if (currentViewMode === 'grid' && paging.isPaged()) {
+              <div class="paged-books">
+                <div
+                  class="grid"
+                  [ngStyle]="{'grid-template-columns': 'repeat(auto-fill, minmax(' + gridColumnMinWidth + ', 1fr))'}">
+                  @for (book of visibleBooks(books); track book.id) {
+                    <div
+                      class="virtual-scroller-item"
+                      [ngStyle]="{width: currentCardSize.width + 'px', height: getCardHeight(book) + 'px'}">
+                      <app-book-card
+                        [index]="books.indexOf(book)"
+                        [book]="book"
+                        [isCheckboxEnabled]="true"
+                        [seriesViewEnabled]="seriesViewEnabled"
+                        [onBookSelect]="handleBookSelect.bind(this)"
+                        [isSeriesCollapsed]="seriesCollapseFilter.isSeriesCollapsed"
+                        (checkboxClick)="onCheckboxClicked($event)"
+                        [isSelected]="selectedBooks.has(book.id)"
+                        [useSquareCovers]="isAudiobookOnlyLibrary"
+                        [overlayPreferenceService]="bookCardOverlayPreferenceService">
+                      </app-book-card>
+                    </div>
+                  }
+                </div>
+                <app-book-pager [totalRecords]="books.length" [page]="pageFor(books)" (pageChange)="onPageChange($event)"></app-book-pager>
+              </div>
+            }
+            @if (currentViewMode === 'grid' && !paging.isPaged()) {
               <virtual-scroller class="virtual-scroller" #scroll [items]="books">
                 <div
                   class="grid"

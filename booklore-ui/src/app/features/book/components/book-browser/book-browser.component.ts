@@ -1,5 +1,7 @@
 import {AfterViewInit, ChangeDetectorRef, Component, HostListener, inject, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {confirmBookDeletion} from '../../../../shared/util/confirm-book-deletion';
+import {BrowsePaginationService} from '../../../../shared/service/browse-pagination.service';
+import {BookPagerComponent} from '../../../../shared/components/book-pager/book-pager.component';
 import {ActivatedRoute, NavigationStart, Router} from '@angular/router';
 import {ConfirmationService, MenuItem, MessageService} from 'primeng/api';
 import {PageTitleService} from '../../../../shared/service/page-title.service';
@@ -75,7 +77,7 @@ export enum EntityType {
   templateUrl: './book-browser.component.html',
   styleUrls: ['./book-browser.component.scss'],
   imports: [
-    Button, VirtualScrollerModule, BookCardComponent, AsyncPipe, ProgressSpinner, Menu, InputText, FormsModule,
+    Button, VirtualScrollerModule, BookCardComponent, BookPagerComponent, AsyncPipe, ProgressSpinner, Menu, InputText, FormsModule,
     BookTableComponent, BookFilterComponent, Tooltip, NgClass, NgStyle, Popover,
     Checkbox, Slider, Divider, MultiSelect, TieredMenu, BadgeModule, MultiSortPopoverComponent, TranslocoDirective
   ],
@@ -97,6 +99,12 @@ export class BookBrowserComponent implements OnInit, AfterViewInit, OnDestroy {
 
   protected userService = inject(UserService);
   protected coverScalePreferenceService = inject(CoverScalePreferenceService);
+  protected paging = inject(BrowsePaginationService);
+  // Pages mode: the page shown (0-based), kept in the URL's page parameter; back to the first page
+  // whenever the filter, filter mode, sort or search changes.
+  currentPage = 0;
+  private listKey: string | null = null;
+  private lastSearchTerm = '';
   protected columnPreferenceService = inject(TableColumnPreferenceService);
   protected sidebarFilterTogglePrefService = inject(SidebarFilterTogglePrefService);
   protected seriesCollapseFilter = inject(SeriesCollapseFilter);
@@ -416,6 +424,15 @@ export class BookBrowserComponent implements OnInit, AfterViewInit, OnDestroy {
       this.activatedRoute.queryParamMap,
       this.userService.userState$.pipe(filter(u => !!u?.user && u.loaded))
     ]).subscribe(([entityInfo, queryParamMap, user]) => {
+      const listKey = JSON.stringify([entityInfo.entityType, entityInfo.entityId, queryParamMap.get('filter'),
+        queryParamMap.get('fmode'), queryParamMap.get('sort'), queryParamMap.get('direction')]);
+      const listChanged = this.listKey !== null && listKey !== this.listKey;
+      this.listKey = listKey;
+      if (listChanged) {
+        this.onPageChange(0);
+      } else {
+        this.currentPage = Math.max(0, (Number(queryParamMap.get('page')) || 1) - 1);
+      }
       const parseResult = this.queryParamsService.parseQueryParams(
         queryParamMap,
         user.user?.userSettings?.entityViewPreferences,
@@ -496,6 +513,11 @@ export class BookBrowserComponent implements OnInit, AfterViewInit, OnDestroy {
   private setupSearchTermSubscription(): void {
     this.searchTerm$.subscribe(term => {
       this.hasSearchTerm = !!term && term.trim().length > 0;
+      const trimmed = (term ?? '').trim();
+      if (trimmed !== this.lastSearchTerm) {
+        this.lastSearchTerm = trimmed;
+        this.onPageChange(0);
+      }
     });
   }
 
@@ -774,6 +796,34 @@ export class BookBrowserComponent implements OnInit, AfterViewInit, OnDestroy {
       this.selectedFilter.next(null);
     }
     this.clearSearch();
+  }
+
+  /** The books on the current page in Pages mode, otherwise all of them. */
+  visibleBooks(books: Book[]): Book[] {
+    return this.paging.slice(books, this.currentPage);
+  }
+
+  pageFor(books: Book[]): number {
+    return this.paging.clampPage(this.currentPage, books.length);
+  }
+
+  onPageChange(page: number): void {
+    if (page === this.currentPage && this.activatedRoute.snapshot.queryParamMap.get('page') === (page > 0 ? String(page + 1) : null)) {
+      return;
+    }
+    this.currentPage = page;
+    this.router.navigate([], {
+      relativeTo: this.activatedRoute,
+      queryParams: {page: page > 0 ? page + 1 : null},
+      queryParamsHandling: 'merge',
+      replaceUrl: true
+    });
+    document.querySelector('.paged-books')?.scrollTo({top: 0});
+  }
+
+  togglePaging(): void {
+    this.paging.setMode(this.paging.isPaged() ? 'scroll' : 'pages');
+    this.onPageChange(0);
   }
 
   toggleTableGrid(): void {

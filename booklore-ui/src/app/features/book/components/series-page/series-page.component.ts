@@ -1,5 +1,7 @@
 import {FormsModule} from "@angular/forms";
 import {confirmBookDeletion} from '../../../../shared/util/confirm-book-deletion';
+import {BrowsePaginationService} from '../../../../shared/service/browse-pagination.service';
+import {BookPagerComponent} from '../../../../shared/components/book-pager/book-pager.component';
 import {Button} from "primeng/button";
 import {ActivatedRoute, Router} from "@angular/router";
 import {AsyncPipe, DecimalPipe, KeyValuePipe, NgClass, NgStyle} from "@angular/common";
@@ -70,6 +72,7 @@ interface SeriesStats {
   styleUrls: ["./series-page.component.scss"],
   imports: [
     AsyncPipe,
+    BookPagerComponent,
     DecimalPipe,
     KeyValuePipe,
     Button,
@@ -110,6 +113,10 @@ export class SeriesPageComponent implements OnDestroy, AfterViewChecked {
   private bookService = inject(BookService);
   private bookMetadataManageService = inject(BookMetadataManageService);
   protected coverScalePreferenceService = inject(CoverScalePreferenceService);
+  protected paging = inject(BrowsePaginationService);
+  // Pages mode: the page shown (0-based), from the URL's page parameter.
+  currentPage = 0;
+  private pageSub: Subscription;
   private metadataCenterViewMode: "route" | "dialog" = "route";
   private dialogRef?: DynamicDialogRef | null;
   private router = inject(Router);
@@ -411,6 +418,9 @@ export class SeriesPageComponent implements OnDestroy, AfterViewChecked {
   );
 
   constructor() {
+    this.pageSub = this.route.queryParamMap.subscribe(params => {
+      this.currentPage = Math.max(0, (Number(params.get('page')) || 1) - 1);
+    });
     this.userSub = this.userService.userState$.pipe(filter(u => !!u?.user && u.loaded))
       .subscribe(userState => {
         this.metadataMenuItems = this.bookMenuService.getMetadataMenuItems(
@@ -428,6 +438,31 @@ export class SeriesPageComponent implements OnDestroy, AfterViewChecked {
 
   ngOnDestroy(): void {
     this.userSub.unsubscribe();
+    this.pageSub.unsubscribe();
+  }
+
+  /** The books on the current page in Pages mode, otherwise all of them. */
+  visibleBooks(books: Book[]): Book[] {
+    return this.paging.slice(books, this.currentPage);
+  }
+
+  pageFor(books: Book[]): number {
+    return this.paging.clampPage(this.currentPage, books.length);
+  }
+
+  onPageChange(page: number): void {
+    this.currentPage = page;
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: {page: page > 0 ? page + 1 : null},
+      queryParamsHandling: 'merge',
+      replaceUrl: true
+    });
+  }
+
+  togglePaging(): void {
+    this.paging.setMode(this.paging.isPaged() ? 'scroll' : 'pages');
+    this.onPageChange(0);
   }
 
   get currentCardSize() {

@@ -7,6 +7,12 @@ import {catchError, distinctUntilChanged, finalize, shareReplay, tap} from 'rxjs
 import {AuthService} from '../../../shared/service/auth.service';
 import {DashboardConfig} from '../../dashboard/models/dashboard-config.model';
 
+/** How book grids are laid out: one continuous scrolling list (default) or numbered pages. */
+export interface BrowsePagination {
+  mode: 'scroll' | 'pages';
+  pageSize: number;
+}
+
 export interface EntityViewPreferences {
   global: EntityViewPreference;
   overrides: EntityViewPreferenceOverride[];
@@ -279,6 +285,7 @@ export interface UserSettings {
   filterMode: BookFilterMode;
   visibleFilters?: VisibleFilterType[];
   visibleSortFields?: string[];
+  browsePagination?: BrowsePagination;
   metadataCenterViewMode: 'route' | 'dialog';
   enableSeriesView: boolean;
   entityViewPreferences: EntityViewPreferences;
