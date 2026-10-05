@@ -20,6 +20,11 @@ export class UrlHelperService {
     return this.authService.getInternalAccessToken();
   }
 
+  /** Cover and thumbnail URLs: no token once the media cookie is set, so they stay cacheable. */
+  private appendImageAuth(url: string): string {
+    return this.authService.isMediaCookieReady() ? url : this.appendToken(url);
+  }
+
   private appendToken(url: string): string {
     const token = this.getToken();
     return token ? `${url}${url.includes('?') ? '&' : '?'}token=${token}` : url;
@@ -39,7 +44,7 @@ export class UrlHelperService {
     if (coverUpdatedOn) {
       url += `?${coverUpdatedOn}`;
     }
-    return this.appendToken(url);
+    return this.appendImageAuth(url);
   }
 
   getDirectThumbnailUrl(bookId: number, coverUpdatedOn?: string): string {
@@ -47,7 +52,7 @@ export class UrlHelperService {
     if (coverUpdatedOn) {
       url += `?${coverUpdatedOn}`;
     }
-    return this.appendToken(url);
+    return this.appendImageAuth(url);
   }
 
   getCoverUrl(bookId: number, coverUpdatedOn?: string): string {
@@ -64,12 +69,12 @@ export class UrlHelperService {
     if (coverUpdatedOn) {
       url += `?${coverUpdatedOn}`;
     }
-    return this.appendToken(url);
+    return this.appendImageAuth(url);
   }
 
   getBackupCoverUrl(bookId: number): string {
     const url = `${this.mediaBaseUrl}/book/${bookId}/backup-cover`;
-    return this.appendToken(url);
+    return this.appendImageAuth(url);
   }
 
   getAudiobookCoverUrl(bookId: number, audiobookCoverUpdatedOn?: string): string {
@@ -87,7 +92,7 @@ export class UrlHelperService {
     if (audiobookCoverUpdatedOn) {
       url += `?${audiobookCoverUpdatedOn}`;
     }
-    return this.appendToken(url);
+    return this.appendImageAuth(url);
   }
 
   getAudiobookThumbnailUrl(bookId: number, audiobookCoverUpdatedOn?: string): string {
@@ -105,7 +110,7 @@ export class UrlHelperService {
     if (audiobookCoverUpdatedOn) {
       url += `?${audiobookCoverUpdatedOn}`;
     }
-    return this.appendToken(url);
+    return this.appendImageAuth(url);
   }
 
   getBookdropCoverUrl(bookdropId: number): string {

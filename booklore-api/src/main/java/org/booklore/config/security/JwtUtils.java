@@ -44,6 +44,10 @@ public class JwtUtils {
     static final String TOKEN_USE_CLAIM = "token_use";
     static final String TOKEN_USE_ACCESS = "access";
     static final String TOKEN_USE_REFRESH = "refresh";
+    // Read-only, for the web app's image requests (covers, thumbnails, author photos), sent as the
+    // trove_media cookie so image URLs carry no token and stay cacheable; see MediaCookieController.
+    static final String TOKEN_USE_MEDIA = "media";
+    public static final long mediaTokenExpirationMs = refreshTokenExpirationMs;
     // Tokens issued before the claim existed are told apart by lifetime instead.
     private static final long LEGACY_ACCESS_LIFETIME_SLACK_MS = 1000L * 60;
 
@@ -76,6 +80,30 @@ public class JwtUtils {
 
     public String generateRefreshToken(BookLoreUserEntity user) {
         return generateToken(user, true);
+    }
+
+    public String generateMediaToken(BookLoreUserEntity user) {
+        Instant now = Instant.now();
+        return Jwts.builder()
+                .issuer(ISSUER)
+                .id(UUID.randomUUID().toString())
+                .subject(user.getUsername())
+                .claim("userId", user.getId())
+                .claim(TOKEN_USE_CLAIM, TOKEN_USE_MEDIA)
+                .issuedAt(Date.from(now))
+                .expiration(Date.from(now.plusMillis(mediaTokenExpirationMs)))
+                .signWith(getSigningKey(), Jwts.SIG.HS256)
+                .compact();
+    }
+
+    /** Only a media token: it opens image endpoints and nothing else. */
+    public boolean validateMediaToken(String token) {
+        try {
+            return TOKEN_USE_MEDIA.equals(extractClaims(token).get(TOKEN_USE_CLAIM));
+        } catch (JwtException e) {
+            log.debug("Invalid media token: {}", e.getMessage());
+            return false;
+        }
     }
 
     public boolean validateToken(String token) {

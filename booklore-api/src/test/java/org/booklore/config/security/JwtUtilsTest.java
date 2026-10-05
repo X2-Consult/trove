@@ -113,4 +113,15 @@ class JwtUtilsTest {
 
         assertThat(jwtUtils.validateAccessToken(tampered)).isFalse();
     }
+
+    @Test
+    void mediaTokenOpensImagesOnly() {
+        String media = jwtUtils.generateMediaToken(user);
+
+        assertThat(jwtUtils.validateMediaToken(media)).isTrue();
+        assertThat(jwtUtils.validateAccessToken(media)).isFalse();
+        assertThat(jwtUtils.validateMediaToken(jwtUtils.generateAccessToken(user))).isFalse();
+        assertThat(jwtUtils.validateMediaToken(jwtUtils.generateRefreshToken(user))).isFalse();
+        assertThat(jwtUtils.extractUserId(media)).isEqualTo(7L);
+    }
 }

@@ -24,6 +24,28 @@ export class AuthService {
   public tokenSubject = new BehaviorSubject<string | null>(this.getInternalAccessToken());
   public token$ = this.tokenSubject.asObservable();
 
+  // Set once the server has given us the trove_media cookie; image URLs then leave out the token
+  // and stay the same across logins and token refreshes, so the browser keeps the images cached.
+  private mediaCookieReady = false;
+
+  constructor() {
+    if (this.getInternalAccessToken()) {
+      // After construction: the request goes through the auth interceptor, which injects this service.
+      queueMicrotask(() => this.refreshMediaCookie());
+    }
+  }
+
+  isMediaCookieReady(): boolean {
+    return this.mediaCookieReady;
+  }
+
+  private refreshMediaCookie(): void {
+    this.http.post<void>(`${API_CONFIG.BASE_URL}/api/v1/session/media-cookie`, {}).subscribe({
+      next: () => this.mediaCookieReady = true,
+      error: () => this.mediaCookieReady = false
+    });
+  }
+
   internalLogin(credentials: { username: string; password: string }): Observable<{ accessToken: string; refreshToken: string, isDefaultPassword: string }> {
     return this.http.post<{ accessToken: string; refreshToken: string, isDefaultPassword: string }>(`${this.apiUrl}/login`, credentials).pipe(
       tap((response) => {
@@ -63,6 +85,7 @@ export class AuthService {
     localStorage.setItem('accessToken_Internal', accessToken);
     localStorage.setItem('refreshToken_Internal', refreshToken);
     this.tokenSubject.next(accessToken);
+    this.refreshMediaCookie();
   }
 
   getInternalAccessToken(): string | null {
@@ -104,6 +127,7 @@ export class AuthService {
     localStorage.removeItem('accessToken_Internal');
     localStorage.removeItem('refreshToken_Internal');
     this.tokenSubject.next(null);
+    this.mediaCookieReady = false;
     this.postLoginInitialized = false;
     this.getRxStompService().deactivate();
   }

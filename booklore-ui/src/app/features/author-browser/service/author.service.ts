@@ -109,7 +109,7 @@ export class AuthorService {
   }
 
   getAuthorPhotoUrl(authorId: number): string {
-    const token = this.authService.getInternalAccessToken();
+    const token = this.authService.isMediaCookieReady() ? null : this.authService.getInternalAccessToken();
     let url = `${this.mediaBaseUrl}/author/${authorId}/photo`;
     if (token) {
       url += `?token=${token}`;
@@ -118,7 +118,7 @@ export class AuthorService {
   }
 
   getAuthorThumbnailUrl(authorId: number, cacheBuster?: number): string {
-    const token = this.authService.getInternalAccessToken();
+    const token = this.authService.isMediaCookieReady() ? null : this.authService.getInternalAccessToken();
     let url = `${this.mediaBaseUrl}/author/${authorId}/thumbnail`;
     if (token) {
       url += `?token=${token}`;
