@@ -57,8 +57,8 @@ export class MetadataAdvancedFetchOptionsComponent implements OnChanges {
     'language', 'categories', 'cover', 'pageCount',
   ];
 
-  providers: string[] = ['Amazon', 'Google', 'GoodReads', 'Hardcover', 'OpenLibrary', 'Comicvine', 'Douban', 'Lubimyczytac', 'Ranobedb', 'Audible', 'Bookshelf'];
-  providersWithClear: string[] = ['Clear All', 'Amazon', 'Google', 'GoodReads', 'Hardcover', 'OpenLibrary', 'Comicvine', 'Douban', 'Lubimyczytac', 'Ranobedb', 'Audible', 'Bookshelf'];
+  providers: string[] = ['Amazon', 'Google', 'GoodReads', 'Hardcover', 'OpenLibrary', 'Comicvine', 'Douban', 'Lubimyczytac', 'Ranobedb', 'Audible', 'Bookshelf', 'AppleBooks'];
+  providersWithClear: string[] = ['Clear All', 'Amazon', 'Google', 'GoodReads', 'Hardcover', 'OpenLibrary', 'Comicvine', 'Douban', 'Lubimyczytac', 'Ranobedb', 'Audible', 'Bookshelf', 'AppleBooks'];
 
   refreshCovers: boolean = false;
   mergeCategories: boolean = false;

@@ -56,6 +56,7 @@ export interface MetadataProviderSettings {
   google: Google;
   goodReads: Goodreads;
   ranobedb: Ranobedb;
+  appleBooks?: AppleBooks;
   hardcover: Hardcover;
   openLibrary: OpenLibrary;
   comicvine: Comicvine;
@@ -83,6 +84,11 @@ export interface Goodreads {
 
 export interface Ranobedb {
   enabled: boolean;
+}
+
+export interface AppleBooks {
+  enabled: boolean;
+  country: string;
 }
 
 export interface Hardcover {

@@ -123,6 +123,10 @@ public class SettingPersistenceHelper {
         defaultMetadataProviderSettings.setOpenLibrary(defaultOpenLibrary);
         defaultMetadataProviderSettings.setComicvine(defaultComicvine);
         defaultMetadataProviderSettings.setRanobedb(defaultRanobedb);
+        MetadataProviderSettings.AppleBooks defaultAppleBooks = new MetadataProviderSettings.AppleBooks();
+        defaultAppleBooks.setEnabled(false);
+        defaultAppleBooks.setCountry("US");
+        defaultMetadataProviderSettings.setAppleBooks(defaultAppleBooks);
         defaultMetadataProviderSettings.setDouban(defaultDouban);
         defaultMetadataProviderSettings.setBookshelf(defaultBookshelf);
 

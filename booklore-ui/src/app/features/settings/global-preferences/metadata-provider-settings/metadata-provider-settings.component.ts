@@ -98,6 +98,8 @@ export class MetadataProviderSettingsComponent implements OnInit {
   doubanEnabled: boolean = false;
   lubimyCzytacEnabled: boolean = false;
   ranobedbEnabled: boolean = false;
+  appleBooksEnabled: boolean = false;
+  appleBooksCountry: string = 'US';
   bookshelfEnabled: boolean = false;
   bookshelfToken: string = '';
   googleApiKey: string = '';
@@ -132,6 +134,8 @@ export class MetadataProviderSettingsComponent implements OnInit {
         this.doubanEnabled = metadataProviderSettings?.douban?.enabled ?? false;
         this.lubimyCzytacEnabled = metadataProviderSettings?.lubimyczytac?.enabled ?? false;
         this.ranobedbEnabled = metadataProviderSettings?.ranobedb?.enabled ?? false;
+        this.appleBooksEnabled = metadataProviderSettings?.appleBooks?.enabled ?? false;
+        this.appleBooksCountry = metadataProviderSettings?.appleBooks?.country || 'US';
         this.audibleEnabled = metadataProviderSettings?.audible?.enabled ?? false;
         this.selectedAudibleDomain = metadataProviderSettings?.audible?.domain ?? 'com';
         this.bookshelfEnabled = metadataProviderSettings?.bookshelf?.enabled ?? false;
@@ -185,6 +189,10 @@ export class MetadataProviderSettingsComponent implements OnInit {
           douban: {enabled: this.doubanEnabled},
           lubimyczytac: {enabled: this.lubimyCzytacEnabled},
           ranobedb: {enabled: this.ranobedbEnabled},
+          appleBooks: {
+            enabled: this.appleBooksEnabled,
+            country: (this.appleBooksCountry || 'US').trim().toUpperCase()
+          },
           audible: {
             enabled: this.audibleEnabled,
             domain: this.selectedAudibleDomain

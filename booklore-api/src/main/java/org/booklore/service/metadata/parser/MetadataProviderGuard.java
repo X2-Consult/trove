@@ -31,7 +31,9 @@ public class MetadataProviderGuard {
 
     static final Map<MetadataProvider, Pacing> PACING = Map.of(
             MetadataProvider.Amazon, new Pacing(Duration.ofMillis(1500), Duration.ofMillis(1000)),
-            MetadataProvider.GoodReads, new Pacing(Duration.ofMillis(1000), Duration.ofMillis(1000)));
+            MetadataProvider.GoodReads, new Pacing(Duration.ofMillis(1000), Duration.ofMillis(1000)),
+            // Apple's iTunes Search API allows about 20 requests a minute.
+            MetadataProvider.AppleBooks, new Pacing(Duration.ofMillis(3000), Duration.ofMillis(500)));
 
     // GoodReads' WAF gate comes and goes within minutes; Amazon's bot check tends to stick
     // (30 min is what the Bookshelf backend's Amazon scraper backs off for).
@@ -39,7 +41,8 @@ public class MetadataProviderGuard {
     static final Map<MetadataProvider, Duration> BLOCK_COOLDOWN = Map.of(
             MetadataProvider.Amazon, Duration.ofMinutes(30),
             MetadataProvider.GoodReads, Duration.ofMinutes(3),
-            MetadataProvider.Google, Duration.ofMinutes(30));
+            MetadataProvider.Google, Duration.ofMinutes(30),
+            MetadataProvider.AppleBooks, Duration.ofMinutes(2));
 
     private static final Duration DEFAULT_BLOCK_COOLDOWN = Duration.ofMinutes(5);
 

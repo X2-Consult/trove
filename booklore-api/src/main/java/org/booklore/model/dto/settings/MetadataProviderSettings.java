@@ -17,6 +17,7 @@ public class MetadataProviderSettings {
     private Lubimyczytac lubimyczytac;
     private Audible audible;
     private Bookshelf bookshelf;
+    private AppleBooks appleBooks;
 
     @Data
     public static class Amazon {
@@ -52,6 +53,13 @@ public class MetadataProviderSettings {
     public static class Comicvine {
         private boolean enabled;
         private String apiKey;
+    }
+
+    @Data
+    public static class AppleBooks {
+        private boolean enabled;
+        /** Which Apple Books store to search (two-letter country code); US when empty. */
+        private String country;
     }
 
     @Data

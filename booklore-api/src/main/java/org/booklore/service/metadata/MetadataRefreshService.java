@@ -442,6 +442,7 @@ public class MetadataRefreshService {
             case Douban -> settings.getDouban() != null && settings.getDouban().isEnabled();
             case Lubimyczytac -> settings.getLubimyczytac() != null && settings.getLubimyczytac().isEnabled();
             case Bookshelf -> settings.getBookshelf() != null && settings.getBookshelf().isEnabled();
+            case AppleBooks -> settings.getAppleBooks() != null && settings.getAppleBooks().isEnabled();
             default -> true;
         };
     }

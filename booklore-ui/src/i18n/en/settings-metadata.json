@@ -62,7 +62,9 @@
     "apiToken": "API Token",
     "hardcoverPlaceholder": "Enter Hardcover API token",
     "comicvinePlaceholder": "Enter Comic Vine API token",
-    "bookshelfPlaceholder": "Enter Bookshelf API token"
+    "bookshelfPlaceholder": "Enter Bookshelf API token",
+    "appleBooksCountry": "Store country",
+    "appleBooksCountryDesc": "Two-letter code of the Apple Books store to search (e.g. NZ, US, GB). Stores carry different books and editions. No API key needed; requests are spaced out to stay within Apple's limit of about 20 a minute."
   },
   "publicReviews": {
     "sectionTitle": "Public Reviews",
