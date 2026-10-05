@@ -409,6 +409,9 @@ public class MetadataRefreshService {
             addProviderToSet(fieldOptions.getLubimyczytacRating(), uniqueProviders, appSettings);
             addProviderToSet(fieldOptions.getRanobedbId(), uniqueProviders, appSettings);
             addProviderToSet(fieldOptions.getRanobedbRating(), uniqueProviders, appSettings);
+            addProviderToSet(fieldOptions.getApplebooksId(), uniqueProviders, appSettings);
+            addProviderToSet(fieldOptions.getApplebooksRating(), uniqueProviders, appSettings);
+            addProviderToSet(fieldOptions.getApplebooksReviewCount(), uniqueProviders, appSettings);
             addProviderToSet(fieldOptions.getMoods(), uniqueProviders, appSettings);
             addProviderToSet(fieldOptions.getTags(), uniqueProviders, appSettings);
         }
@@ -710,6 +713,30 @@ public class MetadataRefreshService {
             }
         } else if (isReplaceAll && existingMetadata != null) {
             metadata.setRanobedbRating(existingMetadata.getRanobedbRating());
+        }
+
+        if (enabledFields.isApplebooksId()) {
+            if (metadataMap.containsKey(AppleBooks)) {
+                metadata.setApplebooksId(metadataMap.get(AppleBooks).getApplebooksId());
+            }
+        } else if (isReplaceAll && existingMetadata != null) {
+            metadata.setApplebooksId(existingMetadata.getApplebooksId());
+        }
+
+        if (enabledFields.isApplebooksRating()) {
+            if (metadataMap.containsKey(AppleBooks)) {
+                metadata.setApplebooksRating(metadataMap.get(AppleBooks).getApplebooksRating());
+            }
+        } else if (isReplaceAll && existingMetadata != null) {
+            metadata.setApplebooksRating(existingMetadata.getApplebooksRating());
+        }
+
+        if (enabledFields.isApplebooksReviewCount()) {
+            if (metadataMap.containsKey(AppleBooks)) {
+                metadata.setApplebooksReviewCount(metadataMap.get(AppleBooks).getApplebooksReviewCount());
+            }
+        } else if (isReplaceAll && existingMetadata != null) {
+            metadata.setApplebooksReviewCount(existingMetadata.getApplebooksReviewCount());
         }
 
         if (enabledFields.isMoods()) {

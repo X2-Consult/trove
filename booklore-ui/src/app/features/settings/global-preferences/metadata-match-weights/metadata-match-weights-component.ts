@@ -29,6 +29,7 @@ export class MetadataMatchWeightsComponent implements OnInit {
     'language', 'isbn13', 'isbn10', 'pageCount',
     'amazonRating', 'amazonReviewCount', 'goodreadsRating', 'goodreadsReviewCount',
     'hardcoverRating', 'hardcoverReviewCount', 'audibleRating', 'audibleReviewCount',
+    'applebooksRating', 'applebooksReviewCount',
     'doubanRating', 'doubanReviewCount', 'ranobedbRating'
   ];
 
@@ -69,8 +70,10 @@ export class MetadataMatchWeightsComponent implements OnInit {
       doubanRating: [0, [Validators.required, Validators.min(0)]],
       doubanReviewCount: [0, [Validators.required, Validators.min(0)]],
       ranobedbRating: [0, [Validators.required, Validators.min(0)]],
+      applebooksRating: [0, [Validators.required, Validators.min(0)]],
       audibleRating: [0, [Validators.required, Validators.min(0)]],
       audibleReviewCount: [0, [Validators.required, Validators.min(0)]],
+      applebooksReviewCount: [0, [Validators.required, Validators.min(0)]],
       coverImage: [0, [Validators.required, Validators.min(0)]],
     });
     this.appSettings$

@@ -53,10 +53,13 @@ export interface FieldOptions {
   hardcoverReviewCount: FieldProvider;
   lubimyczytacRating: FieldProvider;
   ranobedbId: FieldProvider;
+  applebooksId: FieldProvider;
   ranobedbRating: FieldProvider;
+  applebooksRating: FieldProvider;
   audibleId: FieldProvider;
   audibleRating: FieldProvider;
   audibleReviewCount: FieldProvider;
+  applebooksReviewCount: FieldProvider;
   moods: FieldProvider;
   tags: FieldProvider;
 }

@@ -183,7 +183,7 @@
               </p-button>
             </div>
 
-            @if (book?.metadata?.amazonRating || book?.metadata?.asin || book?.metadata?.goodreadsRating || book?.metadata?.goodreadsId || book?.metadata?.hardcoverRating || book?.metadata?.hardcoverId || book?.metadata?.lubimyczytacRating || book?.metadata?.lubimyczytacId || book?.metadata?.ranobedbRating || book?.metadata?.ranobedbId || book?.metadata?.audibleRating || book?.metadata?.audibleId || book?.metadata?.googleId) {
+            @if (book?.metadata?.amazonRating || book?.metadata?.asin || book?.metadata?.goodreadsRating || book?.metadata?.goodreadsId || book?.metadata?.hardcoverRating || book?.metadata?.hardcoverId || book?.metadata?.lubimyczytacRating || book?.metadata?.lubimyczytacId || book?.metadata?.ranobedbRating || book?.metadata?.ranobedbId || book?.metadata?.audibleRating || book?.metadata?.audibleId || book?.metadata?.applebooksRating || book?.metadata?.applebooksId || book?.metadata?.googleId) {
               <div class="gradient-divider"></div>
             }
 
@@ -264,6 +264,22 @@
                   <img src="https://www.ranobedb.org/favicon.png" alt="Ranobedb" class="rating-favicon"/>
                   @if (book?.metadata?.ranobedbRating) {
                     <span class="rating-value">{{ getRatingPercent(book.metadata!.ranobedbRating) }}%</span>
+                  }
+                </a>
+              }
+
+              @if (book?.metadata?.applebooksRating || book?.metadata?.applebooksId) {
+                <a
+                  class="rating-link"
+                  [href]="'https://books.apple.com/book/id' + (book.metadata?.applebooksId ?? '')"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  [pTooltip]="book?.metadata?.applebooksRating ? getRatingTooltip(book, 'applebooks') : undefined"
+                  tooltipPosition="top"
+                >
+                  <img src="https://www.apple.com/favicon.ico" alt="Apple Books" class="rating-favicon"/>
+                  @if (book?.metadata?.applebooksRating) {
+                    <span class="rating-value">{{ getRatingPercent(book.metadata!.applebooksRating) }}%</span>
                   }
                 </a>
               }

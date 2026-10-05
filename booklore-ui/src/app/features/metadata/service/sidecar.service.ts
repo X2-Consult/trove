@@ -22,6 +22,7 @@ export interface SidecarIdentifiers {
   comicvineId?: string;
   lubimyczytacId?: string;
   ranobedbId?: string;
+  applebooksId?: string;
   audibleId?: string;
 }
 

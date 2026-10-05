@@ -19,6 +19,7 @@ export class FilterLabelHelper {
     goodreadsRating: 'Goodreads Rating',
     hardcoverRating: 'Hardcover Rating',
     ranobedbRating: 'Ranobedb Rating',
+    applebooksRating: 'Apple Books Rating',
     mood: 'Mood',
     tag: 'Tag',
   };

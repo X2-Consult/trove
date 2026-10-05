@@ -82,6 +82,7 @@ export class BookTableComponent implements OnInit, OnDestroy, OnChanges {
     {field: 'hardcoverRating', header: this.t.translate('book.columnPref.columns.hardcoverRating')},
     {field: 'hardcoverReviewCount', header: this.t.translate('book.columnPref.columns.hardcoverReviewCount')},
     {field: 'ranobedbRating', header: this.t.translate('book.columnPref.columns.ranobedbRating')},
+    {field: 'applebooksRating', header: this.t.translate('book.columnPref.columns.applebooksRating')},
   ];
 
   scrollHeight = 'calc(100dvh - 160px)';

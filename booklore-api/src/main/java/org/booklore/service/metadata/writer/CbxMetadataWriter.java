@@ -321,11 +321,13 @@ public class CbxMetadataWriter implements MetadataWriter {
         appendBookLoreTag(notesBuilder, "HardcoverRating", metadata.getHardcoverRating());
         appendBookLoreTag(notesBuilder, "LubimyczytacRating", metadata.getLubimyczytacRating());
         appendBookLoreTag(notesBuilder, "RanobedbRating", metadata.getRanobedbRating());
+        appendBookLoreTag(notesBuilder, "ApplebooksRating", metadata.getApplebooksRating());
 
         appendBookLoreTag(notesBuilder, "HardcoverBookId", metadata.getHardcoverBookId());
         appendBookLoreTag(notesBuilder, "HardcoverId", metadata.getHardcoverId());
         appendBookLoreTag(notesBuilder, "LubimyczytacId", metadata.getLubimyczytacId());
         appendBookLoreTag(notesBuilder, "RanobedbId", metadata.getRanobedbId());
+        appendBookLoreTag(notesBuilder, "ApplebooksId", metadata.getApplebooksId());
         appendBookLoreTag(notesBuilder, "GoogleId", metadata.getGoogleId());
         appendBookLoreTag(notesBuilder, "GoodreadsId", metadata.getGoodreadsId());
         appendBookLoreTag(notesBuilder, "ASIN", metadata.getAsin());

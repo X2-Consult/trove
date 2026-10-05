@@ -86,6 +86,7 @@ export class SortService {
     hardcoverRating: (book) => book.metadata?.hardcoverRating || null,
     hardcoverReviewCount: (book) => book.metadata?.hardcoverReviewCount || null,
     ranobedbRating: (book) => book.metadata?.ranobedbRating || null,
+    applebooksRating: (book) => book.metadata?.applebooksRating || null,
     locked: (book) => book.metadata?.allMetadataLocked ?? false,
     lastReadTime: (book) => book.lastReadTime ? new Date(book.lastReadTime).getTime() : null,
     addedOn: (book) => book.addedOn ? new Date(book.addedOn).getTime() : null,

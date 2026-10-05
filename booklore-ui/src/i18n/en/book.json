@@ -331,7 +331,8 @@
       "goodreadsReviewCount": "GR #",
       "hardcoverRating": "Hardcover",
       "hardcoverReviewCount": "HC #",
-      "ranobedbRating": "Ranobedb"
+      "ranobedbRating": "Ranobedb",
+      "applebooksRating": "Apple Books"
     },
     "toast": {
       "savedSummary": "Preferences Saved",
@@ -730,6 +731,7 @@
       "hardcoverRating": "Hardcover Rating",
       "hardcoverReviewCount": "Hardcover #",
       "ranobedbRating": "Ranobedb Rating",
+      "applebooksRating": "Apple Books Rating",
       "narrator": "Narrator",
       "pageCount": "Pages",
       "random": "Random"

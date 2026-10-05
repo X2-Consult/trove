@@ -35,8 +35,9 @@ import java.util.regex.Pattern;
  * Apple Books, through Apple's public iTunes Search API (no key). Looks books up by ISBN first, then
  * searches by title and author. Its covers are large: the artwork URL is asked for at
  * {@link #COVER_SIZE}px. The API allows about 20 requests a minute, so requests are paced through
- * {@link MetadataProviderGuard}. Based on Grimmory 0660e1d6, without the per-book Apple ID, rating
- * and review-count fields.
+ * {@link MetadataProviderGuard}. Gives the book's Apple ID (its store id, so
+ * https://books.apple.com/book/id&lt;id&gt; opens it), rating out of 5 and number of ratings. Based on
+ * Grimmory 0660e1d6.
  */
 @Slf4j
 @RequiredArgsConstructor
@@ -47,7 +48,7 @@ public class AppleBooksParser implements BookParser {
     record ResultItem(String wrapperType, Long trackId, Long collectionId, String trackName, String collectionName,
                       String artistName, String description, List<String> genres, String primaryGenreName,
                       String releaseDate, String artworkUrl100, String trackViewUrl, String collectionViewUrl,
-                      String language) {
+                      String language, Double averageUserRating, Integer userRatingCount) {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -146,6 +147,10 @@ public class AppleBooksParser implements BookParser {
         }
         return BookMetadata.builder()
                 .provider(MetadataProvider.AppleBooks)
+                .applebooksId(result.trackId() != null ? String.valueOf(result.trackId())
+                        : result.collectionId() != null ? String.valueOf(result.collectionId()) : null)
+                .applebooksRating(result.averageUserRating())
+                .applebooksReviewCount(result.userRatingCount())
                 .title(result.trackName() != null ? result.trackName() : result.collectionName())
                 .authors(result.artistName() != null ? List.of(result.artistName()) : List.of())
                 .description(result.description() != null ? Jsoup.parse(result.description()).text() : null)

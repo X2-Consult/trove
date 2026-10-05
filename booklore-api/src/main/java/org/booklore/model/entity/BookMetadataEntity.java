@@ -124,9 +124,13 @@ public class BookMetadataEntity {
 
     @Column(name = "ranobedb_id", length = 100)
     private String ranobedbId;
+    @Column(name = "applebooks_id", length = 100)
+    private String applebooksId;
 
     @Column(name = "ranobedb_rating")
     private Double ranobedbRating;
+    @Column(name = "applebooks_rating")
+    private Double applebooksRating;
 
     @Column(name = "audible_id", length = 100)
     private String audibleId;
@@ -136,6 +140,8 @@ public class BookMetadataEntity {
 
     @Column(name = "audible_review_count")
     private Integer audibleReviewCount;
+    @Column(name = "applebooks_review_count")
+    private Integer applebooksReviewCount;
 
     @Column(name = "title_locked")
     @Builder.Default
@@ -269,9 +275,17 @@ public class BookMetadataEntity {
     @Builder.Default
     private Boolean ranobedbIdLocked = Boolean.FALSE;
 
+    @Column(name = "applebooks_id_locked")
+    @Builder.Default
+    private Boolean applebooksIdLocked = Boolean.FALSE;
+
     @Column(name = "ranobedb_rating_locked")
     @Builder.Default
     private Boolean ranobedbRatingLocked = Boolean.FALSE;
+
+    @Column(name = "applebooks_rating_locked")
+    @Builder.Default
+    private Boolean applebooksRatingLocked = Boolean.FALSE;
 
     @Column(name = "audible_id_locked")
     @Builder.Default
@@ -284,6 +298,10 @@ public class BookMetadataEntity {
     @Column(name = "audible_review_count_locked")
     @Builder.Default
     private Boolean audibleReviewCountLocked = Boolean.FALSE;
+
+    @Column(name = "applebooks_review_count_locked")
+    @Builder.Default
+    private Boolean applebooksReviewCountLocked = Boolean.FALSE;
 
     @Column(name = "narrator", length = 500)
     private String narrator;
@@ -353,6 +371,7 @@ public class BookMetadataEntity {
         this.comicvineId = trimOrNull(this.comicvineId);
         this.lubimyczytacId = trimOrNull(this.lubimyczytacId);
         this.ranobedbId = trimOrNull(this.ranobedbId);
+        this.applebooksId = trimOrNull(this.applebooksId);
         this.audibleId = trimOrNull(this.audibleId);
         this.contentRating = trimOrNull(this.contentRating);
         this.narrator = trimOrNull(this.narrator);
@@ -449,10 +468,13 @@ public class BookMetadataEntity {
         this.googleIdLocked = lock;
         this.lubimyczytacIdLocked = lock;
         this.ranobedbIdLocked = lock;
+        this.applebooksIdLocked = lock;
         this.ranobedbRatingLocked = lock;
+        this.applebooksRatingLocked = lock;
         this.audibleIdLocked = lock;
         this.audibleRatingLocked = lock;
         this.audibleReviewCountLocked = lock;
+        this.applebooksReviewCountLocked = lock;
         this.reviewsLocked = lock;
         this.narratorLocked = lock;
         this.abridgedLocked = lock;
@@ -497,10 +519,13 @@ public class BookMetadataEntity {
                 && Boolean.TRUE.equals(this.googleIdLocked)
                 && Boolean.TRUE.equals(this.lubimyczytacIdLocked)
                 && Boolean.TRUE.equals(this.ranobedbIdLocked)
+                && Boolean.TRUE.equals(this.applebooksIdLocked)
                 && Boolean.TRUE.equals(this.ranobedbRatingLocked)
+                && Boolean.TRUE.equals(this.applebooksRatingLocked)
                 && Boolean.TRUE.equals(this.audibleIdLocked)
                 && Boolean.TRUE.equals(this.audibleRatingLocked)
                 && Boolean.TRUE.equals(this.audibleReviewCountLocked)
+                && Boolean.TRUE.equals(this.applebooksReviewCountLocked)
                 && Boolean.TRUE.equals(this.reviewsLocked)
                 && Boolean.TRUE.equals(this.narratorLocked)
                 && Boolean.TRUE.equals(this.abridgedLocked)

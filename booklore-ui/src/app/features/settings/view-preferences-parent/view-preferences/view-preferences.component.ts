@@ -71,6 +71,7 @@ export class ViewPreferencesComponent implements OnInit, OnDestroy {
     {field: 'hardcoverRating', translationKey: 'sortHardcoverRating'},
     {field: 'hardcoverReviewCount', translationKey: 'sortHardcoverCount'},
     {field: 'ranobedbRating', translationKey: 'sortRanobedbRating'},
+    {field: 'applebooksRating', translationKey: 'sortApplebooksRating'},
     {field: 'narrator', translationKey: 'sortNarrator'},
     {field: 'pageCount', translationKey: 'sortPages'},
     {field: 'random', translationKey: 'sortRandom'},

@@ -25,8 +25,10 @@ export interface MetadataMatchWeights {
   doubanReviewCount: number;
   lubimyczytacRating: number;
   ranobedbRating: number;
+  applebooksRating: number;
   audibleRating: number;
   audibleReviewCount: number;
+  applebooksReviewCount: number;
   coverImage: number;
 }
 
@@ -232,10 +234,13 @@ export interface MetadataProviderSpecificFields {
   lubimyczytacId: boolean;
   lubimyczytacRating: boolean;
   ranobedbId: boolean;
+  applebooksId: boolean;
   ranobedbRating: boolean;
+  applebooksRating: boolean;
   audibleId: boolean;
   audibleRating: boolean;
   audibleReviewCount: boolean;
+  applebooksReviewCount: boolean;
 }
 
 export enum AppSettingKey {

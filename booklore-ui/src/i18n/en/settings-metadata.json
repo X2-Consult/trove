@@ -120,9 +120,11 @@
       "hardcoverReviewCount": "Hardcover Rating #",
       "audibleRating": "Audible Rating",
       "audibleReviewCount": "Audible Rating #",
+      "applebooksReviewCount": "Apple Books Rating #",
       "doubanRating": "Douban Rating",
       "doubanReviewCount": "Douban Rating #",
-      "ranobedbRating": "Ranobedb Rating"
+      "ranobedbRating": "Ranobedb Rating",
+      "applebooksRating": "Apple Books Rating"
     }
   },
   "fieldSelector": {
@@ -136,7 +138,8 @@
       "audible": "Audible",
       "comicvine": "Comicvine",
       "lubimyczytac": "Lubimyczytac",
-      "ranobedb": "Ranobedb"
+      "ranobedb": "Ranobedb",
+      "applebooks": "Apple Books"
     },
     "fields": {
       "asin": "Amazon ASIN",
@@ -154,10 +157,13 @@
       "lubimyczytacId": "Lubimyczytac ID",
       "lubimyczytacRating": "Lubimyczytac Rating",
       "ranobedbId": "Ranobedb ID",
+      "applebooksId": "Apple Books ID",
       "ranobedbRating": "Ranobedb Rating",
+      "applebooksRating": "Apple Books Rating",
       "audibleId": "Audible ID",
       "audibleRating": "Audible Rating",
-      "audibleReviewCount": "Audible Review Count"
+      "audibleReviewCount": "Audible Review Count",
+      "applebooksReviewCount": "Apple Books Review Count"
     }
   }
 }

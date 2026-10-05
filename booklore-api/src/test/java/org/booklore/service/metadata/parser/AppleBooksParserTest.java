@@ -34,7 +34,8 @@ class AppleBooksParserTest {
              "artistName":"Lee Child","description":"<p>Jack Reacher&#39;s back.</p>","genres":["Hard-Boiled Mysteries","Books"],
              "releaseDate":"2008-09-04T07:00:00Z",
              "artworkUrl100":"https://is1-ssl.mzstatic.com/image/thumb/Publication125/v4/50/9781407070643.jpg/100x100bb.jpg",
-             "trackViewUrl":"https://books.apple.com/nz/book/without-fail/id436142462?uo=4","language":"EN"}]}
+             "trackViewUrl":"https://books.apple.com/nz/book/without-fail/id436142462?uo=4","language":"EN",
+             "averageUserRating":4.5,"userRatingCount":1234}]}
             """;
     private static final String EMPTY = "{\"resultCount\":0,\"results\":[]}";
 
@@ -92,6 +93,9 @@ class AppleBooksParserTest {
             assertThat(m.getCategories()).containsExactly("Hard-Boiled Mysteries", "Books");
             assertThat(m.getThumbnailUrl()).endsWith("/1400x1400bb.jpg");
             assertThat(m.getLanguage()).isEqualTo("en");
+            assertThat(m.getApplebooksId()).isEqualTo("436142462");
+            assertThat(m.getApplebooksRating()).isEqualTo(4.5);
+            assertThat(m.getApplebooksReviewCount()).isEqualTo(1234);
         });
         assertThat(requested.getFirst().toString())
                 .startsWith("https://itunes.apple.com/search?")

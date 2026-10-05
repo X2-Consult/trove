@@ -67,7 +67,10 @@ public class MetadataRefreshOptions {
         private FieldProvider hardcoverReviewCount;
         private FieldProvider lubimyczytacRating;
         private FieldProvider ranobedbId;
+        private FieldProvider applebooksId;
         private FieldProvider ranobedbRating;
+        private FieldProvider applebooksRating;
+        private FieldProvider applebooksReviewCount;
         private FieldProvider moods;
         private FieldProvider tags;
     }
@@ -152,7 +155,13 @@ public class MetadataRefreshOptions {
         @Builder.Default @JsonSetter(nulls = Nulls.SKIP)
         private boolean ranobedbId = true;
         @Builder.Default @JsonSetter(nulls = Nulls.SKIP)
+        private boolean applebooksId = true;
+        @Builder.Default @JsonSetter(nulls = Nulls.SKIP)
         private boolean ranobedbRating = true;
+        @Builder.Default @JsonSetter(nulls = Nulls.SKIP)
+        private boolean applebooksRating = true;
+        @Builder.Default @JsonSetter(nulls = Nulls.SKIP)
+        private boolean applebooksReviewCount = true;
         @Builder.Default @JsonSetter(nulls = Nulls.SKIP)
         private boolean moods = true;
         @Builder.Default @JsonSetter(nulls = Nulls.SKIP)
@@ -192,7 +201,10 @@ public class MetadataRefreshOptions {
             this.hardcoverReviewCount = true;
             this.lubimyczytacRating = true;
             this.ranobedbId = true;
+            this.applebooksId = true;
             this.ranobedbRating = true;
+            this.applebooksRating = true;
+            this.applebooksReviewCount = true;
             this.moods = true;
             this.tags = true;
         }

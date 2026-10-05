@@ -332,6 +332,12 @@ public class PdfMetadataWriter implements MetadataWriter {
             }
         });
 
+        helper.copyApplebooksId(clear != null && clear.isApplebooksId(), id -> {
+            if (id != null && !id.isBlank()) {
+                appendBookloreElement(doc, bookloreDescription, "applebooksId", id);
+            }
+        });
+
         // Ratings (only if > 0)
         helper.copyRating(false, rating -> appendBookloreRating(doc, bookloreDescription, "rating", rating));
         helper.copyHardcoverRating(clear != null && clear.isHardcoverRating(), rating -> appendBookloreRating(doc, bookloreDescription, "hardcoverRating", rating));
@@ -339,6 +345,7 @@ public class PdfMetadataWriter implements MetadataWriter {
         helper.copyAmazonRating(clear != null && clear.isAmazonRating(), rating -> appendBookloreRating(doc, bookloreDescription, "amazonRating", rating));
         helper.copyLubimyczytacRating(clear != null && clear.isLubimyczytacRating(), rating -> appendBookloreRating(doc, bookloreDescription, "lubimyczytacRating", rating));
         helper.copyRanobedbRating(clear != null && clear.isRanobedbRating(), rating -> appendBookloreRating(doc, bookloreDescription, "ranobedbRating", rating));
+        helper.copyApplebooksRating(clear != null && clear.isApplebooksRating(), rating -> appendBookloreRating(doc, bookloreDescription, "applebooksRating", rating));
 
         // Tags (as RDF Bag)
         helper.copyTags(clear != null && clear.isTags(), tags -> {

@@ -285,6 +285,7 @@ public class CbxProcessor extends AbstractFileProcessor implements BookFileProce
             metadata.setComicvineId(truncate(extracted.getComicvineId(), 100));
             metadata.setLubimyczytacId(truncate(extracted.getLubimyczytacId(), 100));
             metadata.setRanobedbId(truncate(extracted.getRanobedbId(), 100));
+            metadata.setApplebooksId(truncate(extracted.getApplebooksId(), 100));
             
             // Ratings
             metadata.setAmazonRating(extracted.getAmazonRating());
@@ -295,6 +296,7 @@ public class CbxProcessor extends AbstractFileProcessor implements BookFileProce
             metadata.setHardcoverReviewCount(extracted.getHardcoverReviewCount());
             metadata.setLubimyczytacRating(extracted.getLubimyczytacRating());
             metadata.setRanobedbRating(extracted.getRanobedbRating());
+            metadata.setApplebooksRating(extracted.getApplebooksRating());
 
             // Authors
             if (extracted.getAuthors() != null) {

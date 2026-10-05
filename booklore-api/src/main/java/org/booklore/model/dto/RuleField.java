@@ -47,6 +47,8 @@ public enum RuleField {
     HARDCOVER_REVIEW_COUNT,
     @JsonProperty("ranobedbRating")
     RANOBEDB_RATING,
+    @JsonProperty("applebooksRating")
+    APPLEBOOKS_RATING,
     @JsonProperty("personalRating")
     PERSONAL_RATING,
     @JsonProperty("fileType")
@@ -83,6 +85,8 @@ public enum RuleField {
     AUDIBLE_RATING,
     @JsonProperty("audibleReviewCount")
     AUDIBLE_REVIEW_COUNT,
+    @JsonProperty("applebooksReviewCount")
+    APPLEBOOKS_REVIEW_COUNT,
     @JsonProperty("abridged")
     ABRIDGED,
     @JsonProperty("audiobookDuration")

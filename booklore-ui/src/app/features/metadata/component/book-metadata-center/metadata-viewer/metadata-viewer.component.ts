@@ -1163,7 +1163,7 @@ export class MetadataViewerComponent implements OnInit, OnChanges, AfterViewChec
     return p != null ? Math.round(p * 10) / 10 : null;
   }
 
-  getRatingTooltip(book: Book, source: 'amazon' | 'goodreads' | 'hardcover' | 'lubimyczytac' | 'ranobedb' | 'audible'): string {
+  getRatingTooltip(book: Book, source: 'amazon' | 'goodreads' | 'hardcover' | 'lubimyczytac' | 'ranobedb' | 'audible' | 'applebooks'): string {
     const meta = book?.metadata;
     if (!meta) return '';
 
@@ -1191,6 +1191,10 @@ export class MetadataViewerComponent implements OnInit, OnChanges, AfterViewChec
       case 'audible':
         return meta.audibleRating != null
           ? `★ ${meta.audibleRating} | ${meta.audibleReviewCount?.toLocaleString() ?? '0'} reviews`
+          : '';
+      case 'applebooks':
+        return meta.applebooksRating != null
+          ? `★ ${meta.applebooksRating} | ${meta.applebooksReviewCount?.toLocaleString() ?? '0'} ratings`
           : '';
       default:
         return '';

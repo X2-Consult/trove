@@ -60,9 +60,13 @@ public class MetadataMatchWeights {
     @Builder.Default @JsonSetter(nulls = Nulls.SKIP)
     private int ranobedbRating = 2;
     @Builder.Default @JsonSetter(nulls = Nulls.SKIP)
+    private int applebooksRating = 2;
+    @Builder.Default @JsonSetter(nulls = Nulls.SKIP)
     private int audibleRating = 2;
     @Builder.Default @JsonSetter(nulls = Nulls.SKIP)
     private int audibleReviewCount = 1;
+    @Builder.Default @JsonSetter(nulls = Nulls.SKIP)
+    private int applebooksReviewCount = 1;
     @Builder.Default @JsonSetter(nulls = Nulls.SKIP)
     private int coverImage = 5;
 
@@ -72,6 +76,7 @@ public class MetadataMatchWeights {
                 pageCount + categories + amazonRating + amazonReviewCount +
                 goodreadsRating + goodreadsReviewCount + hardcoverRating +
                 hardcoverReviewCount + doubanRating + doubanReviewCount +
-                ranobedbRating + audibleRating + audibleReviewCount + coverImage;
+                ranobedbRating + audibleRating + audibleReviewCount +
+                applebooksRating + applebooksReviewCount + coverImage;
     }
 }

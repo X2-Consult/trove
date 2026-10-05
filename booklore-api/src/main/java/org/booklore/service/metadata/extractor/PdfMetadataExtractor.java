@@ -220,6 +220,11 @@ public class PdfMetadataExtractor implements FileMetadataExtractor {
                                     metadataBuilder.ranobedbId(ranobedb);
                                 }
 
+                                String applebooks = identifiers.get("applebooks");
+                                if (StringUtils.isNotBlank(applebooks)) {
+                                    metadataBuilder.applebooksId(applebooks);
+                                }
+
                                 String hardcover = identifiers.get("hardcover");
                                 if (StringUtils.isNotBlank(hardcover)) {
                                     metadataBuilder.hardcoverId(hardcover);
@@ -415,6 +420,11 @@ public class PdfMetadataExtractor implements FileMetadataExtractor {
                 builder.ranobedbId(ranobedbId.trim());
             }
 
+            String applebooksId = extractBookloreField(xpath, doc, "applebooksId");
+            if (StringUtils.isNotBlank(applebooksId)) {
+                builder.applebooksId(applebooksId.trim());
+            }
+
             // Page count: Do NOT read from XMP metadata for PDFs.
             // The actual PDF page count (from pdf.getNumberOfPages()) is set earlier
             // and should not be overridden by metadata that describes the original book.
@@ -461,6 +471,7 @@ public class PdfMetadataExtractor implements FileMetadataExtractor {
             extractBookloreRating(xpath, doc, "hardcoverRating", "HardcoverRating", builder::hardcoverRating);
             extractBookloreRating(xpath, doc, "lubimyczytacRating", "LubimyczytacRating", builder::lubimyczytacRating);
             extractBookloreRating(xpath, doc, "ranobedbRating", "RanobedbRating", builder::ranobedbRating);
+            extractBookloreRating(xpath, doc, "applebooksRating", "ApplebooksRating", builder::applebooksRating);
             
             // User rating
             extractBookloreRating(xpath, doc, "rating", "Rating", builder::rating);

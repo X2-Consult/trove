@@ -329,7 +329,9 @@ export class BookRuleEvaluatorService {
       case 'hardcoverReviewCount':
         return book.metadata?.hardcoverReviewCount;
       case 'ranobedbRating':
+      case 'applebooksRating':
         return book.metadata?.ranobedbRating;
+        return book.metadata?.applebooksRating;
       case 'addedOn':
         return book.addedOn ? new Date(book.addedOn) : null;
       case 'description':
@@ -343,7 +345,9 @@ export class BookRuleEvaluatorService {
       case 'audibleRating':
         return book.metadata?.audibleRating;
       case 'audibleReviewCount':
+      case 'applebooksReviewCount':
         return book.metadata?.audibleReviewCount;
+        return book.metadata?.applebooksReviewCount;
       case 'abridged':
         return book.metadata?.abridged;
       case 'audiobookDuration':
@@ -529,18 +533,21 @@ export class BookRuleEvaluatorService {
       case 'goodreadsRating': return book.metadata?.goodreadsRating;
       case 'hardcoverRating': return book.metadata?.hardcoverRating;
       case 'ranobedbRating': return book.metadata?.ranobedbRating;
+      case 'applebooksRating': return book.metadata?.applebooksRating;
       case 'lubimyczytacRating': return book.metadata?.lubimyczytacRating;
       case 'audibleRating': return book.metadata?.audibleRating;
       case 'amazonReviewCount': return book.metadata?.amazonReviewCount;
       case 'goodreadsReviewCount': return book.metadata?.goodreadsReviewCount;
       case 'hardcoverReviewCount': return book.metadata?.hardcoverReviewCount;
       case 'audibleReviewCount': return book.metadata?.audibleReviewCount;
+      case 'applebooksReviewCount': return book.metadata?.applebooksReviewCount;
       case 'goodreadsId': return book.metadata?.goodreadsId;
       case 'hardcoverId': return book.metadata?.hardcoverId;
       case 'googleId': return book.metadata?.googleId;
       case 'audibleId': return book.metadata?.audibleId;
       case 'lubimyczytacId': return book.metadata?.lubimyczytacId;
       case 'ranobedbId': return book.metadata?.ranobedbId;
+      case 'applebooksId': return book.metadata?.applebooksId;
       case 'comicvineId': return book.metadata?.comicvineId;
       case 'abridged': return book.metadata?.abridged;
       case 'audiobookDuration': return book.metadata?.audiobookMetadata?.durationSeconds;

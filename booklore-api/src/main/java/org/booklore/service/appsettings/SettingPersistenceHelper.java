@@ -171,7 +171,10 @@ public class SettingPersistenceHelper {
                 .hardcoverReviewCount(nullProvider)
                 .lubimyczytacRating(nullProvider)
                 .ranobedbId(nullProvider)
+                .applebooksId(nullProvider)
                 .ranobedbRating(nullProvider)
+                .applebooksRating(nullProvider)
+                .applebooksReviewCount(nullProvider)
                 .moods(nullProvider)
                 .tags(nullProvider)
                 .build();
@@ -206,7 +209,10 @@ public class SettingPersistenceHelper {
                 .hardcoverReviewCount(true)
                 .lubimyczytacRating(true)
                 .ranobedbId(false)
+                .applebooksId(false)
                 .ranobedbRating(false)
+                .applebooksRating(false)
+                .applebooksReviewCount(false)
                 .moods(true)
                 .tags(true)
                 .build();
@@ -247,6 +253,8 @@ public class SettingPersistenceHelper {
                 .doubanRating(3)
                 .doubanReviewCount(2)
                 .ranobedbRating(2)
+                .applebooksRating(2)
+                .applebooksReviewCount(1)
                 .coverImage(5)
                 .build();
     }
@@ -341,7 +349,10 @@ public class SettingPersistenceHelper {
         fields.setLubimyczytacId(true);
         fields.setLubimyczytacRating(true);
         fields.setRanobedbId(true);
+        fields.setApplebooksId(true);
         fields.setRanobedbRating(true);
+        fields.setApplebooksRating(true);
+        fields.setApplebooksReviewCount(true);
         return fields;
     }
 }

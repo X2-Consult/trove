@@ -195,6 +195,13 @@ public class EpubMetadataWriter implements MetadataWriter {
                 }
                 hasChanges[0] = true;
             });
+            helper.copyApplebooksId(clear != null && clear.isApplebooksId(), val -> {
+                removeIdentifierByUrn(metadataElement, "applebooks");
+                if (val != null && !val.isBlank()) {
+                    metadataElement.appendChild(createIdentifierElement(opfDoc, "applebooks", val));
+                }
+                hasChanges[0] = true;
+            });
 
             EpubCover.Written cover = null;
             if (StringUtils.isNotBlank(thumbnailUrl)) {
@@ -868,6 +875,10 @@ public class EpubMetadataWriter implements MetadataWriter {
         
         if (metadata.getRanobedbRating() != null && metadata.getRanobedbRating() > 0) {
             metadataElement.appendChild(createBookloreMetaElement(doc, "ranobedb_rating", String.valueOf(metadata.getRanobedbRating()), epub3));
+        }
+
+        if (metadata.getApplebooksRating() != null && metadata.getApplebooksRating() > 0) {
+            metadataElement.appendChild(createBookloreMetaElement(doc, "applebooks_rating", String.valueOf(metadata.getApplebooksRating()), epub3));
         }
         
         if (metadata.getMoods() != null && !metadata.getMoods().isEmpty()) {

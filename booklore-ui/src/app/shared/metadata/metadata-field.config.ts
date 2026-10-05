@@ -43,10 +43,13 @@ export const ALL_METADATA_FIELDS: MetadataFieldConfig[] = [
   { label: 'LB ID', controlName: 'lubimyczytacId', lockedKey: 'lubimyczytacIdLocked', fetchedKey: 'lubimyczytacId', type: 'string', providerKey: 'lubimyczytacId' },
   { label: 'LB ★', controlName: 'lubimyczytacRating', lockedKey: 'lubimyczytacRatingLocked', fetchedKey: 'lubimyczytacRating', type: 'number', providerKey: 'lubimyczytacRating' },
   { label: 'Ranobedb ID', controlName: 'ranobedbId', lockedKey: 'ranobedbIdLocked', fetchedKey: 'ranobedbId', type: 'string', providerKey: 'ranobedbId' },
+  { label: 'Apple Books ID', controlName: 'applebooksId', lockedKey: 'applebooksIdLocked', fetchedKey: 'applebooksId', type: 'string', providerKey: 'applebooksId' },
   { label: 'Ranobedb ★', controlName: 'ranobedbRating', lockedKey: 'ranobedbRatingLocked', fetchedKey: 'ranobedbRating', type: 'number', providerKey: 'ranobedbRating' },
+  { label: 'Apple Books ★', controlName: 'applebooksRating', lockedKey: 'applebooksRatingLocked', fetchedKey: 'applebooksRating', type: 'number', providerKey: 'applebooksRating' },
   { label: 'Audible ID', controlName: 'audibleId', lockedKey: 'audibleIdLocked', fetchedKey: 'audibleId', type: 'string', providerKey: 'audibleId' },
   { label: 'Audible ★', controlName: 'audibleRating', lockedKey: 'audibleRatingLocked', fetchedKey: 'audibleRating', type: 'number', providerKey: 'audibleRating' },
-  { label: 'Audible #', controlName: 'audibleReviewCount', lockedKey: 'audibleReviewCountLocked', fetchedKey: 'audibleReviewCount', type: 'number', providerKey: 'audibleReviewCount' }
+  { label: 'Audible #', controlName: 'audibleReviewCount', lockedKey: 'audibleReviewCountLocked', fetchedKey: 'audibleReviewCount', type: 'number', providerKey: 'audibleReviewCount' },
+  { label: 'Apple Books #', controlName: 'applebooksReviewCount', lockedKey: 'applebooksReviewCountLocked', fetchedKey: 'applebooksReviewCount', type: 'number', providerKey: 'applebooksReviewCount' }
 ];
 
 // Audiobook content metadata fields (narrator/abridged) - now stored at top level of BookMetadata

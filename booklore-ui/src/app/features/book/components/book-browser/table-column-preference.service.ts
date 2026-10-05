@@ -21,6 +21,7 @@ export class TableColumnPreferenceService {
     'language', 'isbn', 'asin', 'pageCount', 'amazonRating', 'amazonReviewCount',
     'goodreadsRating', 'goodreadsReviewCount', 'hardcoverRating', 'hardcoverReviewCount',
     'ranobedbRating',
+    'applebooksRating',
   ];
 
   private readonly fallbackPreferences: TableColumnPreference[] = this.allAvailableFields.map((field, index) => ({

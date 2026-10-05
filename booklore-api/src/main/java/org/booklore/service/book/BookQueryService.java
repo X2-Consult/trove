@@ -114,10 +114,13 @@ public class BookQueryService {
             m.setLubimyczytacIdLocked(null);
             m.setLubimyczytacRatingLocked(null);
             m.setRanobedbIdLocked(null);
+            m.setApplebooksIdLocked(null);
             m.setRanobedbRatingLocked(null);
+            m.setApplebooksRatingLocked(null);
             m.setAudibleIdLocked(null);
             m.setAudibleRatingLocked(null);
             m.setAudibleReviewCountLocked(null);
+            m.setApplebooksReviewCountLocked(null);
             m.setExternalUrlLocked(null);
             m.setCoverLocked(null);
             m.setAudiobookCoverLocked(null);
@@ -140,6 +143,7 @@ public class BookQueryService {
             m.setGoogleId(null);
             m.setLubimyczytacId(null);
             m.setRanobedbId(null);
+            m.setApplebooksId(null);
             m.setAudibleId(null);
             m.setDoubanId(null);
 
@@ -160,6 +164,7 @@ public class BookQueryService {
             m.setDoubanReviewCount(null);
             m.setAudibleRating(null);
             m.setAudibleReviewCount(null);
+            m.setApplebooksReviewCount(null);
             m.setLubimyczytacRating(null);
 
             // Strip empty metadata collections
@@ -235,6 +240,7 @@ public class BookQueryService {
                 m.getLubimyczytacIdLocked(), m.getLubimyczytacRatingLocked(),
                 m.getRanobedbIdLocked(), m.getRanobedbRatingLocked(),
                 m.getAudibleIdLocked(), m.getAudibleRatingLocked(), m.getAudibleReviewCountLocked(),
+                m.getApplebooksIdLocked(), m.getApplebooksRatingLocked(), m.getApplebooksReviewCountLocked(),
                 m.getExternalUrlLocked(), m.getCoverLocked(), m.getAudiobookCoverLocked(),
                 m.getAuthorsLocked(), m.getCategoriesLocked(), m.getMoodsLocked(),
                 m.getTagsLocked(), m.getReviewsLocked(), m.getNarratorLocked(),

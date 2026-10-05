@@ -21,6 +21,7 @@ public class BookLoreSchema extends XMPSchema {
     public static final String HARDCOVER_RATING = "HardcoverRating";
     public static final String LUBIMYCZYTAC_RATING = "LubimyczytacRating";
     public static final String RANOBEDB_RATING = "RanobedbRating";
+    public static final String APPLEBOOKS_RATING = "ApplebooksRating";
     public static final String LUBIMYCZYTAC_ID = "LubimyczytacId";
     public static final String HARDCOVER_BOOK_ID = "HardcoverBookId";
     public static final String ISBN_10 = "ISBN10";
@@ -88,6 +89,12 @@ public class BookLoreSchema extends XMPSchema {
     public void setRanobedbRating(Double rating) {
         if (rating != null) {
             setTextPropertyValue(RANOBEDB_RATING, String.format(Locale.US, "%.2f", rating));
+        }
+    }
+
+    public void setApplebooksRating(Double rating) {
+        if (rating != null) {
+            setTextPropertyValue(APPLEBOOKS_RATING, String.format(Locale.US, "%.2f", rating));
         }
     }
 

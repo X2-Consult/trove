@@ -21,8 +21,11 @@ public class MetadataProviderSpecificFields {
     private Boolean lubimyczytacId;
     private Boolean lubimyczytacRating;
     private Boolean ranobedbId;
+    private Boolean applebooksId;
     private Boolean ranobedbRating;
+    private Boolean applebooksRating;
     private Boolean audibleId;
     private Boolean audibleRating;
     private Boolean audibleReviewCount;
+    private Boolean applebooksReviewCount;
 }

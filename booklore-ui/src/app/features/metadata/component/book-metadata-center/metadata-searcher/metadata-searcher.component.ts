@@ -300,6 +300,7 @@ export class MetadataSearcherComponent implements OnInit, OnDestroy, OnChanges {
     if (metadata['lubimyczytacId']) return 'lubimyczytac';
     if (metadata.comicvineId) return 'comicvine';
     if (metadata.ranobedbId) return 'ranobedb';
+    if (metadata.applebooksId) return 'applebooks';
     if (metadata.audibleId) return 'audible';
     return metadata.provider?.toLowerCase() || null;
   }
@@ -466,6 +467,8 @@ export class MetadataSearcherComponent implements OnInit, OnDestroy, OnChanges {
       return `<a href="https://comicvine.gamespot.com/4050-${metadata.comicvineId}/" target="_blank">Comicvine</a>`;
     } else if (metadata.ranobedbId) {
       return `<a href="https://ranobedb.org/book/${metadata.ranobedbId}" target="_blank">RanobeDB</a>`;
+    } else if (metadata.applebooksId) {
+      return `<a href="https://books.apple.com/book/id${metadata.applebooksId}" target="_blank">Apple Books</a>`;
     } else if (metadata.audibleId) {
       return `<a href="https://www.audible.com/pd/${metadata.audibleId}" target="_blank">Audible</a>`;
     } else if (metadata.externalUrl) {

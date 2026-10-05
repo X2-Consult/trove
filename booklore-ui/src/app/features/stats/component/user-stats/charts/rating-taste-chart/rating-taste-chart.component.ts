@@ -252,6 +252,7 @@ export class RatingTasteChartComponent implements OnInit, OnDestroy {
     if (book.metadata?.hardcoverRating) ratings.push(book.metadata.hardcoverRating);
     if (book.metadata?.lubimyczytacRating) ratings.push(book.metadata.lubimyczytacRating);
     if (book.metadata?.ranobedbRating) ratings.push(book.metadata.ranobedbRating);
+    if (book.metadata?.applebooksRating) ratings.push(book.metadata.applebooksRating);
 
     if (ratings.length > 0) {
       return ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length;

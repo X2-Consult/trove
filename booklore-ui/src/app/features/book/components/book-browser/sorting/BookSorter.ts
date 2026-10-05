@@ -28,6 +28,7 @@ export const SORT_OPTION_LABEL_KEYS: Readonly<Record<string, string>> = {
   hardcoverRating: 'book.sorting.options.hardcoverRating',
   hardcoverReviewCount: 'book.sorting.options.hardcoverReviewCount',
   ranobedbRating: 'book.sorting.options.ranobedbRating',
+  applebooksRating: 'book.sorting.options.applebooksRating',
   narrator: 'book.sorting.options.narrator',
   pageCount: 'book.sorting.options.pageCount',
   random: 'book.sorting.options.random'
@@ -59,6 +60,7 @@ const SORT_FIELDS: { field: string; defaultLabel: string }[] = [
   {field: 'hardcoverRating', defaultLabel: 'Hardcover Rating'},
   {field: 'hardcoverReviewCount', defaultLabel: 'Hardcover #'},
   {field: 'ranobedbRating', defaultLabel: 'Ranobedb Rating'},
+  {field: 'applebooksRating', defaultLabel: 'Apple Books Rating'},
   {field: 'narrator', defaultLabel: 'Narrator'},
   {field: 'pageCount', defaultLabel: 'Pages'},
   {field: 'random', defaultLabel: 'Random'},
