@@ -3,6 +3,9 @@
     "confirm": {
       "deleteMessage": "Are you sure you want to delete {{ count }} book(s)?\n\nThis will permanently remove the book files from your filesystem.\n\nThis action cannot be undone.",
       "deleteHeader": "Confirm Deletion",
+      "bulkDeleteHeader": "Delete {{ count }} Books?",
+      "bulkDeleteMessage": "This is a bulk delete of {{ count }} books.\n\nTheir files will be permanently removed from disk. This can't be undone.\n\nAre you sure you want to delete all {{ count }} books?",
+      "bulkDeleteAccept": "Delete {{ count }} books",
       "regenCoverMessage": "Are you sure you want to regenerate covers for {{ count }} book(s)?",
       "regenCoverHeader": "Confirm Cover Regeneration",
       "customCoverMessage": "Are you sure you want to generate custom covers for {{ count }} book(s)?",

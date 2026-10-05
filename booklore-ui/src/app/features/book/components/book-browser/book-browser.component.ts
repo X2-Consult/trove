@@ -1,4 +1,5 @@
 import {AfterViewInit, ChangeDetectorRef, Component, HostListener, inject, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {confirmBookDeletion} from '../../../../shared/util/confirm-book-deletion';
 import {ActivatedRoute, NavigationStart, Router} from '@angular/router';
 import {ConfirmationService, MenuItem, MessageService} from 'primeng/api';
 import {PageTitleService} from '../../../../shared/service/page-title.service';
@@ -577,26 +578,14 @@ export class BookBrowserComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   confirmDeleteBooks(): void {
-    this.confirmationService.confirm({
-      message: this.t.translate('book.browser.confirm.deleteMessage', {count: this.selectedBooks.size}),
-      header: this.t.translate('book.browser.confirm.deleteHeader'),
-      icon: 'pi pi-exclamation-triangle',
-      acceptIcon: 'pi pi-trash',
-      rejectIcon: 'pi pi-times',
-      acceptLabel: this.t.translate('common.delete'),
-      rejectLabel: this.t.translate('common.cancel'),
-      acceptButtonStyleClass: 'p-button-danger',
-      rejectButtonStyleClass: 'p-button-outlined',
-      accept: () => {
-        const count = this.selectedBooks.size;
-        const loader = this.loadingService.show(this.t.translate('book.browser.loading.deleting', {count}));
-
-        this.bookService.deleteBooks(this.selectedBooks)
-          .pipe(finalize(() => this.loadingService.hide(loader)))
-          .subscribe(() => {
-            this.bookSelectionService.deselectAll();
-          });
-      }
+    const count = this.selectedBooks.size;
+    confirmBookDeletion(this.confirmationService, this.t, count, () => {
+      const loader = this.loadingService.show(this.t.translate('book.browser.loading.deleting', {count}));
+      this.bookService.deleteBooks(this.selectedBooks)
+        .pipe(finalize(() => this.loadingService.hide(loader)))
+        .subscribe(() => {
+          this.bookSelectionService.deselectAll();
+        });
     });
   }
 
