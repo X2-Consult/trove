@@ -16,6 +16,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.WebRequest;
 
 import java.io.IOException;
 
@@ -34,32 +35,32 @@ public class BookMediaController {
     @ApiResponse(responseCode = "200", description = "Book thumbnail returned successfully")
     @GetMapping("/book/{bookId}/thumbnail")
     @CheckBookAccess(bookIdParam = "bookId")
-    public ResponseEntity<Resource> getBookThumbnail(@Parameter(description = "ID of the book") @PathVariable long bookId) {
-        return ResponseEntity.ok(bookService.getBookThumbnail(bookId));
+    public ResponseEntity<Resource> getBookThumbnail(@Parameter(description = "ID of the book") @PathVariable long bookId, WebRequest request) {
+        return withLastModified(bookService.getBookThumbnail(bookId), request);
     }
 
     @Operation(summary = "Get book cover", description = "Retrieve the cover image for a specific book.")
     @ApiResponse(responseCode = "200", description = "Book cover returned successfully")
     @GetMapping("/book/{bookId}/cover")
     @CheckBookAccess(bookIdParam = "bookId")
-    public ResponseEntity<Resource> getBookCover(@Parameter(description = "ID of the book") @PathVariable long bookId) {
-        return ResponseEntity.ok(bookService.getBookCover(bookId));
+    public ResponseEntity<Resource> getBookCover(@Parameter(description = "ID of the book") @PathVariable long bookId, WebRequest request) {
+        return withLastModified(bookService.getBookCover(bookId), request);
     }
 
     @Operation(summary = "Get audiobook thumbnail", description = "Retrieve the audiobook thumbnail image for a specific book.")
     @ApiResponse(responseCode = "200", description = "Audiobook thumbnail returned successfully")
     @GetMapping("/book/{bookId}/audiobook-thumbnail")
     @CheckBookAccess(bookIdParam = "bookId")
-    public ResponseEntity<Resource> getAudiobookThumbnail(@Parameter(description = "ID of the book") @PathVariable long bookId) {
-        return ResponseEntity.ok(bookService.getAudiobookThumbnail(bookId));
+    public ResponseEntity<Resource> getAudiobookThumbnail(@Parameter(description = "ID of the book") @PathVariable long bookId, WebRequest request) {
+        return withLastModified(bookService.getAudiobookThumbnail(bookId), request);
     }
 
     @Operation(summary = "Get audiobook cover", description = "Retrieve the audiobook cover image for a specific book.")
     @ApiResponse(responseCode = "200", description = "Audiobook cover returned successfully")
     @GetMapping("/book/{bookId}/audiobook-cover")
     @CheckBookAccess(bookIdParam = "bookId")
-    public ResponseEntity<Resource> getAudiobookCover(@Parameter(description = "ID of the book") @PathVariable long bookId) {
-        return ResponseEntity.ok(bookService.getAudiobookCover(bookId));
+    public ResponseEntity<Resource> getAudiobookCover(@Parameter(description = "ID of the book") @PathVariable long bookId, WebRequest request) {
+        return withLastModified(bookService.getAudiobookCover(bookId), request);
     }
 
     @Operation(summary = "Get CBX page as image", description = "Retrieve a specific page from a CBX book as an image.")
@@ -78,10 +79,13 @@ public class BookMediaController {
     @Operation(summary = "Get author photo", description = "Retrieve the photo for a specific author.")
     @ApiResponse(responseCode = "200", description = "Author photo returned successfully")
     @GetMapping("/author/{authorId}/photo")
-    public ResponseEntity<Resource> getAuthorPhoto(@Parameter(description = "ID of the author") @PathVariable long authorId) {
+    public ResponseEntity<Resource> getAuthorPhoto(@Parameter(description = "ID of the author") @PathVariable long authorId, WebRequest request) {
         Resource photo = authorMetadataService.getAuthorPhoto(authorId);
         if (photo == null) {
             return ResponseEntity.notFound().build();
+        }
+        if (notModified(photo, request)) {
+            return null;
         }
         return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(photo);
     }
@@ -89,10 +93,13 @@ public class BookMediaController {
     @Operation(summary = "Get author thumbnail", description = "Retrieve the thumbnail for a specific author.")
     @ApiResponse(responseCode = "200", description = "Author thumbnail returned successfully")
     @GetMapping("/author/{authorId}/thumbnail")
-    public ResponseEntity<Resource> getAuthorThumbnail(@Parameter(description = "ID of the author") @PathVariable long authorId) {
+    public ResponseEntity<Resource> getAuthorThumbnail(@Parameter(description = "ID of the author") @PathVariable long authorId, WebRequest request) {
         Resource thumbnail = authorMetadataService.getAuthorThumbnail(authorId);
         if (thumbnail == null) {
             return ResponseEntity.notFound().build();
+        }
+        if (notModified(thumbnail, request)) {
+            return null;
         }
         return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(thumbnail);
     }
@@ -109,5 +116,27 @@ public class BookMediaController {
                 .contentType(MediaType.IMAGE_JPEG)
                 .body(file)
                 : ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Answers 304 when the browser's copy is current (Last-Modified / If-Modified-Since), so an expired
+     * cached image costs a header round trip rather than the whole file. See ImageCachingFilter.
+     */
+    private static ResponseEntity<Resource> withLastModified(Resource resource, WebRequest request) {
+        if (notModified(resource, request)) {
+            return null;
+        }
+        return ResponseEntity.ok(resource);
+    }
+
+    /** Also sets Last-Modified on the response; true (with status 304 set) if the client is current. */
+    private static boolean notModified(Resource resource, WebRequest request) {
+        long lastModified;
+        try {
+            lastModified = resource.lastModified();
+        } catch (IOException e) {
+            return false;
+        }
+        return lastModified > 0 && request.checkNotModified(lastModified);
     }
 }
