@@ -69,6 +69,17 @@ jobs:
           echo "❌ Backend tests failed"
           exit 1
 
+  tmas-source-scan:
+    name: TMAS Source Scan
+    # Fork PRs get no secrets, so there is no API key to scan with.
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+    permissions:
+      contents: read
+      pull-requests: write
+    uses: ./.github/workflows/tmas-scan.yml
+    secrets:
+      TMAS_API_KEY: ${{ secrets.TMAS_API_KEY }}
+
   frontend-tests:
     name: Frontend Tests
     needs: [ migration-check ]
@@ -142,6 +153,8 @@ jobs:
     name: Build and Push Container
     needs: [ backend-tests, frontend-tests ]
     runs-on: ubuntu-latest
+    outputs:
+      image_tag: ${{ steps.set_image_tag.outputs.image_tag }}
 
     permissions:
       contents: read
@@ -168,6 +181,7 @@ jobs:
           fi
 
           echo "image_tag=$image_tag" >> $GITHUB_ENV
+          echo "image_tag=$image_tag" >> $GITHUB_OUTPUT
           echo "Image tag: $image_tag"
 
       # ----------------------------------------
@@ -268,3 +282,18 @@ jobs:
           cache-to: |
             type=gha,mode=max
             type=registry,ref=ghcr.io/x2-consult/trove:buildcache,mode=max
+
+  tmas-image-scan:
+    name: TMAS Image Scan
+    needs: [ build-and-push ]
+    # Only images that were actually pushed can be scanned.
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+    permissions:
+      contents: read
+      packages: read
+      pull-requests: write
+    uses: ./.github/workflows/tmas-scan.yml
+    with:
+      image: ghcr.io/x2-consult/trove:${{ needs.build-and-push.outputs.image_tag }}
+    secrets:
+      TMAS_API_KEY: ${{ secrets.TMAS_API_KEY }}

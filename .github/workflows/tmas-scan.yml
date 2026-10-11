@@ -1,0 +1,95 @@
+name: Reusable - TMAS Scan
+
+# Trend Vision One Artifact Scanner (TMAS).
+#
+# Source scan (no `image`): checks out the calling repo and scans it for open-source
+# vulnerabilities and committed secrets.
+# Image scan (`image` set): pulls the image and scans it for vulnerabilities, secrets and malware.
+#
+# The calling job must grant:
+#   contents: read, pull-requests: write (PR comment), and packages: read for private ghcr.io images.
+# and pass the TMAS_API_KEY repo secret.
+
+on:
+  workflow_call:
+    inputs:
+      image:
+        description: Image reference to scan (e.g. ghcr.io/x2-consult/app:tag). Leave empty to scan the repo source.
+        type: string
+        default: ''
+      platform:
+        description: Platform to scan for multi-arch images. Ignored for source scans.
+        type: string
+        default: linux/amd64
+      region:
+        description: Trend Vision One region of the API key.
+        type: string
+        default: ap-southeast-2
+      evaluate-policy:
+        description: Fail the job when findings violate the Vision One Code Security policy.
+        type: boolean
+        default: false
+      tmas-version:
+        description: TMAS CLI version; pinned to a major so a breaking release can't land unannounced.
+        type: string
+        default: '2'
+    secrets:
+      TMAS_API_KEY:
+        required: true
+
+jobs:
+  scan:
+    name: ${{ inputs.image == '' && 'Source' || 'Image' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checked out into a subfolder: the action installs the TMAS binary under the workspace,
+      # and a scan of the workspace root would include it.
+      - name: Checkout Repository
+        if: inputs.image == ''
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          path: src
+
+      # TMAS pulls private images with Docker's stored credentials.
+      - name: Authenticate to GitHub Container Registry
+        if: startsWith(inputs.image, 'ghcr.io/')
+        uses: docker/login-action@4907a6ddec9925e35a0a9e82d7399ccc52663121 # v4.1.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+
+      - name: Resolve Scan Arguments
+        id: args
+        env:
+          IMAGE: ${{ inputs.image }}
+          PLATFORM: ${{ inputs.platform }}
+          REGION: ${{ inputs.region }}
+          EVALUATE_POLICY: ${{ inputs.evaluate-policy }}
+        run: |
+          args="--region=$REGION"
+          if [ -n "$IMAGE" ]; then
+            echo "artifact=registry:$IMAGE" >> "$GITHUB_OUTPUT"
+            echo "malware=true" >> "$GITHUB_OUTPUT"
+            args="$args --platform=$PLATFORM"
+          else
+            echo "artifact=dir:./src" >> "$GITHUB_OUTPUT"
+            echo "malware=false" >> "$GITHUB_OUTPUT"
+          fi
+          if [ "$EVALUATE_POLICY" = "true" ]; then
+            args="$args --evaluatePolicy"
+          fi
+          echo "additional=$args" >> "$GITHUB_OUTPUT"
+
+      - name: Run TMAS Scan
+        uses: trendmicro/tmas-scan-action@2ab9b93e06d1263d20e7e26418f34cbd77a42003 # v3.3.1
+        with:
+          version: ${{ inputs.tmas-version }}
+          vulnerabilitiesScan: true
+          secretsScan: true
+          malwareScan: ${{ steps.args.outputs.malware }}
+          artifact: ${{ steps.args.outputs.artifact }}
+          additionalArgs: ${{ steps.args.outputs.additional }}
+          tmasApiKey: ${{ secrets.TMAS_API_KEY }}
+          githubToken: ${{ github.token }}

@@ -154,6 +154,8 @@ jobs:
     needs: [ backend-tests, frontend-tests ]
     if: needs.backend-tests.result == 'success' && needs.frontend-tests.result == 'success'
     runs-on: ubuntu-latest
+    outputs:
+      image_tag: ${{ steps.determine_bump.outputs.new_tag }}
     permissions:
       contents: write
       packages: write
@@ -198,6 +200,7 @@ jobs:
             echo "HEAD is already tagged $pinned_tag - using it as-is, skipping version bump."
             echo "bump=none" >> $GITHUB_ENV
             echo "new_tag=$pinned_tag" >> $GITHUB_ENV
+            echo "new_tag=$pinned_tag" >> $GITHUB_OUTPUT
             exit 0
           fi
 
@@ -250,6 +253,7 @@ jobs:
 
           echo "bump=$bump" >> $GITHUB_ENV
           echo "new_tag=$next_version" >> $GITHUB_ENV
+          echo "new_tag=$next_version" >> $GITHUB_OUTPUT
 
       # ----------------------------------------
       # Native Angular build
@@ -343,3 +347,16 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         run: |
           gh release edit ${{ env.new_tag }} --draft=true
+
+  tmas-image-scan:
+    name: TMAS Image Scan
+    needs: [ build-and-release ]
+    permissions:
+      contents: read
+      packages: read
+      pull-requests: write
+    uses: ./.github/workflows/tmas-scan.yml
+    with:
+      image: ghcr.io/x2-consult/trove:${{ needs.build-and-release.outputs.image_tag }}
+    secrets:
+      TMAS_API_KEY: ${{ secrets.TMAS_API_KEY }}
