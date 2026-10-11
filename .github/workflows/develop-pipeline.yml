@@ -284,7 +284,7 @@ jobs:
             type=registry,ref=ghcr.io/x2-consult/trove:buildcache,mode=max
 
   tmas-image-scan:
-    name: TMAS Image Scan
+    name: TMAS Image Scan (${{ matrix.platform }})
     needs: [ build-and-push ]
     # Only images that were actually pushed can be scanned.
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
@@ -292,8 +292,14 @@ jobs:
       contents: read
       packages: read
       pull-requests: write
+    # The image is multi-arch; each platform is its own image underneath, so each gets scanned.
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [ linux/amd64, linux/arm64 ]
     uses: ./.github/workflows/tmas-scan.yml
     with:
       image: ghcr.io/x2-consult/trove:${{ needs.build-and-push.outputs.image_tag }}
+      platform: ${{ matrix.platform }}
     secrets:
       TMAS_API_KEY: ${{ secrets.TMAS_API_KEY }}

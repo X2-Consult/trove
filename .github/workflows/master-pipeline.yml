@@ -349,14 +349,20 @@ jobs:
           gh release edit ${{ env.new_tag }} --draft=true
 
   tmas-image-scan:
-    name: TMAS Image Scan
+    name: TMAS Image Scan (${{ matrix.platform }})
     needs: [ build-and-release ]
     permissions:
       contents: read
       packages: read
       pull-requests: write
+    # The image is multi-arch; each platform is its own image underneath, so each gets scanned.
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [ linux/amd64, linux/arm64 ]
     uses: ./.github/workflows/tmas-scan.yml
     with:
       image: ghcr.io/x2-consult/trove:${{ needs.build-and-release.outputs.image_tag }}
+      platform: ${{ matrix.platform }}
     secrets:
       TMAS_API_KEY: ${{ secrets.TMAS_API_KEY }}
