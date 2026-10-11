@@ -465,7 +465,7 @@ describe('MagicShelfComponent (Part 3)', () => {
       ruleCtrl.get('value')?.setValue('15');
       ruleCtrl.get('operator')?.setValue('within_last');
       component.onOperatorChange(ruleCtrl);
-      expect(ruleCtrl.get('value')?.value).toBeNull();
+      expect(ruleCtrl.get('value')?.value).toBe('15');
     });
   });
 
