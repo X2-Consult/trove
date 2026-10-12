@@ -22,6 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       has_migrations: ${{ steps.check_migrations.outputs.has_migrations }}
+      base: ${{ steps.check_migrations.outputs.base }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
@@ -30,9 +31,21 @@ jobs:
 
       - name: Detect Flyway Migration Changes
         id: check_migrations
+        env:
+          BASE_REF: ${{ inputs.base_ref }}
+          HEAD_REF: ${{ inputs.head_ref }}
         run: |
-          echo "Comparing ${{ inputs.base_ref }}...${{ inputs.head_ref }}"
-          if git diff --name-only ${{ inputs.base_ref }}...${{ inputs.head_ref }} | grep -q "booklore-api/src/main/resources/db/migration/V.*.sql"; then
+          base="$BASE_REF"
+          # A push that creates a branch has an all-zero "before", and a force push's may no longer
+          # exist: compare against the head's parent instead.
+          if ! git rev-parse --verify --quiet "${base}^{commit}" >/dev/null; then
+            echo "Base ref '${base}' is not a commit here; comparing against the parent of ${HEAD_REF}."
+            base="${HEAD_REF}^"
+          fi
+          base=$(git rev-parse "${base}^{commit}")
+          echo "base=${base}" >> $GITHUB_OUTPUT
+          echo "Comparing ${base}...${HEAD_REF}"
+          if git diff --name-only "${base}...${HEAD_REF}" | grep -q "booklore-api/src/main/resources/db/migration/V.*.sql"; then
             echo "Migration file changes detected. Proceeding with migration preview."
             echo "has_migrations=true" >> $GITHUB_OUTPUT
           else
@@ -64,12 +77,12 @@ jobs:
       - name: Checkout Base Branch
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
-          ref: ${{ inputs.base_ref }}
+          ref: ${{ needs.check-for-migrations.outputs.base }}
           fetch-depth: 0
 
       - name: Apply Migrations from Base Branch
         run: |
-          echo "Applying migrations from base ref (${{ inputs.base_ref }})..."
+          echo "Applying migrations from base ref (${{ needs.check-for-migrations.outputs.base }})..."
           docker run --network host \
             -v ${{ github.workspace }}:/flyway/sql \
             flyway/flyway:11.19.0-alpine \
