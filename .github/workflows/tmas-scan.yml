@@ -5,6 +5,7 @@ name: Reusable - TMAS Scan
 # Source scan (no `image`): checks out the calling repo and scans it for open-source
 # vulnerabilities and committed secrets.
 # Image scan (`image` set): pulls the image and scans it for vulnerabilities, secrets and malware.
+# Either way, accepted findings listed in the repo's .github/tmas-overrides.yml are left out.
 #
 # The calling job must grant:
 #   contents: read, pull-requests: write (PR comment), and packages: read for private ghcr.io images.
@@ -44,9 +45,8 @@ jobs:
 
     steps:
       # Checked out into a subfolder: the action installs the TMAS binary under the workspace,
-      # and a scan of the workspace root would include it.
+      # and a scan of the workspace root would include it. Image scans need it for the overrides.
       - name: Checkout Repository
-        if: inputs.image == ''
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           path: src
@@ -76,6 +76,9 @@ jobs:
           else
             echo "artifact=dir:./src" >> "$GITHUB_OUTPUT"
             echo "malware=false" >> "$GITHUB_OUTPUT"
+          fi
+          if [ -f src/.github/tmas-overrides.yml ]; then
+            args="$args --override=src/.github/tmas-overrides.yml"
           fi
           if [ "$EVALUATE_POLICY" = "true" ]; then
             args="$args --evaluatePolicy"

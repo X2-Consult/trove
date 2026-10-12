@@ -1,0 +1,23 @@
+# TMAS findings reviewed and accepted, read by .github/workflows/tmas-scan.yml.
+# Patterns are regexes. A path entry hides every secret in that file, so list files, not folders.
+secrets:
+  paths:
+    - patterns:
+        - \.github/workflows/migrations-check\.yml$
+      reason: Password of the throwaway Postgres service container used for the migration preview
+    - patterns:
+        - (^|/)dev\.docker-compose\.yml$
+      reason: Local development database credentials
+    - patterns:
+        - example-docker/docker-compose\.yml$
+        - booklore-ui/public/docs/installation\.html$
+      reason: Placeholder passwords in install examples, for the user to replace
+    - patterns:
+        - service/koreader/KoreaderPasswordsTest\.java$
+      reason: Test fixture, the MD5 of the word "password"
+    - patterns:
+        - service/kobo/KoboResourcesComponent\.java$
+      reason: Mirror of Kobo's public store resource list; the key is Kobo's live chat widget key, not ours
+    - patterns:
+        - bookdrop-pattern-extract-dialog\.component\.ts$
+      reason: False positive on translation keys (placeholders.isbn10, placeholders.isbn13)
