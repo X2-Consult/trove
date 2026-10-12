@@ -28,11 +28,11 @@ public class FindEpubCoverProblemsTask extends EpubCoverTask {
     @Override
     protected String summary(Tally tally) {
         if (tally.broken() == 0) {
-            return String.format("All %d EPUBs have a cover readers can show. Nothing was changed.", tally.checked);
+            return String.format("All %d EPUBs checked have a cover readers can show. Nothing was changed.", tally.checked) + skippedNote(tally);
         }
         String text = String.format("%d of %d EPUBs have a cover readers may not show: %s. Nothing was changed; the books are listed under Settings > Server Logs.",
                 tally.broken(), tally.checked, tally.describeProblems());
-        return tally.failed > 0 ? text + " " + tally.failed + " couldn't be checked." : text;
+        return (tally.failed > 0 ? text + " " + tally.failed + " couldn't be checked." : text) + skippedNote(tally);
     }
 
     @Override

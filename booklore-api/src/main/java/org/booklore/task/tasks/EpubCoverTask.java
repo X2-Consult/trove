@@ -23,7 +23,8 @@ import java.util.stream.Collectors;
 /**
  * Walks the books whose primary file is an EPUB, checking that the file's own cover is one readers
  * can show: {@link FindEpubCoverProblemsTask} only reports, {@link FixEpubCoversTask} also writes
- * Trove's cover into the broken ones.
+ * Trove's cover into the broken ones. Books an earlier run found fine or fixed, and unchanged since,
+ * are skipped.
  */
 @Slf4j
 abstract class EpubCoverTask implements Task {
@@ -50,6 +51,7 @@ abstract class EpubCoverTask implements Task {
         int repaired;
         int notRepaired;
         int failed;
+        int skipped;
 
         int broken() {
             return problems.values().stream().mapToInt(Integer::intValue).sum();
@@ -86,8 +88,10 @@ abstract class EpubCoverTask implements Task {
 
         try {
             checkCanRun();
-            List<Long> bookIds = repairService.candidates();
+            EpubCoverRepairService.Candidates candidates = repairService.candidates();
+            List<Long> bookIds = candidates.bookIds();
             Tally tally = new Tally();
+            tally.skipped = candidates.skipped();
             for (int i = 0; i < bookIds.size(); i++) {
                 if (cancellationManager.isTaskCancelled(taskId)) {
                     log.info("{}: Cancelled after {} of {} book(s)", getTaskType(), i, bookIds.size());
@@ -128,6 +132,14 @@ abstract class EpubCoverTask implements Task {
         }
         tally.problems.merge(outcome.check().problem(), 1, Integer::sum);
         return true;
+    }
+
+    /** The summary's note on the books skipped as already checked, or "" if none were. */
+    protected static String skippedNote(Tally tally) {
+        if (tally.skipped == 0) {
+            return "";
+        }
+        return " " + tally.skipped + (tally.skipped == 1 ? " EPUB" : " EPUBs") + " already checked and unchanged since were skipped.";
     }
 
     private void progress(String taskId, int percent, String message, TaskStatus status, boolean force) {

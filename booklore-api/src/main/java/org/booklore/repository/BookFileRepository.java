@@ -36,13 +36,22 @@ public interface BookFileRepository extends JpaRepository<BookFileEntity, Long> 
     @Query("SELECT bf FROM BookFileEntity bf WHERE bf.currentHash = :currentHash AND bf.isBookFormat = true")
     Optional<BookFileEntity> findByCurrentHashAndIsBookFormatTrue(@Param("currentHash") String currentHash);
 
+    /** The EPUB book files of books that aren't deleted, with their hashes. */
     @Query("""
-            SELECT DISTINCT bf.book.id FROM BookFileEntity bf
+            SELECT bf.book.id AS bookId, bf.id AS bookFileId, bf.currentHash AS currentHash FROM BookFileEntity bf
             WHERE bf.bookType = org.booklore.model.enums.BookFileType.EPUB AND bf.isBookFormat = true
               AND (bf.book.deleted IS NULL OR bf.book.deleted = false)
             ORDER BY bf.book.id
             """)
-    List<Long> findBookIdsWithEpub();
+    List<EpubFileRef> findEpubFileRefs();
+
+    interface EpubFileRef {
+        Long getBookId();
+
+        Long getBookFileId();
+
+        String getCurrentHash();
+    }
 
     @Modifying
     @Transactional

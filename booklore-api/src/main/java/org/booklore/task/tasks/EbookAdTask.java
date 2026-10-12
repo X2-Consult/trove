@@ -21,7 +21,8 @@ import java.util.UUID;
 /**
  * Walks the library's EPUBs looking for the OceanofPDF advert: {@link FindEbookAdsTask} only reports,
  * {@link RemoveEbookAdsTask} cleans each book it finds. Both can be limited to some books with
- * {@link EbookAdOptions}.
+ * {@link EbookAdOptions}; otherwise files an earlier run found clean or cleaned, and unchanged since,
+ * are skipped.
  */
 @Slf4j
 abstract class EbookAdTask implements Task {
@@ -49,6 +50,7 @@ abstract class EbookAdTask implements Task {
         int strayFiles;
         int otherMentions;
         int failed;
+        int skipped;
     }
 
     /** Handles one EPUB, adding to the tally. */
@@ -77,8 +79,10 @@ abstract class EbookAdTask implements Task {
         try {
             checkCanRun();
             EbookAdOptions options = request != null ? request.getOptionsAs(EbookAdOptions.class) : null;
-            List<BookFileEntity> files = cleanerService.candidates(options != null ? options.getBookIds() : null);
+            EbookAdCleanerService.Candidates candidates = cleanerService.candidates(options != null ? options.getBookIds() : null);
+            List<BookFileEntity> files = candidates.files();
             Tally tally = new Tally();
+            tally.skipped = candidates.skipped();
             for (int i = 0; i < files.size(); i++) {
                 if (cancellationManager.isTaskCancelled(taskId)) {
                     log.info("{}: Cancelled after {} of {} file(s)", getTaskType(), i, files.size());
@@ -115,6 +119,11 @@ abstract class EbookAdTask implements Task {
         } catch (Exception e) {
             return bookFile.getFileName();
         }
+    }
+
+    /** The summary's note on the files skipped as already checked, or "" if none were. */
+    protected static String skippedNote(Tally tally) {
+        return tally.skipped > 0 ? " " + plural(tally.skipped, "EPUB") + " already checked and unchanged since were skipped." : "";
     }
 
     protected static String plural(int n, String word) {

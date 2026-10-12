@@ -81,7 +81,7 @@ public enum TaskType {
             true,
             false,
             "Find Website Ads in EPUBs",
-            "Dry run: lists the EPUBs that OceanofPDF has stamped with its website link, and how many times, without changing anything."
+            "Dry run: lists the EPUBs that OceanofPDF has stamped with its website link, and how many times, without changing anything. EPUBs already found clean or cleaned are skipped until their file changes."
     ),
     REMOVE_EBOOK_ADS(
             false,
@@ -89,7 +89,7 @@ public enum TaskType {
             false,
             false,
             "Remove Website Ads from EPUBs",
-            "Strips the OceanofPDF website link from every chapter of the EPUBs that have it, plus the stray oceanofpdf.com file. Each book is checked before it replaces the original, and the original is kept in the ad-cleaner-backups folder."
+            "Strips the OceanofPDF website link from every chapter of the EPUBs that have it, plus the stray oceanofpdf.com file. Each book is checked before it replaces the original, and the original is kept in the ad-cleaner-backups folder. EPUBs already found clean or cleaned are skipped until their file changes."
     ),
     FETCH_MISSING_REVIEWS(
             false,
@@ -105,7 +105,7 @@ public enum TaskType {
             true,
             false,
             "Find Missing EPUB Covers",
-            "Dry run: lists the EPUBs whose own cover readers may not show - none declared, the image missing or unreadable, or saved as a different image type than declared - without changing anything."
+            "Dry run: lists the EPUBs whose own cover readers may not show - none declared, the image missing or unreadable, or saved as a different image type than declared - without changing anything. EPUBs already found fine or fixed are skipped until their file changes."
     ),
     FIX_EPUB_COVERS(
             false,
@@ -113,7 +113,7 @@ public enum TaskType {
             false,
             false,
             "Fix Missing EPUB Covers",
-            "Writes Trove's cover into the EPUBs whose own cover readers may not show, so downloaded copies have it. Each fixed file is read back to confirm the cover is there."
+            "Writes Trove's cover into the EPUBs whose own cover readers may not show, so downloaded copies have it. Each fixed file is read back to confirm the cover is there. EPUBs already found fine or fixed are skipped until their file changes."
     );
 
     @Getter

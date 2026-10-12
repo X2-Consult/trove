@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.booklore.config.AppProperties;
 import org.booklore.model.entity.BookFileEntity;
+import org.booklore.model.enums.BookFileCheckResult;
+import org.booklore.model.enums.BookFileCheckType;
 import org.booklore.model.enums.BookFileType;
 import org.booklore.repository.BookFileRepository;
 import org.booklore.util.EpubAdCleaner;
@@ -23,6 +25,8 @@ import java.util.List;
  * Finds and strips the OceanofPDF advert from the library's EPUBs ({@link EpubAdCleaner}). A cleaned
  * book replaces the original in place through {@link SafeFiles#replace}, so the library doesn't gain a
  * second copy, and the original is kept under {@code <config>/ad-cleaner-backups/<book id>/} first.
+ * Each result is recorded ({@link BookFileCheckService}), so files found clean or cleaned are left
+ * out of later runs until they change.
  */
 @Service
 @RequiredArgsConstructor
@@ -34,18 +38,33 @@ public class EbookAdCleanerService {
 
     private final BookFileRepository bookFileRepository;
     private final AppProperties appProperties;
+    private final BookFileCheckService checks;
 
-    /** EPUB files of books that aren't deleted, all of them or only those of {@code bookIds}. */
-    public List<BookFileEntity> candidates(Collection<Long> bookIds) {
-        return bookFileRepository.findAllWithBookAndLibraryPathByBookTypeIn(List.of(BookFileType.EPUB)).stream()
+    /**
+     * EPUB files of books that aren't deleted, all of them or only those of {@code bookIds}. Unless
+     * books were named, files already found clean or cleaned, and unchanged since, are skipped.
+     */
+    public Candidates candidates(Collection<Long> bookIds) {
+        boolean named = bookIds != null && !bookIds.isEmpty();
+        List<BookFileEntity> files = bookFileRepository.findAllWithBookAndLibraryPathByBookTypeIn(List.of(BookFileType.EPUB)).stream()
                 .filter(BookFileEntity::isBookFormat)
                 .filter(file -> !Boolean.TRUE.equals(file.getBook().getDeleted()))
-                .filter(file -> bookIds == null || bookIds.isEmpty() || bookIds.contains(file.getBook().getId()))
+                .filter(file -> !named || bookIds.contains(file.getBook().getId()))
                 .toList();
+        if (named) {
+            return new Candidates(files, 0);
+        }
+        BookFileCheckService.Settled settled = checks.settled(BookFileCheckType.EBOOK_ADS);
+        List<BookFileEntity> toCheck = files.stream()
+                .filter(file -> !settled.covers(file.getId(), file.getCurrentHash()))
+                .toList();
+        return new Candidates(toCheck, files.size() - toCheck.size());
     }
 
     public EpubAdCleaner.Findings scan(BookFileEntity bookFile) throws IOException {
-        return EpubAdCleaner.scan(bookFile.getFullFilePath());
+        EpubAdCleaner.Findings findings = EpubAdCleaner.scan(bookFile.getFullFilePath());
+        record(bookFile, findings.hasAds() ? BookFileCheckResult.NEEDS_FIXING : BookFileCheckResult.OK);
+        return findings;
     }
 
     /**
@@ -57,6 +76,7 @@ public class EbookAdCleanerService {
         Path path = bookFile.getFullFilePath();
         EpubAdCleaner.Findings findings = EpubAdCleaner.scan(path);
         if (!findings.hasAds()) {
+            record(bookFile, BookFileCheckResult.OK);
             return null;
         }
         Path backup = backupPath(bookFile);
@@ -72,7 +92,13 @@ public class EbookAdCleanerService {
         }
         String hash = FileFingerprint.generateHash(path);
         bookFileRepository.updateCurrentHashAndSize(bookFile.getId(), hash, Files.size(path) / 1024);
+        bookFile.setCurrentHash(hash);
+        record(bookFile, BookFileCheckResult.FIXED);
         return new Cleaned(findings, backup);
+    }
+
+    private void record(BookFileEntity bookFile, BookFileCheckResult result) {
+        checks.record(BookFileCheckType.EBOOK_ADS, bookFile.getId(), bookFile.getCurrentHash(), result);
     }
 
     private Path backupPath(BookFileEntity bookFile) {
@@ -85,5 +111,9 @@ public class EbookAdCleanerService {
     }
 
     public record Cleaned(EpubAdCleaner.Findings findings, Path backup) {
+    }
+
+    /** The files to check, and how many were left out as already clean or cleaned. */
+    public record Candidates(List<BookFileEntity> files, int skipped) {
     }
 }

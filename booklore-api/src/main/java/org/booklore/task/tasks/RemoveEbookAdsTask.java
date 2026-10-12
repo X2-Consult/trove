@@ -66,7 +66,7 @@ public class RemoveEbookAdsTask extends EbookAdTask {
         if (tally.failed > 0) {
             text += " " + plural(tally.failed, "file") + " couldn't be cleaned; see Settings > Server Logs.";
         }
-        return text;
+        return text + skippedNote(tally);
     }
 
     @Override
