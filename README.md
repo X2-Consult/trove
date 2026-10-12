@@ -256,6 +256,9 @@ Found a security problem? Please report it privately through
 [GitHub's vulnerability reporting](https://github.com/X2-Consult/trove/security/advisories/new) rather than in a public
 issue. See [SECURITY.md](SECURITY.md) for what's supported and what to expect.
 
+Every push and release is scanned with TrendAI's code security scanner, covering the source code and the container
+images, and any issues found are addressed. See [Automated scanning](SECURITY.md#automated-scanning).
+
 ---
 
 <div align="center">

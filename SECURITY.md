@@ -14,6 +14,18 @@ Trove is maintained by one person, so only the latest release gets security fixe
 To update a native install, run `./deploy.sh` in `/opt/trove` or use **Update now** in the app. For
 Docker, pull the latest image.
 
+## Automated scanning
+
+Every push to `develop`, every pull request from this repository and every release is scanned with
+TrendAI's code security scanner (TMAS):
+
+- the source code, for vulnerable dependencies and committed secrets;
+- the published container image, both `amd64` and `arm64`, for vulnerabilities, malware and secrets.
+
+Any issues found are addressed: fixed, usually by updating the affected dependency, or, for a false
+positive, reviewed and recorded in [`.github/tmas-overrides.yml`](.github/tmas-overrides.yml) with the
+reason.
+
 ## Reporting a vulnerability
 
 Please **don't open a public issue** for a security problem.
