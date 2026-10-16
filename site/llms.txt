@@ -1,0 +1,29 @@
+# Trove
+
+> Trove is a free, open-source (GNU AGPL v3), self-hosted library server for ebooks, comics and audiobooks. It organises EPUB, PDF, MOBI, AZW3, FB2, CBZ/CBR/CB7 and M4B/M4A/MP3/Opus files, has a built-in web reader, fetches metadata automatically, supports multiple users, and syncs with Kobo e-readers, KOReader and OPDS reading apps. It is a maintained continuation of BookLore, and an alternative to Calibre-Web, Kavita and Komga.
+
+Trove runs on your own Linux server, NAS or home lab, with Docker/Podman (image `ghcr.io/x2-consult/trove`), a Helm chart, or a native installer for Ubuntu and Debian (Java 25 and PostgreSQL). Nothing depends on a third-party service. Source code: https://github.com/X2-Consult/trove
+
+Key features:
+
+- Libraries on local disks or NAS shares (SMB/NFS), with safe writes to network storage
+- Built-in reader for ebooks, comics, PDFs and audiobooks, with highlights, notes and reading progress
+- Kobo sync (books, shelves and two-way reading progress), KOReader progress sync, OPDS catalogue, Komga-compatible API
+- Automatic metadata from Google Books, Open Library, Amazon, Goodreads and more
+- Custom shelves, rule-based Magic Shelves, series and author pages, full-text search
+- Multiple users, per-user progress and shelves, library access and content restrictions, OIDC single sign-on
+- BookDrop watched-folder import, Send to Kindle and email
+- Moving from BookLore keeps libraries, users, reading progress and paired devices
+
+## Docs
+
+- [Getting started]({{SITE_URL}}docs/getting-started.html): first steps after installing
+- [Installation]({{SITE_URL}}docs/installation.html): Docker, Podman and native installs
+- [Initial setup]({{SITE_URL}}docs/initial-setup.html): admin account and first library
+- [Devices]({{SITE_URL}}docs/tools/devices.html): Kobo, KOReader and OPDS
+- [All help topics]({{SITE_URL}}docs/): the full manual
+
+## Optional
+
+- [Source code and issues](https://github.com/X2-Consult/trove)
+- [Security policy](https://github.com/X2-Consult/trove/blob/develop/SECURITY.md)

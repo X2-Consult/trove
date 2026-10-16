@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trove: self-hosted ebook, comic and audiobook library server</title>
+<meta name="description" content="Trove is a free, open-source, self-hosted library server for ebooks, comics and audiobooks. Organise EPUB, PDF, MOBI, AZW3, FB2, CBZ/CBR and M4B/MP3 files, read in the browser, and sync with Kobo, KOReader and OPDS apps.">
+<link rel="canonical" href="{{SITE_URL}}">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Trove: self-hosted ebook, comic and audiobook library server">
+<meta property="og:description" content="Free, open-source and self-hosted: organise, read and sync your books, comics and audiobooks on your own server.">
+<meta property="og:url" content="{{SITE_URL}}">
+<meta property="og:image" content="{{SITE_URL}}docs/images/dashboard/dashboard-overview.jpg">
+<link rel="icon" href="trove-mark-gradient.svg" type="image/svg+xml">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Trove",
+  "description": "Free, open-source, self-hosted library server for ebooks, comics and audiobooks, with a web reader, metadata fetching, multi-user support and Kobo, KOReader and OPDS sync. A maintained continuation of BookLore.",
+  "applicationCategory": "MultimediaApplication",
+  "applicationSubCategory": "Ebook library server",
+  "operatingSystem": "Linux, Docker",
+  "url": "{{SITE_URL}}",
+  "downloadUrl": "https://github.com/X2-Consult/trove",
+  "codeRepository": "https://github.com/X2-Consult/trove",
+  "softwareVersion": "{{VERSION}}",
+  "license": "https://www.gnu.org/licenses/agpl-3.0.html",
+  "isAccessibleForFree": true,
+  "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
+  "screenshot": "{{SITE_URL}}docs/images/dashboard/dashboard-overview.jpg",
+  "featureList": ["EPUB, PDF, MOBI, AZW3, FB2 and comic (CBZ, CBR, CB7) support", "Audiobooks (M4B, M4A, MP3, Opus)", "In-browser reader with highlights and annotations", "Kobo sync", "KOReader progress sync", "OPDS catalogue", "Komga-compatible API for comic apps", "Automatic metadata from Google Books, Open Library, Amazon and Goodreads", "Rule-based Magic Shelves", "Multiple users with OIDC single sign-on", "BookDrop watched-folder import", "Send to Kindle and email", "Docker or native Linux install"]
+}
+</script>
+<style>
+:root {
+  --bg: #fbfcfb; --surface: #f0f4f2; --border: #d5dfdb; --text: #17201d; --muted: #56645f;
+  --accent: #047857; --accent-text: #ffffff; --link: #046c4e; --code-bg: #eef3f1;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1412; --surface: #151d1a; --border: #26332e; --text: #e2ebe7; --muted: #97a7a1;
+    --accent: #34d399; --accent-text: #06231a; --link: #6ee7b7; --code-bg: #121916;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e1412; --surface: #151d1a; --border: #26332e; --text: #e2ebe7; --muted: #97a7a1;
+  --accent: #34d399; --accent-text: #06231a; --link: #6ee7b7; --code-bg: #121916;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 17px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+a { color: var(--link); }
+.wrap { max-width: 1040px; margin: 0 auto; padding: 0 16px; }
+header.top { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 20px 0; }
+header.top { flex-wrap: wrap; }
+header.top nav { display: flex; flex-wrap: wrap; gap: 6px 18px; }
+header.top nav a { text-decoration: none; font-weight: 600; }
+pre { max-width: 100%; }
+.logo-dark { display: none; }
+@media (prefers-color-scheme: dark) { .logo-light { display: none; } .logo-dark { display: inline; } }
+.hero { padding: 40px 0 24px; }
+.hero h1 { font-size: clamp(30px, 5vw, 46px); line-height: 1.15; margin: 0 0 16px; letter-spacing: -0.01em; }
+.hero p.lede { font-size: 20px; color: var(--muted); max-width: 720px; margin: 0 0 28px; }
+.buttons { display: flex; flex-wrap: wrap; gap: 12px; }
+.btn { display: inline-block; padding: 11px 20px; border-radius: 8px; font-weight: 600; text-decoration: none; border: 1px solid var(--border); }
+.btn.primary { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
+.shot { margin: 36px 0 8px; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+.shot img { display: block; width: 100%; height: auto; }
+section { padding: 28px 0; }
+h2 { font-size: 28px; margin: 0 0 16px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; }
+.card h3 { margin: 0 0 6px; font-size: 18px; }
+.card p { margin: 0; color: var(--muted); }
+pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; overflow-x: auto; font-size: 15px; }
+dl dt { font-weight: 700; margin-top: 16px; }
+dl dd { margin: 4px 0 0; color: var(--muted); }
+footer { border-top: 1px solid var(--border); margin-top: 32px; padding: 24px 0 40px; color: var(--muted); font-size: 15px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+  <a href="./" aria-label="Trove home">
+    <img class="logo-light" src="trove-logo-light.svg" alt="Trove" height="40">
+    <img class="logo-dark" src="trove-logo-dark.svg" alt="Trove" height="40">
+  </a>
+  <nav><a href="docs/">Help</a><a href="docs/installation.html">Install</a><a href="https://github.com/X2-Consult/trove">GitHub</a></nav>
+</header>
+
+<main>
+<div class="hero">
+  <h1>Your library. Your server. Your books.</h1>
+  <p class="lede">Trove is a free, open-source, self-hosted library server for ebooks, comics and audiobooks. Run it on your own server or NAS to organise your collection, read in any browser, and sync to Kobo, KOReader and OPDS reading apps, with no third-party service involved.</p>
+  <div class="buttons">
+    <a class="btn primary" href="docs/getting-started.html">Get started</a>
+    <a class="btn" href="https://github.com/X2-Consult/trove">View on GitHub</a>
+  </div>
+  <div class="shot"><img src="docs/images/dashboard/dashboard-overview.jpg" alt="The Trove dashboard showing recently added books and reading progress" width="1440" height="900" loading="eager"></div>
+</div>
+
+<section>
+  <h2>What Trove does</h2>
+  <div class="grid">
+    <div class="card"><h3>Every format in one place</h3><p>EPUB, PDF, MOBI, AZW3, FB2, comics (CBZ, CBR, CB7) and audiobooks (M4B, M4A, MP3, Opus), in libraries that can live on local disks or a NAS share.</p></div>
+    <div class="card"><h3>Read in the browser</h3><p>A built-in reader for books, comics, PDFs and audiobooks, with highlights, notes, bookmarks and reading progress.</p></div>
+    <div class="card"><h3>Sync your devices</h3><p>Kobo sync, KOReader progress sync, an OPDS catalogue for reading apps, and a Komga-compatible API for comic readers.</p></div>
+    <div class="card"><h3>Automatic metadata</h3><p>Covers, descriptions, series and ratings from Google Books, Open Library, Amazon, Goodreads and more, all editable.</p></div>
+    <div class="card"><h3>Shelves that sort themselves</h3><p>Custom shelves, rule-based Magic Shelves, series and author pages, filters and full-text search.</p></div>
+    <div class="card"><h3>For the whole household</h3><p>Separate shelves, progress and preferences per user, library access controls and content restrictions, with local accounts or OIDC single sign-on.</p></div>
+    <div class="card"><h3>Hands-off importing</h3><p>BookDrop watches a folder, identifies new files, fetches their metadata and queues them for import.</p></div>
+    <div class="card"><h3>Share and send</h3><p>Send any book to a Kindle or an email address in one click.</p></div>
+  </div>
+</section>
+
+<section>
+  <h2>Install</h2>
+  <p>With Docker, use the <code>ghcr.io/x2-consult/trove</code> image and the example compose file. On an Ubuntu or Debian server, the native installer sets up everything, including PostgreSQL, a systemd service and an optional HTTPS reverse proxy:</p>
+<pre><code>git clone -b master https://github.com/X2-Consult/trove.git
+cd trove
+./install.sh</code></pre>
+  <p>See <a href="docs/installation.html">Installation</a> for both methods.</p>
+</section>
+
+<section>
+  <h2>Questions</h2>
+  <dl>
+    <dt>Is Trove free?</dt>
+    <dd>Yes. Trove is open source under the GNU AGPL v3 licence, with no paid tier, and you host it yourself.</dd>
+    <dt>How does Trove relate to BookLore?</dt>
+    <dd>Trove started as a fork of BookLore after BookLore's maintainer abandoned it, and is maintained independently. It uses PostgreSQL, adds a native (non-Docker) installer, hardens security and fixes memory use. Existing BookLore installs can move to Trove and keep their libraries, users, reading progress and paired Kobo and KOReader devices.</dd>
+    <dt>Is it an alternative to Calibre-Web, Kavita or Komga?</dt>
+    <dd>Trove covers the same ground: a self-hosted web library and reader for ebooks and comics, with OPDS, device sync and multiple users, and it adds audiobooks and a Komga-compatible API in the same app.</dd>
+    <dt>Does it work with Kobo and Kindle?</dt>
+    <dd>Kobo e-readers sync directly with Trove, including reading progress. Kindles can receive books by email through Send to Kindle. KOReader devices sync reading progress, and any OPDS app can browse and download books.</dd>
+    <dt>What does it run on?</dt>
+    <dd>Any Linux server, NAS or home lab that runs Docker or Podman (a Helm chart is included for Kubernetes), or natively on Ubuntu and Debian with Java 25 and PostgreSQL.</dd>
+  </dl>
+</section>
+</main>
+
+<footer>
+  Trove {{VERSION}} · Open source under the <a href="https://www.gnu.org/licenses/agpl-3.0.html">GNU AGPL v3</a> · Based on BookLore ·
+  <a href="https://github.com/X2-Consult/trove">Source code</a> · <a href="https://github.com/X2-Consult/trove/security/advisories/new">Report a security problem</a>
+</footer>
+</div>
+</body>
+</html>

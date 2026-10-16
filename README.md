@@ -9,9 +9,21 @@
 <p align="center"><strong>Your library. Your server. Your books.</strong></p>
 
 <p align="center">
-Trove is a self-hosted app that brings your entire book collection under one roof.<br/>
+Trove is a free, open-source, self-hosted library server for ebooks, comics and audiobooks.<br/>
 Organize, read, annotate, sync across devices, and share, all without relying on third-party services.
 </p>
+
+<p align="center">
+<a href="https://x2-consult.github.io/trove/"><strong>Website</strong></a> ·
+<a href="https://x2-consult.github.io/trove/docs/"><strong>Help</strong></a> ·
+<a href="https://x2-consult.github.io/trove/docs/installation.html"><strong>Install</strong></a>
+</p>
+
+EPUB, PDF, MOBI, AZW3, FB2, comics (CBZ, CBR, CB7) and audiobooks (M4B, M4A, MP3, Opus) in one web library, with a
+built-in reader, automatic metadata, multiple users and OIDC sign-in, and sync to **Kobo** e-readers, **KOReader** and
+any **OPDS** reading app, plus a **Komga-compatible API** for comic readers. If you're looking for a self-hosted
+alternative to Calibre-Web, Kavita or Komga, or a maintained continuation of BookLore, this is it. Runs with Docker,
+Podman, Helm or a native install on Ubuntu and Debian.
 
 ---
 

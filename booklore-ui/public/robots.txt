@@ -1,0 +1,4 @@
+# This is someone's private Trove library. Search engines and AI crawlers: please stay out.
+# (The project's public website is https://x2-consult.github.io/trove/)
+User-agent: *
+Disallow: /
