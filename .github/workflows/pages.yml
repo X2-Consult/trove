@@ -53,3 +53,36 @@ jobs:
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
+
+      # Tell Bing and the other IndexNow search engines (Yandex, Naver, Seznam...) about every page,
+      # so new and changed help pages are picked up without a webmaster account. The key is public
+      # by design: the matching file is site/<key>.txt. Google doesn't take IndexNow; it reads the
+      # sitemap through Search Console.
+      - name: Notify Search Engines (IndexNow)
+        continue-on-error: true
+        env:
+          SITE_URL: ${{ steps.deployment.outputs.page_url }}
+          INDEXNOW_KEY: ccd5fa2d9379bc0061d1a997539038ad
+        run: |
+          python3 -I - <<'PY'
+          import json, os, re, time, urllib.request
+          site = os.environ["SITE_URL"].rstrip("/") + "/"
+          key = os.environ["INDEXNOW_KEY"]
+          for attempt in range(6):  # Pages can take a moment to serve the new files
+              try:
+                  sitemap = urllib.request.urlopen(site + "sitemap.xml", timeout=30).read().decode()
+                  urllib.request.urlopen(f"{site}{key}.txt", timeout=30).read()
+                  break
+              except OSError as e:
+                  print(f"Site not ready yet ({e}), retrying")
+                  time.sleep(20)
+          else:
+              raise SystemExit("The published site didn't answer; skipping IndexNow")
+          urls = re.findall(r"<loc>([^<]+)</loc>", sitemap)
+          body = json.dumps({"host": site.split("/")[2], "key": key, "keyLocation": f"{site}{key}.txt",
+                             "urlList": urls}).encode()
+          req = urllib.request.Request("https://api.indexnow.org/indexnow", data=body,
+                                       headers={"Content-Type": "application/json; charset=utf-8"})
+          with urllib.request.urlopen(req, timeout=30) as r:
+              print(f"IndexNow accepted {len(urls)} URLs: HTTP {r.status}")
+          PY
