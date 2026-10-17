@@ -11,11 +11,13 @@ import org.booklore.repository.BookAdditionalFileRepository;
 import org.booklore.repository.BookRepository;
 import org.booklore.service.book.BookCreatorService;
 import org.booklore.service.file.FileFingerprint;
+import org.booklore.service.metadata.IdentifierConflictService;
 import org.booklore.service.metadata.MetadataMatchService;
 import org.booklore.service.metadata.sidecar.SidecarMetadataWriter;
 import org.booklore.util.FileService;
 import org.booklore.util.FileUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +25,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -53,6 +56,14 @@ public abstract class AbstractFileProcessor implements BookFileProcessor {
         this.sidecarMetadataWriter = sidecarMetadataWriter;
     }
 
+    // Setter-injected so the processors' constructors (and their tests) stay as they are.
+    private IdentifierConflictService identifierConflictService;
+
+    @Autowired(required = false)
+    public void setIdentifierConflictService(IdentifierConflictService identifierConflictService) {
+        this.identifierConflictService = identifierConflictService;
+    }
+
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     @Override
     public FileProcessResult processFile(LibraryFile libraryFile) {
@@ -67,6 +78,7 @@ public abstract class AbstractFileProcessor implements BookFileProcessor {
     private Book createAndMapBook(LibraryFile libraryFile, String hash) {
         BookEntity entity = processNewFile(libraryFile);
         entity.getPrimaryBookFile().setCurrentHash(hash);
+        dropConflictingIdentifiers(entity);
         entity.setMetadataMatchScore(metadataMatchService.calculateMatchScore(entity));
         bookCreatorService.saveConnections(entity);
 
@@ -79,6 +91,19 @@ public abstract class AbstractFileProcessor implements BookFileProcessor {
         }
 
         return bookMapper.toBook(entity);
+    }
+
+    private void dropConflictingIdentifiers(BookEntity entity) {
+        if (identifierConflictService == null || entity.getMetadata() == null) return;
+        try {
+            List<String> dropped = identifierConflictService.dropConflictingIdentifiers(entity.getMetadata());
+            if (!dropped.isEmpty()) {
+                log.warn("Imported book {} \"{}\": dropped identifiers from the file that belong to other books: {}",
+                        entity.getId(), entity.getMetadata().getTitle(), String.join("; ", dropped));
+            }
+        } catch (Exception e) {
+            log.warn("Shared-identifier check failed for imported book {}: {}", entity.getId(), e.getMessage());
+        }
     }
 
     protected abstract BookEntity processNewFile(LibraryFile libraryFile);

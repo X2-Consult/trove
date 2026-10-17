@@ -19,4 +19,6 @@ public class MetadataUpdateContext {
     private boolean mergeMoods;
     private boolean mergeTags;
     private MetadataReplaceMode replaceMode;
+    /** True for a user's own edit: an ASIN/ISBN another book already holds is saved with a warning instead of dropped. */
+    private boolean allowIdentifierConflicts;
 }

@@ -15,7 +15,11 @@ import org.booklore.model.entity.*;
 import org.booklore.model.enums.BookFileType;
 import org.booklore.model.enums.ComicCreatorRole;
 import org.booklore.model.enums.MetadataReplaceMode;
+import org.booklore.model.enums.PermissionType;
+import org.booklore.model.websocket.LogNotification;
+import org.booklore.model.websocket.Topic;
 import org.booklore.repository.*;
+import org.booklore.service.NotificationService;
 import org.booklore.service.appsettings.AppSettingService;
 import org.booklore.service.file.FileFingerprint;
 import org.booklore.service.file.FileMoveService;
@@ -62,6 +66,8 @@ public class BookMetadataUpdater {
     private final BookReviewUpdateService bookReviewUpdateService;
     private final FileMoveService fileMoveService;
     private final SidecarMetadataWriter sidecarMetadataWriter;
+    private final IdentifierConflictService identifierConflictService;
+    private final NotificationService notificationService;
 
     @Transactional
     public void setBookMetadata(MetadataUpdateContext context) {
@@ -105,7 +111,11 @@ public class BookMetadataUpdater {
 
         boolean hasValueChangesForFileWrite = MetadataChangeDetector.hasValueChangesForFileWrite(newMetadata, metadata, clearFlags);
 
+        String previousAsin = metadata.getAsin();
+        String previousIsbn13 = metadata.getIsbn13();
+        String previousIsbn10 = metadata.getIsbn10();
         updateBasicFields(newMetadata, metadata, clearFlags, replaceMode);
+        guardIdentifiers(context, metadata, previousAsin, previousIsbn13, previousIsbn10);
         updateAuthorsIfNeeded(newMetadata, metadata, clearFlags, mergeCategories, replaceMode);
         updateCategoriesIfNeeded(newMetadata, metadata, clearFlags, mergeCategories, replaceMode);
         updateMoodsIfNeeded(newMetadata, metadata, clearFlags, mergeMoods, replaceMode);
@@ -171,6 +181,38 @@ public class BookMetadataUpdater {
             } catch (Exception e) {
                 log.warn("Failed to move files for book ID {} after metadata update: {}", bookId, e.getMessage());
             }
+        }
+    }
+
+    /**
+     * A new ASIN or ISBN that another book in the library already holds, where that book isn't the
+     * same work, is almost always a fetch that matched a bundle or sibling volume. Keep the old
+     * value and warn, unless the user typed it in themselves, in which case save it and warn.
+     */
+    private void guardIdentifiers(MetadataUpdateContext context, BookMetadataEntity e, String previousAsin, String previousIsbn13, String previousIsbn10) {
+        List<String> warnings = new ArrayList<>();
+        guardIdentifier(context, e, "ASIN", previousAsin, e.getAsin(), e::setAsin, warnings);
+        guardIdentifier(context, e, "ISBN-13", previousIsbn13, e.getIsbn13(), e::setIsbn13, warnings);
+        guardIdentifier(context, e, "ISBN-10", previousIsbn10, e.getIsbn10(), e::setIsbn10, warnings);
+        if (!warnings.isEmpty()) {
+            notificationService.sendMessageToPermissions(Topic.LOG, LogNotification.warn(String.join(" ", warnings)),
+                    Set.of(PermissionType.ADMIN, PermissionType.EDIT_METADATA));
+        }
+    }
+
+    private void guardIdentifier(MetadataUpdateContext context, BookMetadataEntity e, String label, String previous, String current,
+                                 Consumer<String> setter, List<String> warnings) {
+        if (!StringUtils.hasText(current) || current.equalsIgnoreCase(previous)) return;
+        List<BookMetadataEntity> conflicts = identifierConflictService.findConflicts(e, current);
+        if (conflicts.isEmpty()) return;
+        String others = IdentifierConflictService.describe(conflicts);
+        if (context.isAllowIdentifierConflicts()) {
+            log.warn("Book {} saved with {} {} that {} also has", e.getBookId(), label, current, others);
+            warnings.add("\"" + e.getTitle() + "\" now shares " + label + " " + current + " with " + others + ".");
+        } else {
+            setter.accept(previous);
+            log.warn("Book {}: not saving {} {} because {} already has it", e.getBookId(), label, current, others);
+            warnings.add("Kept the old " + label + " of \"" + e.getTitle() + "\": the fetched " + current + " belongs to " + others + ".");
         }
     }
 

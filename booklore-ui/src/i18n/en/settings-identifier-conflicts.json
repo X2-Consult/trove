@@ -1,0 +1,31 @@
+{
+  "title": "Shared Identifiers",
+  "description": "ASINs and ISBNs that more than one book in a library holds, where those books aren't the same work. This usually means a bundle's or another volume's identifier was copied onto the wrong book. Apps that sync with Trove treat a shared identifier as another copy of the same book, so these books get merged there.",
+  "repairTitle": "Repair",
+  "repairHelp": "The dry run asks Amazon which book really owns each identifier, and changes nothing. Applying clears the identifier from the other books and then re-fetches their metadata, so they pick up their own. Groups Amazon can't settle are left alone for you to fix by hand.",
+  "dryRun": "Dry run",
+  "apply": "Clear and re-fetch",
+  "checking": "Checking with Amazon: {{checked}} of {{total}} identifiers",
+  "dryRunFailed": "The dry run failed: {{error}}",
+  "planSummary": "{{identifiers}} identifiers will be cleared from {{books}} books.",
+  "listTitle": "Shared identifiers ({{count}})",
+  "reload": "Reload",
+  "empty": "No identifiers are shared between different books.",
+  "amazonSays": "Amazon: {{title}}",
+  "status": {
+    "RESOLVED": "Owner found",
+    "NO_OWNER": "No owner here",
+    "AMBIGUOUS": "Needs review",
+    "LOOKUP_FAILED": "Amazon didn't answer"
+  },
+  "action": {
+    "KEEP": "Keep",
+    "CLEAR": "Clear",
+    "LOCKED": "Locked, skipped"
+  },
+  "confirmHeader": "Clear shared identifiers?",
+  "confirmMessage": "This clears {{identifiers}} identifiers from {{books}} books, then re-fetches their metadata.",
+  "repairedSummary": "Identifiers cleared",
+  "repairedDetail": "Cleared identifiers on {{books}} books. Re-fetching their metadata.",
+  "repairFailed": "Couldn't clear the identifiers"
+}

@@ -1,5 +1,6 @@
 package org.booklore.repository;
 
+import org.booklore.model.dto.BookIdentifierRow;
 import org.booklore.model.entity.*;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -108,4 +109,28 @@ public interface BookMetadataRepository extends JpaRepository<BookMetadataEntity
               AND (m.pageCountLocked IS NULL OR m.pageCountLocked = false)
             """)
     int fillMissingPageCount(@Param("bookId") Long bookId, @Param("pageCount") int pageCount, @Param("estimated") boolean estimated);
+    /**
+     * Other live books in the library holding {@code value} as their ASIN, ISBN-13 or ISBN-10.
+     * Any column counts, because a book's ISBN-10 doubles as its ASIN on Amazon.
+     */
+    @Query("""
+            SELECT m FROM BookMetadataEntity m JOIN m.book b
+            WHERE b.library.id = :libraryId AND m.bookId <> :bookId
+              AND (b.deleted IS NULL OR b.deleted = false)
+              AND (UPPER(m.asin) = :value OR UPPER(m.isbn13) = :value OR UPPER(m.isbn10) = :value)
+            """)
+    List<BookMetadataEntity> findOthersInLibraryWithIdentifier(@Param("libraryId") Long libraryId,
+                                                               @Param("bookId") Long bookId,
+                                                               @Param("value") String value);
+
+    /** Identifier fields of every live book that has an ASIN or ISBN, for the duplicate-identifier report. */
+    @Query("""
+            SELECT new org.booklore.model.dto.BookIdentifierRow(
+                   m.bookId, b.library.id, b.library.name, m.title, m.seriesName, m.seriesNumber,
+                   m.goodreadsId, m.asin, m.isbn13, m.isbn10)
+            FROM BookMetadataEntity m JOIN m.book b
+            WHERE (b.deleted IS NULL OR b.deleted = false)
+              AND (m.asin IS NOT NULL OR m.isbn13 IS NOT NULL OR m.isbn10 IS NOT NULL)
+            """)
+    List<BookIdentifierRow> findIdentifierRows();
 }

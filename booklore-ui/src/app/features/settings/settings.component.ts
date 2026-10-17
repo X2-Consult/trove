@@ -13,6 +13,7 @@ import {FileNamingPatternComponent} from './file-naming-pattern/file-naming-patt
 import {TaskManagementComponent} from './task-management/task-management.component';
 import {AuditLogsComponent} from './audit-logs/audit-logs.component';
 import {ServerLogsComponent} from './server-logs/server-logs.component';
+import {IdentifierConflictsComponent} from './identifier-conflicts/identifier-conflicts.component';
 import {OpdsSettings} from './opds-settings/opds-settings';
 import {ApiTokensSettings} from './api-tokens/api-tokens-settings';
 import {MetadataSettingsComponent} from './metadata-settings/metadata-settings-component';
@@ -38,6 +39,7 @@ export enum SettingsTab {
   Tasks = 'task',
   AuditLogs = 'audit-logs',
   ServerLogs = 'server-logs',
+  IdentifierConflicts = 'identifier-conflicts',
 }
 
 @Component({
@@ -63,6 +65,7 @@ export enum SettingsTab {
     TaskManagementComponent,
     AuditLogsComponent,
     ServerLogsComponent,
+    IdentifierConflictsComponent,
     EmailV2Component,
     TranslocoDirective
   ],

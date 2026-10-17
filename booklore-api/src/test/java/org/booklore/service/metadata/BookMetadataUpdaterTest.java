@@ -14,6 +14,7 @@ import org.booklore.model.enums.BookFileType;
 import org.booklore.model.enums.ComicCreatorRole;
 import org.booklore.model.enums.MetadataReplaceMode;
 import org.booklore.repository.*;
+import org.booklore.service.NotificationService;
 import org.booklore.service.appsettings.AppSettingService;
 import org.booklore.service.file.FileMoveService;
 import org.booklore.service.metadata.sidecar.SidecarMetadataWriter;
@@ -57,6 +58,8 @@ class BookMetadataUpdaterTest {
     @Mock private BookReviewUpdateService bookReviewUpdateService;
     @Mock private FileMoveService fileMoveService;
     @Mock private SidecarMetadataWriter sidecarMetadataWriter;
+    @Mock private IdentifierConflictService identifierConflictService;
+    @Mock private NotificationService notificationService;
 
     @InjectMocks
     private BookMetadataUpdater updater;
@@ -104,6 +107,52 @@ class BookMetadataUpdaterTest {
         mcd.when(() -> MetadataChangeDetector.hasValueChanges(any(), any(), any())).thenReturn(hasValueChanges);
         mcd.when(() -> MetadataChangeDetector.hasLockChanges(any(), any())).thenReturn(false);
         mcd.when(() -> MetadataChangeDetector.hasValueChangesForFileWrite(any(), any(), any())).thenReturn(false);
+    }
+
+    @Test
+    void setBookMetadata_keepsOldAsinWhenFetchedOneBelongsToAnotherBook() {
+        metadataEntity.setAsin("B0OWNASIN1");
+        BookMetadataEntity bundle = BookMetadataEntity.builder().bookId(2L).title("Rock God: Parts One to Six").build();
+        when(identifierConflictService.findConflicts(metadataEntity, "B0CJGL9NRB")).thenReturn(List.of(bundle));
+        BookMetadata newMeta = BookMetadata.builder().title("Original Title").asin("B0CJGL9NRB").build();
+
+        try (MockedStatic<MetadataChangeDetector> mcd = mockStatic(MetadataChangeDetector.class)) {
+            mockSettingsAndChangeDetector(mcd, true, true);
+            updater.setBookMetadata(buildContext(newMeta, MetadataReplaceMode.REPLACE_ALL));
+        }
+
+        assertThat(metadataEntity.getAsin()).isEqualTo("B0OWNASIN1");
+        verify(notificationService).sendMessageToPermissions(any(), any(), any());
+    }
+
+    @Test
+    void setBookMetadata_savesConflictingAsinFromUserEditWithWarning() {
+        BookMetadataEntity other = BookMetadataEntity.builder().bookId(2L).title("Other Book").build();
+        when(identifierConflictService.findConflicts(metadataEntity, "B0CJGL9NRB")).thenReturn(List.of(other));
+        BookMetadata newMeta = BookMetadata.builder().title("Original Title").asin("B0CJGL9NRB").build();
+        MetadataUpdateContext context = buildContext(newMeta, MetadataReplaceMode.REPLACE_ALL);
+        context.setAllowIdentifierConflicts(true);
+
+        try (MockedStatic<MetadataChangeDetector> mcd = mockStatic(MetadataChangeDetector.class)) {
+            mockSettingsAndChangeDetector(mcd, true, true);
+            updater.setBookMetadata(context);
+        }
+
+        assertThat(metadataEntity.getAsin()).isEqualTo("B0CJGL9NRB");
+        verify(notificationService).sendMessageToPermissions(any(), any(), any());
+    }
+
+    @Test
+    void setBookMetadata_savesAsinNoOtherBookHolds() {
+        BookMetadata newMeta = BookMetadata.builder().title("Original Title").asin("B0CJGL9NRB").build();
+
+        try (MockedStatic<MetadataChangeDetector> mcd = mockStatic(MetadataChangeDetector.class)) {
+            mockSettingsAndChangeDetector(mcd, true, true);
+            updater.setBookMetadata(buildContext(newMeta, MetadataReplaceMode.REPLACE_ALL));
+        }
+
+        assertThat(metadataEntity.getAsin()).isEqualTo("B0CJGL9NRB");
+        verifyNoInteractions(notificationService);
     }
 
     @Test

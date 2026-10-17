@@ -47,6 +47,7 @@ public class AmazonBookParser implements BookParser, DetailedMetadataProvider {
     }
 
     private static final int COUNT_DETAILED_METADATA_TO_GET = 3;
+    private static final int MAX_CANDIDATES_TO_VERIFY = 3;
     private static final String BASE_BOOK_URL_SUFFIX = "/dp/";
     private static final Pattern NON_DIGIT_PATTERN = Pattern.compile("[^\\d]");
     // Matches "352 pages" / "352 Seiten" / "352 páginas" / "352 ページ" / "352 页" etc. in the
@@ -220,15 +221,59 @@ public class AmazonBookParser implements BookParser, DetailedMetadataProvider {
 
     @Override
     public BookMetadata fetchTopMetadata(Book book, FetchMetadataRequest fetchMetadataRequest) {
+        String wantedTitle = fetchMetadataRequest.getTitle();
         BookMetadata byKnownAsin = fetchByKnownAsin(fetchMetadataRequest.getAsin());
         if (byKnownAsin != null) {
-            return byKnownAsin;
+            if (isWantedBook(wantedTitle, byKnownAsin)) {
+                return byKnownAsin;
+            }
+            // A wrong ASIN (e.g. a series bundle's) must not keep confirming itself on every refresh.
+            log.warn("Amazon: known ASIN {} is \"{}\", not \"{}\"; searching instead",
+                    byKnownAsin.getAsin(), TitleMatcher.fullTitle(byKnownAsin.getTitle(), byKnownAsin.getSubtitle()), wantedTitle);
         }
-        LinkedList<String> amazonBookIds = getAmazonBookIds(book, fetchMetadataRequest);
-        if (amazonBookIds == null || amazonBookIds.isEmpty()) {
+        boolean hasIsbn = ParserUtils.cleanIsbn(fetchMetadataRequest.getIsbn()) != null
+                && !ParserUtils.cleanIsbn(fetchMetadataRequest.getIsbn()).isEmpty();
+        BookMetadata found = firstMatchingProduct(wantedTitle, getAmazonBookIds(book, fetchMetadataRequest, hasIsbn));
+        if (found == null && hasIsbn) {
+            // The stored ISBN can be another book's too; try the title before giving up.
+            found = firstMatchingProduct(wantedTitle, getAmazonBookIds(book, fetchMetadataRequest, false));
+        }
+        return found;
+    }
+
+    // Search results put bundles and sibling volumes ahead of the book itself often enough
+    // (KU series especially) that the first hit can't be trusted: check product pages in order
+    // and take the first whose title is the wanted book, or nothing.
+    private BookMetadata firstMatchingProduct(String wantedTitle, List<String> amazonBookIds) {
+        if (amazonBookIds == null) {
             return null;
         }
-        return getBookMetadata(amazonBookIds.getFirst());
+        int checked = 0;
+        for (String id : amazonBookIds) {
+            if (id == null || id.isBlank()) continue;
+            if (checked++ >= MAX_CANDIDATES_TO_VERIFY) break;
+            BookMetadata metadata;
+            try {
+                metadata = getBookMetadata(id);
+            } catch (Exception e) {
+                log.warn("Amazon: product page {} failed: {}", id, e.getMessage());
+                continue;
+            }
+            if (metadata == null) {
+                // Blocked: checking more candidates won't go better.
+                return null;
+            }
+            if (isWantedBook(wantedTitle, metadata)) {
+                return metadata;
+            }
+            log.info("Amazon: skipping {} \"{}\", not \"{}\"", id,
+                    TitleMatcher.fullTitle(metadata.getTitle(), metadata.getSubtitle()), wantedTitle);
+        }
+        return null;
+    }
+
+    private static boolean isWantedBook(String wantedTitle, BookMetadata candidate) {
+        return TitleMatcher.matches(wantedTitle, TitleMatcher.fullTitle(candidate.getTitle(), candidate.getSubtitle()));
     }
 
     @Override
@@ -320,8 +365,29 @@ public class AmazonBookParser implements BookParser, DetailedMetadataProvider {
         return getBookMetadata(asin);
     }
 
+    /**
+     * The Amazon product an ASIN, ISBN-10 or ISBN-13 belongs to, or null when there is none or
+     * Amazon is blocking. ISBN-13s have no product page of their own, so they go through search.
+     */
+    public BookMetadata lookupIdentifier(String identifier) {
+        String id = identifier == null ? null : identifier.strip().toUpperCase(Locale.ROOT);
+        if (id == null || id.isEmpty()) {
+            return null;
+        }
+        if (ASIN_PATTERN.matcher(id).matches()) {
+            BookMetadata metadata = getBookMetadata(id);
+            return metadata != null && metadata.getTitle() != null && !metadata.getTitle().isBlank() ? metadata : null;
+        }
+        LinkedList<String> ids = getAmazonBookIds(null, FetchMetadataRequest.builder().isbn(id).build(), true);
+        return ids == null || ids.isEmpty() ? null : getBookMetadata(ids.getFirst());
+    }
+
     private LinkedList<String> getAmazonBookIds(Book book, FetchMetadataRequest request) {
-        String queryUrl = buildQueryUrl(request, book);
+        return getAmazonBookIds(book, request, true);
+    }
+
+    private LinkedList<String> getAmazonBookIds(Book book, FetchMetadataRequest request, boolean useIsbn) {
+        String queryUrl = buildQueryUrl(request, book, useIsbn);
         if (queryUrl == null) {
             log.error("Query URL is null, cannot proceed.");
             return null;
@@ -450,10 +516,10 @@ public class AmazonBookParser implements BookParser, DetailedMetadataProvider {
                 .build();
     }
 
-    private String buildQueryUrl(FetchMetadataRequest fetchMetadataRequest, Book book) {
+    private String buildQueryUrl(FetchMetadataRequest fetchMetadataRequest, Book book, boolean useIsbn) {
         String domain = appSettingService.getAppSettings().getMetadataProviderSettings().getAmazon().getDomain();
         String isbnCleaned = ParserUtils.cleanIsbn(fetchMetadataRequest.getIsbn());
-        if (isbnCleaned != null && !isbnCleaned.isEmpty()) {
+        if (useIsbn && isbnCleaned != null && !isbnCleaned.isEmpty()) {
             String url = "https://www.amazon." + domain + "/s?k=" + fetchMetadataRequest.getIsbn();
             log.info("Amazon Query URL (ISBN): {}", url);
             return url;

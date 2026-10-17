@@ -6,6 +6,7 @@ import org.booklore.mapper.BookMetadataMapper;
 import org.booklore.model.MetadataUpdateContext;
 import org.booklore.model.MetadataUpdateWrapper;
 import org.booklore.model.dto.BookMetadata;
+import org.booklore.model.dto.IdentifierConflictGroup;
 import org.booklore.model.dto.request.IsbnLookupRequest;
 import org.booklore.model.dto.request.*;
 import org.booklore.model.entity.BookEntity;
@@ -14,9 +15,12 @@ import org.booklore.model.enums.MetadataReplaceMode;
 import org.booklore.repository.BookRepository;
 import org.booklore.service.metadata.BookMetadataService;
 import org.booklore.service.metadata.BookMetadataUpdater;
+import org.booklore.service.metadata.IdentifierConflictService;
+import org.booklore.service.metadata.IdentifierRepairService;
 import org.booklore.service.metadata.MetadataManagementService;
 import org.booklore.service.metadata.MetadataMatchService;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -45,6 +49,40 @@ public class MetadataController {
     private final BookRepository bookRepository;
     private final MetadataManagementService metadataManagementService;
     private final AuditService auditService;
+    private final IdentifierConflictService identifierConflictService;
+    private final IdentifierRepairService identifierRepairService;
+
+    @Operation(summary = "List shared ASINs and ISBNs", description = "ASINs and ISBNs held by more than one book in a library where those books aren't the same work (different Goodreads IDs or titles). Usually a bundle's or sibling volume's identifier copied onto the wrong book. Requires admin.")
+    @ApiResponse(responseCode = "200", description = "Conflicting identifier groups, largest first")
+    @GetMapping("/metadata/identifier-conflicts")
+    @PreAuthorize("@securityUtil.isAdmin()")
+    public List<IdentifierConflictGroup> getIdentifierConflicts() {
+        return identifierConflictService.findAllConflicts();
+    }
+
+    @Operation(summary = "Start a shared-identifier repair dry run", description = "Asks Amazon which book owns each shared ASIN/ISBN and works out which books it should be cleared from. Runs in the background and changes nothing; poll the GET endpoint for the result. Requires admin.")
+    @ApiResponse(responseCode = "200", description = "Dry run started (or already running)")
+    @PostMapping("/metadata/identifier-conflicts/repair-plan")
+    @PreAuthorize("@securityUtil.isAdmin()")
+    public IdentifierRepairService.PlanStatus startIdentifierRepairPlan() {
+        return identifierRepairService.startPlan();
+    }
+
+    @Operation(summary = "Get the shared-identifier repair dry run", description = "Progress of the latest dry run, with the plan once it has finished. Requires admin.")
+    @ApiResponse(responseCode = "200", description = "Dry run progress and plan")
+    @GetMapping("/metadata/identifier-conflicts/repair-plan")
+    @PreAuthorize("@securityUtil.isAdmin()")
+    public IdentifierRepairService.PlanStatus getIdentifierRepairPlan() {
+        return identifierRepairService.planStatus();
+    }
+
+    @Operation(summary = "Clear shared identifiers", description = "Clears each approved ASIN/ISBN from its book (locked fields are skipped). Returns the IDs of the books that changed, which should then be re-fetched. Requires admin.")
+    @ApiResponse(responseCode = "200", description = "IDs of the books whose identifiers were cleared")
+    @PostMapping("/metadata/identifier-conflicts/repair")
+    @PreAuthorize("@securityUtil.isAdmin()")
+    public List<Long> repairIdentifiers(@RequestBody @Valid IdentifierRepairRequest request) {
+        return identifierRepairService.apply(request);
+    }
 
     @Operation(summary = "Get prospective metadata for a book", description = "Fetch prospective metadata for a book by its ID. Requires metadata edit permission or admin.")
     @ApiResponse(responseCode = "200", description = "Prospective metadata returned successfully")
@@ -79,6 +117,7 @@ public class MetadataController {
                 .replaceMode(replaceMode)
                 .mergeMoods(false)
                 .mergeTags(false)
+                .allowIdentifierConflicts(true)
                 .build();
 
         bookMetadataUpdater.setBookMetadata(context);

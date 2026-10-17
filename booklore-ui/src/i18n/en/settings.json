@@ -12,6 +12,7 @@
     "tasks": "Tasks",
     "auditLogs": "Audit Logs",
     "serverLogs": "Server Logs",
+    "identifierConflicts": "Shared IDs",
     "opds": "OPDS",
     "apiTokens": "API Tokens",
     "devices": "Devices"

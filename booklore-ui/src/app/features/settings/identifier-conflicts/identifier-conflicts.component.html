@@ -1,0 +1,92 @@
+<ng-container *transloco="let t; prefix: 'settingsIdentifierConflicts'">
+  <div class="main-container">
+    <div class="settings-header">
+      <h2 class="settings-title">
+        <i class="pi pi-clone"></i>
+        {{ t('title') }}
+      </h2>
+      <p class="settings-description">{{ t('description') }}</p>
+    </div>
+
+    <div class="settings-card">
+      <div class="section-header">
+        <h3 class="section-title">
+          <i class="pi pi-wrench"></i>
+          {{ t('repairTitle') }}
+        </h3>
+        <div class="actions">
+          <p-button
+            [label]="t('dryRun')"
+            icon="pi pi-search"
+            severity="secondary"
+            size="small"
+            [loading]="planStatus?.running ?? false"
+            [disabled]="groups.length === 0 || applying"
+            (onClick)="startDryRun()"/>
+          <p-button
+            [label]="t('apply')"
+            icon="pi pi-check"
+            size="small"
+            [loading]="applying"
+            [disabled]="plannedClears.length === 0 || (planStatus?.running ?? false)"
+            (onClick)="applyPlan()"/>
+        </div>
+      </div>
+      <p class="section-help">{{ t('repairHelp') }}</p>
+      @if (planStatus?.running) {
+        <p class="status-line">{{ t('checking', {checked: planStatus!.checked, total: planStatus!.total}) }}</p>
+      } @else if (planStatus?.error) {
+        <p class="status-line error">{{ t('dryRunFailed', {error: planStatus!.error}) }}</p>
+      } @else if (planStatus?.plan) {
+        <p class="status-line">{{ t('planSummary', {identifiers: plannedClears.length, books: plannedBookCount}) }}</p>
+      }
+    </div>
+
+    <div class="settings-card">
+      <div class="section-header">
+        <h3 class="section-title">
+          <i class="pi pi-list"></i>
+          {{ t('listTitle', {count: groups.length}) }}
+        </h3>
+        <button class="icon-btn" (click)="loadConflicts()" [title]="t('reload')">
+          <i class="pi pi-refresh" [class.pi-spin]="loading"></i>
+        </button>
+      </div>
+
+      @if (!loading && groups.length === 0) {
+        <p class="empty">{{ t('empty') }}</p>
+      }
+
+      @for (group of groups; track group.libraryId + '|' + group.identifier) {
+        <div class="conflict-group">
+          <div class="group-header">
+            <code class="identifier">{{ group.identifier }}</code>
+            <span class="library">{{ group.libraryName }}</span>
+            @if (planFor(group); as plan) {
+              <app-tag [color]="statusColor(plan.status)" size="2xs" [rounded]="true">{{ t('status.' + plan.status) }}</app-tag>
+              @if (plan.ownerTitle) {
+                <span class="owner">{{ t('amazonSays', {title: plan.ownerTitle}) }}</span>
+              }
+            }
+          </div>
+          <ul class="group-books">
+            @for (book of group.books; track book.bookId) {
+              <li>
+                <a [routerLink]="['/book', book.bookId]" class="book-link">#{{ book.bookId }} {{ book.title }}</a>
+                @if (book.seriesName) {
+                  <span class="series">{{ book.seriesName }}{{ book.seriesNumber != null ? ' #' + book.seriesNumber : '' }}</span>
+                }
+                @if (book.goodreadsId) {
+                  <span class="goodreads">GR {{ book.goodreadsId }}</span>
+                }
+                @if (actionFor(group, book.bookId); as action) {
+                  <app-tag [color]="action === 'CLEAR' ? 'red' : action === 'LOCKED' ? 'gray' : 'green'" size="2xs" [rounded]="true">{{ t('action.' + action) }}</app-tag>
+                }
+              </li>
+            }
+          </ul>
+        </div>
+      }
+    </div>
+  </div>
+</ng-container>

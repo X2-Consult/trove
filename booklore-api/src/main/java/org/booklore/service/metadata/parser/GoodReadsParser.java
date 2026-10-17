@@ -88,14 +88,34 @@ public class GoodReadsParser implements BookParser, DetailedMetadataProvider {
             }
         }
 
+        String wantedTitle = fetchMetadataRequest.getTitle();
         BookMetadata byIsbn = fetchByIsbn(fetchMetadataRequest.getIsbn());
         if (byIsbn != null) {
-            return byIsbn;
+            if (isWantedBook(wantedTitle, byIsbn)) {
+                return byIsbn;
+            }
+            // The stored ISBN may belong to another book (copied from a bundle or sibling).
+            log.warn("GoodReads: ISBN {} is \"{}\", not \"{}\"; searching instead",
+                    fetchMetadataRequest.getIsbn(), TitleMatcher.fullTitle(byIsbn.getTitle(), byIsbn.getSubtitle()), wantedTitle);
         }
 
-        List<SearchTarget> targets = searchTargets(book, fetchMetadataRequest);
-        List<BookMetadata> fetchedMetadata = fetchMetadataFromTargets(targets.stream().limit(1).toList());
-        return fetchedMetadata.isEmpty() ? null : fetchedMetadata.getFirst();
+        // Take the first search result that is the wanted book, not just the first result.
+        List<SearchTarget> targets = searchTargets(book, fetchMetadataRequest).stream().limit(COUNT_DETAILED_METADATA_TO_GET).toList();
+        for (SearchTarget target : targets) {
+            List<BookMetadata> fetched = fetchMetadataFromTargets(List.of(target));
+            if (fetched.isEmpty()) continue;
+            BookMetadata candidate = fetched.getFirst();
+            if (isWantedBook(wantedTitle, candidate)) {
+                return candidate;
+            }
+            log.info("GoodReads: skipping {} \"{}\", not \"{}\"", target.id(),
+                    TitleMatcher.fullTitle(candidate.getTitle(), candidate.getSubtitle()), wantedTitle);
+        }
+        return null;
+    }
+
+    private static boolean isWantedBook(String wantedTitle, BookMetadata candidate) {
+        return TitleMatcher.matches(wantedTitle, TitleMatcher.fullTitle(candidate.getTitle(), candidate.getSubtitle()));
     }
 
     private String getExistingGoodreadsId(Book book) {
