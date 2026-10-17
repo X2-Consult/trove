@@ -40,7 +40,7 @@ domain would fix this: set `SITE_URL` in the workflow and add a `CNAME`.
 
 ### Outstanding
 
-- [ ] **GitHub topic fix:** in the repo's About box, replace `self-hosted-runner` with `self-hosted`.
+- [x] **GitHub topic fix:** in the repo's About box, replace `self-hosted-runner` with `self-hosted`.
       The former is about GitHub Actions runners.
 - [ ] **Google Search Console** (needed for Google Search, Gemini and Google's AI answers):
   1. At https://search.google.com/search-console, choose **Add property**, then **URL prefix**, and
