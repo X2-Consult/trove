@@ -10,7 +10,9 @@ public enum BookFileCheckType {
     /** The OceanofPDF advert, by the Find/Remove Website Ads tasks. */
     EBOOK_ADS(1),
     /** A cover readers can show, by the Find/Fix Missing EPUB Covers tasks. */
-    EPUB_COVER(1);
+    EPUB_COVER(1),
+    /** The file is structurally sound, by the Check Ebook Integrity task. */
+    INTEGRITY(1);
 
     @Getter
     private final int version;
