@@ -21,3 +21,15 @@ secrets:
     - patterns:
         - bookdrop-pattern-extract-dialog\.component\.ts$
       reason: False positive on translation keys (placeholders.isbn10, placeholders.isbn13)
+    - patterns:
+        - \.github/workflows/pages\.yml$
+      reason: IndexNow key, public by design (the site serves it at /<key>.txt for search engines to verify)
+    - patterns:
+        - scripts/docs-screenshots/sample-data\.py$
+      reason: Placeholder (...) for the docs instance password in the usage note
+    - patterns:
+        - scripts/test-migrate-to-trove\.sh$
+      reason: Password of the throwaway PostgreSQL the migration test creates and deletes
+    - patterns:
+        - /opt/java/openjdk/conf/security/java\.security$
+      reason: The JDK's stock security configuration in the base image, not a secret

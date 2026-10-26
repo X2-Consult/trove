@@ -63,7 +63,8 @@ ENV JAVA_TOOL_OPTIONS="-XX:MaxRAMPercentage=60.0 -XX:+UseShenandoahGC -XX:Shenan
 ENV METADATA_BROWSER_ENABLED=false
 
 ARG TARGETARCH
-RUN apk update && apk add --no-cache su-exec libstdc++ libgcc && \
+# apk upgrade picks up Alpine security fixes released since the base image was built.
+RUN apk update && apk upgrade --no-cache && apk add --no-cache su-exec libstdc++ libgcc && \
     mkdir -p /bookdrop
 
 COPY docker/unrar/unrar-${TARGETARCH} /usr/local/bin/unrar
