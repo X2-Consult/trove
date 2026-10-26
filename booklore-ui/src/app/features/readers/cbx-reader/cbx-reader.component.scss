@@ -90,6 +90,17 @@
     background: #0f0f0f;
     min-height: 0;
 
+    // Drag-to-pan cursors (toggled from script) for a page bigger than the screen.
+    &.can-pan,
+    &.can-pan :is([role='button'], .page-image) {
+      cursor: grab;
+    }
+
+    &.is-dragging,
+    &.is-dragging :is([role='button'], .page-image) {
+      cursor: grabbing;
+    }
+
     &:not(.two-page-view):not(.infinite-scroll) {
       flex-direction: column;
       align-items: stretch;
