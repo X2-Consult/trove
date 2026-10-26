@@ -75,21 +75,13 @@ public enum TaskType {
             "Fill Missing Page Counts",
             "Gives books without a page count one from their files: exact for PDFs, comics and EPUBs with print page numbers, otherwise estimated from the word count, measured against your books that have one. Existing and locked counts are kept."
     ),
-    FIND_EBOOK_ADS(
-            false,
-            true,
-            true,
-            false,
-            "Find Website Ads in EPUBs",
-            "Dry run: lists the EPUBs that OceanofPDF has stamped with its website link, and how many times, without changing anything. EPUBs already found clean or cleaned are skipped until their file changes."
-    ),
     REMOVE_EBOOK_ADS(
             false,
             true,
-            false,
+            true,
             false,
             "Remove Website Ads from EPUBs",
-            "Strips the OceanofPDF website link from every chapter of the EPUBs that have it, plus the stray oceanofpdf.com file. Each book is checked before it replaces the original, and the original is kept in the ad-cleaner-backups folder. EPUBs already found clean or cleaned are skipped until their file changes."
+            "Two stages: first finds the EPUBs that OceanofPDF has stamped with its website link, then strips the link from every chapter of those books, plus the stray oceanofpdf.com file. Each cleaned book is checked before it replaces the original, and the original is kept in the ad-cleaner-backups folder. EPUBs already found clean or cleaned are skipped until their file changes."
     ),
     FETCH_MISSING_REVIEWS(
             false,
@@ -99,21 +91,13 @@ public enum TaskType {
             "Fetch Missing Reviews",
             "Downloads reviews for books that have none, from the sources enabled under Public Reviews. Books with no reviews online are checked again after 90 days. Each run stops after 3 hours, or when the sources start blocking requests, and the next run carries on."
     ),
-    FIND_EPUB_COVER_PROBLEMS(
-            false,
-            true,
-            true,
-            false,
-            "Find Missing EPUB Covers",
-            "Dry run: lists the EPUBs whose own cover readers may not show - none declared, the image missing or unreadable, or saved as a different image type than declared - without changing anything. EPUBs already found fine or fixed are skipped until their file changes."
-    ),
     FIX_EPUB_COVERS(
             false,
             true,
-            false,
+            true,
             false,
             "Fix Missing EPUB Covers",
-            "Writes Trove's cover into the EPUBs whose own cover readers may not show, so downloaded copies have it. Each fixed file is read back to confirm the cover is there. EPUBs already found fine or fixed are skipped until their file changes."
+            "Two stages: first finds the EPUBs whose own cover readers may not show - none declared, the image missing or unreadable, or saved as a different image type than declared - then writes Trove's cover into them, so downloaded copies have it. Each fixed file is read back to confirm the cover is there. EPUBs already found fine or fixed are skipped until their file changes."
     ),
     FETCH_SERIES_IDS(
             false,

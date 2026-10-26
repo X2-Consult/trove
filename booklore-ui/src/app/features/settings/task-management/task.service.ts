@@ -15,10 +15,8 @@ export enum TaskType {
   REFRESH_METADATA_MANUAL = 'REFRESH_METADATA_MANUAL',
   CHECK_EBOOK_INTEGRITY = 'CHECK_EBOOK_INTEGRITY',
   FILL_MISSING_PAGE_COUNTS = 'FILL_MISSING_PAGE_COUNTS',
-  FIND_EBOOK_ADS = 'FIND_EBOOK_ADS',
   REMOVE_EBOOK_ADS = 'REMOVE_EBOOK_ADS',
   FETCH_MISSING_REVIEWS = 'FETCH_MISSING_REVIEWS',
-  FIND_EPUB_COVER_PROBLEMS = 'FIND_EPUB_COVER_PROBLEMS',
   FIX_EPUB_COVERS = 'FIX_EPUB_COVERS',
   FETCH_SERIES_IDS = 'FETCH_SERIES_IDS'
 }
@@ -34,12 +32,10 @@ export const TASK_TYPE_CONFIG: Record<TaskType, { parallel: boolean; async: bool
   [TaskType.CLEAR_PDF_CACHE]: {parallel: false, async: false, displayOrder: 8},
   [TaskType.CHECK_EBOOK_INTEGRITY]: {parallel: false, async: true, displayOrder: 9},
   [TaskType.FILL_MISSING_PAGE_COUNTS]: {parallel: false, async: true, displayOrder: 10},
-  [TaskType.FIND_EBOOK_ADS]: {parallel: false, async: true, displayOrder: 11},
-  [TaskType.REMOVE_EBOOK_ADS]: {parallel: false, async: true, displayOrder: 12},
-  [TaskType.FETCH_MISSING_REVIEWS]: {parallel: false, async: true, displayOrder: 13},
-  [TaskType.FIND_EPUB_COVER_PROBLEMS]: {parallel: false, async: true, displayOrder: 14},
-  [TaskType.FIX_EPUB_COVERS]: {parallel: false, async: true, displayOrder: 15},
-  [TaskType.FETCH_SERIES_IDS]: {parallel: false, async: true, displayOrder: 16},
+  [TaskType.REMOVE_EBOOK_ADS]: {parallel: false, async: true, displayOrder: 11},
+  [TaskType.FETCH_MISSING_REVIEWS]: {parallel: false, async: true, displayOrder: 12},
+  [TaskType.FIX_EPUB_COVERS]: {parallel: false, async: true, displayOrder: 13},
+  [TaskType.FETCH_SERIES_IDS]: {parallel: false, async: true, displayOrder: 14},
 };
 
 export enum MetadataReplaceMode {

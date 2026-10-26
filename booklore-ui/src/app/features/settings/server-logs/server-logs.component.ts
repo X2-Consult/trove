@@ -40,7 +40,7 @@ export class ServerLogsComponent implements OnInit, OnDestroy {
   query = '';
   autoRefresh = false;
 
-  readonly quickFilters = ['WARN', 'FIND_EBOOK_ADS', 'REMOVE_EBOOK_ADS', 'FIND_EPUB_COVER_PROBLEMS', 'FIX_EPUB_COVERS', 'FETCH_MISSING_REVIEWS'];
+  readonly quickFilters = ['WARN', 'REMOVE_EBOOK_ADS', 'FIX_EPUB_COVERS', 'FETCH_MISSING_REVIEWS'];
 
   private readonly queryChanges = new Subject<string>();
   private subscriptions: Subscription[] = [];
