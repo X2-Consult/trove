@@ -92,7 +92,7 @@ class GoodReadsParserBookTest {
         Document doc = docWithApolloState("""
                 {
                   "Series:kca://series/other": { "title": "Some Other Series" },
-                  "Series:kca://series/stormlight": { "title": "The Stormlight Archive" },
+                  "Series:kca://series/stormlight": { "title": "The Stormlight Archive", "webUrl": "https://www.goodreads.com/series/49075-the-stormlight-archive" },
                   "Series:kca://series/cosmere": { "title": "The Cosmere Universe" },
                   "Book:kca://book/real": {
                     "title": "The Way of Kings",
@@ -109,6 +109,7 @@ class GoodReadsParserBookTest {
 
         assertThat(result.getSeriesName()).isEqualTo("The Stormlight Archive");
         assertThat(result.getSeriesNumber()).isEqualTo(1f);
+        assertThat(result.getSeriesGoodreadsId()).isEqualTo("49075");
     }
 
     @Test

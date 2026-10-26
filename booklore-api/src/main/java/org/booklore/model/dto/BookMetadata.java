@@ -25,6 +25,8 @@ public class BookMetadata {
     private String seriesName;
     private Float seriesNumber;
     private Integer seriesTotal;
+    private String seriesGoodreadsId;
+    private String seriesAsin;
     private String isbn13;
     private String isbn10;
     private Integer pageCount;

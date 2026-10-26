@@ -156,6 +156,53 @@ class BookMetadataUpdaterTest {
     }
 
     @Test
+    void setBookMetadata_seriesIdsComeWithTheSeriesName() {
+        metadataEntity.setSeriesName("Harem University");
+        BookMetadata newMeta = BookMetadata.builder().title("Original Title").seriesName("Harem University")
+                .seriesGoodreadsId("123").seriesAsin("B0D9DNS7D3").build();
+
+        try (MockedStatic<MetadataChangeDetector> mcd = mockStatic(MetadataChangeDetector.class)) {
+            mockSettingsAndChangeDetector(mcd, true, true);
+            updater.setBookMetadata(buildContext(newMeta, MetadataReplaceMode.REPLACE_MISSING));
+        }
+
+        assertThat(metadataEntity.getSeriesGoodreadsId()).isEqualTo("123");
+        assertThat(metadataEntity.getSeriesAsin()).isEqualTo("B0D9DNS7D3");
+    }
+
+    @Test
+    void setBookMetadata_renamedSeriesDropsTheOldSeriesIds() {
+        metadataEntity.setSeriesName("Harem University");
+        metadataEntity.setSeriesAsin("B0D9DNS7D3");
+        metadataEntity.setSeriesGoodreadsId("123");
+        BookMetadata newMeta = BookMetadata.builder().title("Original Title").seriesName("Campus King").build();
+
+        try (MockedStatic<MetadataChangeDetector> mcd = mockStatic(MetadataChangeDetector.class)) {
+            mockSettingsAndChangeDetector(mcd, true, true);
+            updater.setBookMetadata(buildContext(newMeta, MetadataReplaceMode.REPLACE_WHEN_PROVIDED));
+        }
+
+        assertThat(metadataEntity.getSeriesName()).isEqualTo("Campus King");
+        assertThat(metadataEntity.getSeriesAsin()).isNull();
+        assertThat(metadataEntity.getSeriesGoodreadsId()).isNull();
+    }
+
+    @Test
+    void setBookMetadata_lockedSeriesNameKeepsItsIds() {
+        metadataEntity.setSeriesName("Harem University");
+        metadataEntity.setSeriesAsin("B0D9DNS7D3");
+        metadataEntity.setSeriesNameLocked(true);
+        BookMetadata newMeta = BookMetadata.builder().title("Original Title").seriesName("Harem University").seriesAsin("B0D3KDJCS2").build();
+
+        try (MockedStatic<MetadataChangeDetector> mcd = mockStatic(MetadataChangeDetector.class)) {
+            mockSettingsAndChangeDetector(mcd, true, true);
+            updater.setBookMetadata(buildContext(newMeta, MetadataReplaceMode.REPLACE_ALL));
+        }
+
+        assertThat(metadataEntity.getSeriesAsin()).isEqualTo("B0D9DNS7D3");
+    }
+
+    @Test
     void setBookMetadata_skipsWhenMetadataIsNull() {
         MetadataUpdateContext context = MetadataUpdateContext.builder()
                 .bookEntity(bookEntity)

@@ -536,8 +536,13 @@ public class MetadataRefreshService {
         
         if (enabledFields.isSeriesName()) {
             metadata.setSeriesName(resolveFieldAsString(metadataMap, fieldOptions.getSeriesName(), BookMetadata::getSeriesName));
+            // Each source's series ID, taken only when that source names the same series.
+            metadata.setSeriesGoodreadsId(seriesIdFrom(metadataMap.get(GoodReads), metadata.getSeriesName(), BookMetadata::getSeriesGoodreadsId));
+            metadata.setSeriesAsin(seriesIdFrom(metadataMap.get(Amazon), metadata.getSeriesName(), BookMetadata::getSeriesAsin));
         } else if (isReplaceAll && existingMetadata != null) {
             metadata.setSeriesName(existingMetadata.getSeriesName());
+            metadata.setSeriesGoodreadsId(existingMetadata.getSeriesGoodreadsId());
+            metadata.setSeriesAsin(existingMetadata.getSeriesAsin());
         }
         
         if (enabledFields.isSeriesNumber()) {
@@ -807,6 +812,15 @@ public class MetadataRefreshService {
 
     protected Integer resolveFieldAsInteger (Map < MetadataProvider, BookMetadata > metadataMap, MetadataRefreshOptions.FieldProvider fieldProvider, Function < BookMetadata, Integer > fieldValueExtractor){
         return resolveFieldWithProviders(metadataMap, fieldProvider, fieldValueExtractor, Objects::nonNull);
+    }
+
+    /** The source's series ID, if it was fetched and calls the series by the name that was chosen. */
+    static String seriesIdFrom(BookMetadata source, String seriesName, Function<BookMetadata, String> id) {
+        if (source == null || seriesName == null || source.getSeriesName() == null
+                || !source.getSeriesName().strip().equalsIgnoreCase(seriesName.strip())) {
+            return null;
+        }
+        return id.apply(source);
     }
 
     protected String resolveFieldAsString (Map < MetadataProvider, BookMetadata > metadataMap, MetadataRefreshOptions.FieldProvider fieldProvider, FieldValueExtractor fieldValueExtractor){

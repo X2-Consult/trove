@@ -417,6 +417,8 @@ public class MetadataManagementService {
                 metadata.setSeriesName(null);
                 metadata.setSeriesNumber(null);
                 metadata.setSeriesTotal(null);
+                metadata.setSeriesGoodreadsId(null);
+                metadata.setSeriesAsin(null);
             }
 
             if (!booksWithSeries.isEmpty()) {

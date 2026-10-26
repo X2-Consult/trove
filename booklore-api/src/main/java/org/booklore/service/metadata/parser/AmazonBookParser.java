@@ -55,6 +55,7 @@ public class AmazonBookParser implements BookParser, DetailedMetadataProvider {
     private static final Pattern PAGE_COUNT_TEXT_PATTERN = Pattern.compile(
             "(\\d[\\d.,]*)\\s*(?:pages?|seiten|p\\u00e1ginas?|pagine|pagina's|stron[aey]?|\\u30da\\u30fc\\u30b8|\\u9801|\\u9875)",
             Pattern.CASE_INSENSITIVE);
+    private static final Pattern SERIES_ASIN_PATTERN = Pattern.compile("/dp/(B[0-9A-Z]{9})");
     private static final Pattern SERIES_FORMAT_PATTERN = Pattern.compile("Book (\\d+(?:\\.\\d+)?) of (\\d+)");
     private static final Pattern PARENTHESES_WITH_WHITESPACE_PATTERN = Pattern.compile("\\s*\\(.*?\\)");
     private static final Pattern NON_ALPHANUMERIC_PATTERN = Pattern.compile("[^\\p{L}\\p{M}0-9]");
@@ -102,7 +103,7 @@ public class AmazonBookParser implements BookParser, DetailedMetadataProvider {
 
     private record LocaleInfo(String acceptLanguage, Locale locale) {}
     private record TitleInfo(String title, String subtitle) {}
-    private record SeriesInfo(String name, Float number, Integer total) {}
+    private record SeriesInfo(String name, Float number, Integer total, String asin) {}
 
     private static final Pattern AUTHOR_LINK_ASIN = Pattern.compile("/(?:e|stores/(?:[^/]+/)?author)/(B[0-9A-Z]{9})(?:[/?]|$)");
     private static final Pattern AUTHOR_ASIN = Pattern.compile("B[0-9A-Z]{9}");
@@ -502,6 +503,7 @@ public class AmazonBookParser implements BookParser, DetailedMetadataProvider {
                 .seriesName(seriesInfo.name())
                 .seriesNumber(seriesInfo.number())
                 .seriesTotal(seriesInfo.total())
+                .seriesAsin(seriesInfo.asin())
                 .isbn13(getIsbn(doc, "isbn13"))
                 .isbn10(getIsbn(doc, "isbn10"))
                 .asin(amazonBookId)
@@ -758,11 +760,20 @@ public class AmazonBookParser implements BookParser, DetailedMetadataProvider {
         String name = null;
         Float number = null;
         Integer total = null;
+        String asin = null;
 
         try {
             Element seriesNameElement = doc.selectFirst("#rpi-attribute-book_details-series .rpi-attribute-value a span");
             if (seriesNameElement != null) {
                 name = seriesNameElement.text();
+            }
+            // The series name links to the series' own page, /dp/<series ASIN>.
+            Element seriesLink = doc.selectFirst("#rpi-attribute-book_details-series .rpi-attribute-value a[href]");
+            if (seriesLink != null) {
+                Matcher asinMatcher = SERIES_ASIN_PATTERN.matcher(seriesLink.attr("href"));
+                if (asinMatcher.find()) {
+                    asin = asinMatcher.group(1);
+                }
             }
 
             Element bookDetailsLabel = doc.selectFirst("#rpi-attribute-book_details-series .rpi-attribute-label span");
@@ -778,7 +789,7 @@ public class AmazonBookParser implements BookParser, DetailedMetadataProvider {
             log.warn("Failed to parse series info: {}", e.getMessage());
         }
 
-        return new SeriesInfo(name, number, total);
+        return new SeriesInfo(name, number, total, asin);
     }
 
     private String getLanguage(Document doc) {

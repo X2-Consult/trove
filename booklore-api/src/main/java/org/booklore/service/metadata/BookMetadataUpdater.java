@@ -225,7 +225,9 @@ public class BookMetadataUpdater {
         handleFieldUpdate(e.getPublisherLocked(), clear.isPublisher(), m.getPublisher(), v -> e.setPublisher(nullIfBlank(v)), e::getPublisher, replaceMode);
         handleFieldUpdate(e.getPublishedDateLocked(), clear.isPublishedDate(), m.getPublishedDate(), e::setPublishedDate, e::getPublishedDate, replaceMode);
         handleFieldUpdate(e.getDescriptionLocked(), clear.isDescription(), m.getDescription(), v -> e.setDescription(nullIfBlank(v)), e::getDescription, replaceMode);
+        String seriesBefore = e.getSeriesName();
         handleFieldUpdate(e.getSeriesNameLocked(), clear.isSeriesName(), m.getSeriesName(), e::setSeriesName, e::getSeriesName, replaceMode);
+        updateSeriesIds(m, e, replaceMode, seriesBefore);
         handleFieldUpdate(e.getSeriesNumberLocked(), clear.isSeriesNumber(), m.getSeriesNumber(), e::setSeriesNumber, e::getSeriesNumber, replaceMode);
         handleFieldUpdate(e.getSeriesTotalLocked(), clear.isSeriesTotal(), m.getSeriesTotal(), e::setSeriesTotal, e::getSeriesTotal, replaceMode);
         handleFieldUpdate(e.getIsbn13Locked(), clear.isIsbn13(), m.getIsbn13(), v -> e.setIsbn13(nullIfBlank(v)), e::getIsbn13, replaceMode);
@@ -258,6 +260,28 @@ public class BookMetadataUpdater {
         handleFieldUpdate(e.getApplebooksReviewCountLocked(), clear.isApplebooksReviewCount(), m.getApplebooksReviewCount(), e::setApplebooksReviewCount, e::getApplebooksReviewCount, replaceMode);
         handleFieldUpdate(e.getAgeRatingLocked(), clear.isAgeRating(), m.getAgeRating(), e::setAgeRating, e::getAgeRating, replaceMode);
         handleFieldUpdate(e.getContentRatingLocked(), clear.isContentRating(), m.getContentRating(), v -> e.setContentRating(nullIfBlank(v)), e::getContentRating, replaceMode);
+    }
+
+    /**
+     * The series IDs belong to the series name: they're covered by its lock, and a renamed series
+     * keeps only the IDs that came with the new name, so the old series' IDs can't follow it.
+     */
+    private void updateSeriesIds(BookMetadata m, BookMetadataEntity e, MetadataReplaceMode replaceMode, String seriesBefore) {
+        if (Boolean.TRUE.equals(e.getSeriesNameLocked())) return;
+        String before = seriesBefore != null ? seriesBefore.strip() : "";
+        String after = e.getSeriesName() != null ? e.getSeriesName().strip() : "";
+        if (after.isEmpty()) {
+            e.setSeriesGoodreadsId(null);
+            e.setSeriesAsin(null);
+            return;
+        }
+        if (!before.equalsIgnoreCase(after)) {
+            e.setSeriesGoodreadsId(nullIfBlank(m.getSeriesGoodreadsId()));
+            e.setSeriesAsin(nullIfBlank(m.getSeriesAsin()));
+            return;
+        }
+        handleFieldUpdate(false, false, m.getSeriesGoodreadsId(), v -> e.setSeriesGoodreadsId(nullIfBlank(v)), e::getSeriesGoodreadsId, replaceMode);
+        handleFieldUpdate(false, false, m.getSeriesAsin(), v -> e.setSeriesAsin(nullIfBlank(v)), e::getSeriesAsin, replaceMode);
     }
 
     private <T> void handleFieldUpdate(Boolean locked, boolean shouldClear, T newValue, Consumer<T> setter, Supplier<T> getter, MetadataReplaceMode mode) {

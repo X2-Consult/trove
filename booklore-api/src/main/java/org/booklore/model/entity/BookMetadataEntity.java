@@ -51,6 +51,14 @@ public class BookMetadataEntity {
     @Column(name = "series_total")
     private Integer seriesTotal;
 
+    /** The series' ID on Goodreads, e.g. 40549 for Jack Reacher. Follows the series name and its lock. */
+    @Column(name = "series_goodreads_id", length = 32)
+    private String seriesGoodreadsId;
+
+    /** The series' ASIN on Amazon. Follows the series name and its lock. */
+    @Column(name = "series_asin", length = 20)
+    private String seriesAsin;
+
     @Column(name = "isbn_13", length = 13)
     private String isbn13;
 

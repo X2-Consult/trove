@@ -47,6 +47,7 @@ public class GoodReadsParser implements BookParser, DetailedMetadataProvider {
     private static final int COUNT_DETAILED_METADATA_TO_GET_RETRY = 2;
     private static final Pattern WHITESPACE_PATTERN = Pattern.compile("\\s+");
     private static final Pattern BOOK_SHOW_ID_PATTERN = Pattern.compile("/book/show/(\\d+)");
+    private static final Pattern SERIES_URL_ID_PATTERN = Pattern.compile("/series/(\\d+)");
     private static final Pattern SERIES_SUFFIX_PATTERN = Pattern.compile("\\s*\\([^,(]+,\\s*#[\\d.]+\\)\\s*$");
     private static final Pattern SERIES_FROM_TITLE_PATTERN = Pattern.compile("\\(([^,(]+),\\s*#([\\d.]+)\\)\\s*$");
     private static final Pattern COVER_SIZE_TOKEN_PATTERN = Pattern.compile("\\._S[XY]\\d+_\\.");
@@ -382,8 +383,18 @@ public class GoodReadsParser implements BookParser, DetailedMetadataProvider {
             JSONObject seriesNode = ref != null ? apolloStateJson.optJSONObject(ref) : null;
             if (seriesNode != null) {
                 builder.seriesName(normalizeNull(seriesNode.optString("title")));
+                builder.seriesGoodreadsId(seriesIdFromUrl(seriesNode.optString("webUrl")));
             }
         }
+    }
+
+    /** "https://www.goodreads.com/series/40549-jack-reacher" -> "40549". */
+    static String seriesIdFromUrl(String webUrl) {
+        if (webUrl == null) {
+            return null;
+        }
+        Matcher m = SERIES_URL_ID_PATTERN.matcher(webUrl);
+        return m.find() ? m.group(1) : null;
     }
 
     private void extractWorkDetails(JSONObject apolloStateJson, LinkedHashSet<String> keySet, BookMetadata.BookMetadataBuilder builder) {
