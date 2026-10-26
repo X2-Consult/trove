@@ -22,7 +22,8 @@ LABEL org.opencontainers.image.title="Trove" \
 ENV JAVA_TOOL_OPTIONS="-XX:MaxRAMPercentage=60.0 -XX:+UseShenandoahGC -XX:ShenandoahGCHeuristics=compact -XX:+UseCompactObjectHeaders -XX:InitialRAMPercentage=8.0 -XX:MaxMetaspaceSize=256m -XX:ReservedCodeCacheSize=48m -Xss512k -XX:CICompilerCount=2 -XX:MaxDirectMemorySize=256m -XX:+UseStringDeduplication -XX:+UnlockExperimentalVMOptions -XX:ShenandoahUncommitDelay=5000 -XX:ShenandoahGuaranteedGCInterval=30000 -XX:+ExitOnOutOfMemoryError"
 
 ARG TARGETARCH
-RUN apk update && apk add --no-cache su-exec libstdc++ libgcc
+# apk upgrade picks up Alpine security fixes released since the base image was built.
+RUN apk update && apk upgrade --no-cache && apk add --no-cache su-exec libstdc++ libgcc
 
 COPY docker/unrar/unrar-${TARGETARCH} /usr/local/bin/unrar
 RUN chmod 755 /usr/local/bin/unrar

@@ -185,6 +185,20 @@ jobs:
           echo "image_tag=$image_tag" >> $GITHUB_OUTPUT
           echo "Image tag: $image_tag"
 
+          # A version that counts up between releases: the next patch after the newest release tag,
+          # plus this workflow's run number, e.g. v1.0.2-dev.57 (pr-12.57 for pull requests).
+          latest_tag=$(git tag --list "v*" --sort=-v:refname | head -n 1)
+          semver=${latest_tag#v}
+          semver=${semver:-0.0.0}
+          next="v$(echo "$semver" | awk -F. '{print $1"."$2"."$3+1}')"
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            dev_version="${next}-pr-${{ github.event.pull_request.number }}.${{ github.run_number }}"
+          else
+            dev_version="${next}-dev.${{ github.run_number }}"
+          fi
+          echo "dev_version=$dev_version" >> $GITHUB_ENV
+          echo "Version: $dev_version"
+
       # ----------------------------------------
       # Native Angular build
       # ----------------------------------------
@@ -231,7 +245,7 @@ jobs:
 
       - name: Inject Version into application.yaml
         env:
-          APP_VERSION: ${{ env.image_tag }}
+          APP_VERSION: ${{ env.dev_version }}
         run: |
           sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/v4.52.2/yq_linux_amd64
           sudo chmod +x /usr/local/bin/yq
@@ -274,8 +288,9 @@ jobs:
           push: true
           tags: |
             ghcr.io/x2-consult/trove:${{ env.image_tag }}
+            ghcr.io/x2-consult/trove:${{ env.dev_version }}
           build-args: |
-            APP_VERSION=${{ env.image_tag }}
+            APP_VERSION=${{ env.dev_version }}
             APP_REVISION=${{ github.sha }}
           cache-from: |
             type=gha
