@@ -64,7 +64,15 @@ ENV METADATA_BROWSER_ENABLED=false
 
 ARG TARGETARCH
 # apk upgrade picks up Alpine security fixes released since the base image was built.
-RUN apk update && apk upgrade --no-cache && apk add --no-cache su-exec libstdc++ libgcc && \
+# GNU coreutils and busybox's TLS helper (ssl_client) come with the base image but nothing here uses
+# them: the entrypoint and the app only need busybox's own tools, and the healthcheck's wget is plain
+# HTTP. Removing them drops their unfixed CVEs from the image.
+RUN set -e; \
+    apk update; \
+    apk upgrade --no-cache; \
+    apk add --no-cache su-exec libstdc++ libgcc; \
+    unused=$(apk info -e coreutils coreutils-env coreutils-fmt coreutils-sha512sum ssl_client || true); \
+    if [ -n "$unused" ]; then apk del --no-cache $unused; fi; \
     mkdir -p /bookdrop
 
 COPY docker/unrar/unrar-${TARGETARCH} /usr/local/bin/unrar
