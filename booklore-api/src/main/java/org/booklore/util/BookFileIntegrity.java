@@ -1,7 +1,7 @@
 package org.booklore.util;
 
 import com.github.junrar.Archive;
-import com.github.junrar.exception.UnsupportedRarV5Exception;
+import com.github.junrar.exception.UnsupportedRarVersionException;
 import com.github.junrar.rarfile.FileHeader;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry;
@@ -173,9 +173,9 @@ public final class BookFileIntegrity {
                 }
             }
             return null;
-        } catch (UnsupportedRarV5Exception e) {
+        } catch (UnsupportedRarVersionException e) {
             if (!UnrarHelper.isAvailable()) {
-                return null; // RAR5 without the unrar tool: can't check here
+                return null; // a RAR version junrar can't read, and no unrar tool: can't check here
             }
             return UnrarHelper.testArchive(file) ? null : "unrar reports the archive is damaged";
         }

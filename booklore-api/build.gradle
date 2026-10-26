@@ -59,44 +59,44 @@ dependencies {
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.13.0'
 
     // --- Lombok (For Clean Code) ---
-    compileOnly 'org.projectlombok:lombok:1.18.46'
-    annotationProcessor 'org.projectlombok:lombok:1.18.46'
+    compileOnly 'org.projectlombok:lombok:1.18.48'
+    annotationProcessor 'org.projectlombok:lombok:1.18.48'
 
     // --- Book & Image Processing ---
-    implementation 'org.apache.pdfbox:pdfbox:3.0.7'
-    implementation 'org.apache.pdfbox:pdfbox-io:3.0.7'
-    implementation 'org.apache.pdfbox:xmpbox:3.0.7'
+    implementation 'org.apache.pdfbox:pdfbox:3.0.8'
+    implementation 'org.apache.pdfbox:pdfbox-io:3.0.8'
+    implementation 'org.apache.pdfbox:xmpbox:3.0.8'
     implementation 'org.apache.pdfbox:jbig2-imageio:3.0.5'
     // Required for JPEG2000 support in PDFBox (not covered by TwelveMonkeys)
     implementation 'com.github.jai-imageio:jai-imageio-core:1.4.0'
     implementation 'com.github.jai-imageio:jai-imageio-jpeg2000:1.4.0'
     
     // --- TwelveMonkeys ImageIO ---
-    implementation 'com.twelvemonkeys.imageio:imageio-jpeg:3.13.1'
-    implementation 'com.twelvemonkeys.imageio:imageio-tiff:3.13.1'
-    implementation 'com.twelvemonkeys.imageio:imageio-webp:3.13.1'
-    implementation 'com.twelvemonkeys.imageio:imageio-bmp:3.13.1'
+    implementation 'com.twelvemonkeys.imageio:imageio-jpeg:3.15.3'
+    implementation 'com.twelvemonkeys.imageio:imageio-tiff:3.15.3'
+    implementation 'com.twelvemonkeys.imageio:imageio-webp:3.15.3'
+    implementation 'com.twelvemonkeys.imageio:imageio-bmp:3.15.3'
     
     implementation 'io.documentnode:epub4j-core:4.2.3'
 
     // --- Audio Metadata (Audiobook Support) ---
-    implementation 'com.github.RouHim:jaudiotagger:2.0.24'
+    implementation 'com.github.RouHim:jaudiotagger:2.0.27'
 
     // --- UNRAR Support ---
-    implementation 'com.github.junrar:junrar:7.6.0'
+    implementation 'com.github.junrar:junrar:8.1.2'
 
     // --- JSON & Web Scraping ---
     implementation 'org.jsoup:jsoup:1.23.2'
     // Headless Chromium for Amazon/GoodReads pages that bot-check plain HTTP clients.
     // Bundles its Node driver for every platform (~190 MB); Chromium itself downloads on first use.
-    implementation 'com.microsoft.playwright:playwright:1.62.0'
+    implementation 'com.microsoft.playwright:playwright:1.64.0'
 
     // --- Mapping (DTOs & Entities) ---
     implementation 'org.mapstruct:mapstruct:1.6.3'
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.3'
 
     // --- API Documentation ---
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.3'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.1.1'
     implementation 'org.apache.commons:commons-compress:1.28.0'
     implementation 'org.tukaani:xz:1.12'  // Required by commons-compress for 7z support
     implementation 'org.apache.commons:commons-text:1.15.0'
@@ -106,10 +106,10 @@ dependencies {
     runtimeOnly 'org.glassfish.jaxb:jaxb-runtime:4.0.9'
 
     // --- Template Engine ---
-    implementation 'org.freemarker:freemarker:2.3.34'
+    implementation 'org.freemarker:freemarker:2.3.35'
 
     // --- Jackson 3 ---
-    implementation platform('tools.jackson:jackson-bom:3.2.0')
+    implementation platform('tools.jackson:jackson-bom:3.2.4')
     implementation 'tools.jackson.core:jackson-core'
     implementation 'tools.jackson.core:jackson-databind'
     implementation 'tools.jackson.module:jackson-module-blackbird'
@@ -120,7 +120,7 @@ dependencies {
 
     // --- Caching ---
     implementation 'org.springframework.boot:spring-boot-starter-cache'
-    implementation 'com.github.ben-manes.caffeine:caffeine:3.2.4'
+    implementation 'com.github.ben-manes.caffeine:caffeine:3.3.1'
 
     // --- Test Dependencies ---
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
