@@ -11,7 +11,7 @@
       </div>
     } @else {
       <div class="series-scroller-track">
-        @for (s of series; track s.seriesName) {
+        @for (s of series; track s.key) {
           <app-series-card
             [series]="s"
             [compact]="true"

@@ -59,6 +59,14 @@ public class BookMetadataEntity {
     @Column(name = "series_asin", length = 20)
     private String seriesAsin;
 
+    /** Set by Split / Merge to put books into one series by hand; see SeriesGrouping. */
+    @Column(name = "series_group", length = 64)
+    private String seriesGroup;
+
+    /** When the Fetch Series IDs task last asked for this book's series IDs. */
+    @Column(name = "series_ids_checked_at")
+    private Instant seriesIdsCheckedAt;
+
     @Column(name = "isbn_13", length = 13)
     private String isbn13;
 

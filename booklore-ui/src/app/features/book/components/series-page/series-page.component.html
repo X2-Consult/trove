@@ -35,6 +35,35 @@
                   <div class="hero-info">
                     <h2 class="series-title">{{ seriesTitle$ | async }}</h2>
 
+                    @if (otherSeries$ | async; as others) {
+                      @if (others.length || currentSeries?.manual) {
+                        <div class="same-name-series">
+                          @if (others.length) {
+                            <span class="same-name-label">{{ t('grouping.otherSeries') }}</span>
+                            @for (other of others; track other.key) {
+                              <a class="same-name-link" (click)="showSeries(other)">{{ other.displayName }}</a>
+                            }
+                          }
+                          @if (userService.userState$ | async; as userState) {
+                            @if (userState.user?.permissions?.canEditMetadata || userState.user?.permissions?.admin) {
+                              @for (other of others; track other.key) {
+                                <p-button size="small" text="true" icon="pi pi-link"
+                                          [label]="t('grouping.mergeWith', {name: other.displayName})"
+                                          [pTooltip]="t('grouping.mergeTooltip')" tooltipPosition="top"
+                                          (onClick)="mergeWith(other)"/>
+                              }
+                              @if (currentSeries?.manual) {
+                                <p-button size="small" text="true" icon="pi pi-undo"
+                                          [label]="t('grouping.undo')"
+                                          [pTooltip]="t('grouping.undoTooltip')" tooltipPosition="top"
+                                          (onClick)="undoGrouping()"/>
+                              }
+                            }
+                          }
+                        </div>
+                      }
+                    }
+
                     @if (allAuthors$ | async; as authors) {
                       <p class="series-authors">
                         @for (author of authors; track $index; let isLast = $last) {
@@ -398,6 +427,16 @@
                   [pTooltip]="t('tooltip.assignToShelf')"
                   tooltipPosition="top">
                 </p-button>
+                @if ((userState.user!.permissions.canEditMetadata || userState.user!.permissions.admin) && selectedBooks.size < currentBooks.length) {
+                  <p-button
+                    outlined="true"
+                    icon="pi pi-clone"
+                    severity="info"
+                    (click)="splitSelected()"
+                    [pTooltip]="t('grouping.splitTooltip')"
+                    tooltipPosition="top">
+                  </p-button>
+                }
                 @if (userState.user!.permissions.canBulkLockUnlockMetadata) {
                   <p-button
                     outlined="true"

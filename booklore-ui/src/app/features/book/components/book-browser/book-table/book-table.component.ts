@@ -240,7 +240,7 @@ export class BookTableComponent implements OnInit, OnDestroy, OnChanges {
       case 'seriesName':
         return [
           {
-            url: this.urlHelper.filterBooksBy('series', metadata.seriesName ?? ''),
+            url: this.urlHelper.seriesUrl(book),
             anchor: metadata.seriesName
           }
         ]

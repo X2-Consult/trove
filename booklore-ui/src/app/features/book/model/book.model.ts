@@ -163,6 +163,12 @@ export interface BookMetadata {
   seriesName?: string;
   seriesNumber?: number | null;
   seriesTotal?: number | null;
+  /** The series' own Goodreads ID; see series-grouping.ts. */
+  seriesGoodreadsId?: string | null;
+  /** The series' Amazon series ASIN; see series-grouping.ts. */
+  seriesAsin?: string | null;
+  /** Set by Split / Merge on the series page to put books in one series by hand. */
+  seriesGroup?: string | null;
   isbn13?: string;
   isbn10?: string;
   asin?: string;

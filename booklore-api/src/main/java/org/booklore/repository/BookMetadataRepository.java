@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.Collection;
 import java.util.List;
 
 public interface BookMetadataRepository extends JpaRepository<BookMetadataEntity, Long> {
@@ -25,6 +26,39 @@ public interface BookMetadataRepository extends JpaRepository<BookMetadataEntity
     @Transactional
     @Query("UPDATE BookMetadataEntity m SET m.audiobookCoverUpdatedOn = :timestamp WHERE m.bookId = :bookId")
     void updateAudiobookCoverTimestamp(@Param("bookId") Long bookId, @Param("timestamp") Instant timestamp);
+
+    /** bookId, seriesName, seriesNumber, seriesGoodreadsId, seriesAsin, seriesGroup, libraryId of every book in a series. */
+    @Query("""
+            SELECT m.bookId, m.seriesName, m.seriesNumber, m.seriesGoodreadsId, m.seriesAsin, m.seriesGroup, b.library.id
+            FROM BookMetadataEntity m JOIN m.book b
+            WHERE m.seriesName IS NOT NULL AND m.seriesName <> '' AND (b.deleted IS NULL OR b.deleted = false)
+            """)
+    List<Object[]> findSeriesRows();
+
+    /** bookId, author name for every book in a series. */
+    @Query("""
+            SELECT m.bookId, a.name
+            FROM BookMetadataEntity m JOIN m.book b JOIN m.authors a
+            WHERE m.seriesName IS NOT NULL AND m.seriesName <> '' AND (b.deleted IS NULL OR b.deleted = false)
+            """)
+    List<Object[]> findSeriesAuthorRows();
+
+    /** Books in a series missing a series ID that their Goodreads ID or ASIN could find, not asked since {@code askedBefore}. */
+    @Query("""
+            SELECT m.bookId FROM BookMetadataEntity m JOIN m.book b
+            WHERE (b.deleted IS NULL OR b.deleted = false)
+              AND m.seriesName IS NOT NULL AND m.seriesName <> ''
+              AND ((m.seriesGoodreadsId IS NULL AND m.goodreadsId IS NOT NULL AND m.goodreadsId <> '')
+                   OR (m.seriesAsin IS NULL AND m.asin IS NOT NULL AND m.asin <> ''))
+              AND (m.seriesIdsCheckedAt IS NULL OR m.seriesIdsCheckedAt < :askedBefore)
+            ORDER BY CASE WHEN m.seriesIdsCheckedAt IS NULL THEN 0 ELSE 1 END, m.seriesIdsCheckedAt, m.bookId
+            """)
+    List<Long> findBookIdsMissingSeriesIds(@Param("askedBefore") Instant askedBefore);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE BookMetadataEntity m SET m.seriesGroup = :seriesGroup WHERE m.bookId IN :bookIds")
+    int updateSeriesGroup(@Param("bookIds") Collection<Long> bookIds, @Param("seriesGroup") String seriesGroup);
 
     List<BookMetadataEntity> findAllByAuthorsContaining(AuthorEntity author);
 

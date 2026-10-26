@@ -9,7 +9,10 @@ import org.booklore.model.entity.BookEntity;
 import org.booklore.model.entity.BookLoreUserEntity;
 import org.booklore.model.entity.ShelfEntity;
 import org.booklore.model.enums.OpdsSortOrder;
+import org.booklore.repository.BookMetadataRepository;
 import org.booklore.repository.BookOpdsRepository;
+import org.booklore.service.series.SeriesGrouping;
+import org.booklore.service.series.SeriesService;
 import org.booklore.repository.ShelfRepository;
 import org.booklore.repository.UserRepository;
 import org.booklore.repository.BookRepository;
@@ -43,6 +46,12 @@ public class OpdsBookService {
     private final LibraryService libraryService;
     private final ContentRestrictionService contentRestrictionService;
     private final ReadingProgressService readingProgressService;
+    private final SeriesService seriesService;
+    private final BookMetadataRepository bookMetadataRepository;
+
+    /** A series in the OPDS series list: what it's called there, its key, and a book whose cover stands for it. */
+    public record OpdsSeries(String key, String displayName, Long bookId, java.time.Instant coverUpdatedOn) {
+    }
 
     public List<Library> getAccessibleLibraries(Long userId) {
         if (userId == null) {
@@ -260,9 +269,9 @@ public class OpdsBookService {
         return result;
     }
 
-    // Each series entry carries the id/cover-updated-on of a representative book so the
-    // OPDS series navigation entry can show a cover image.
-    public List<BookOpdsRepository.SeriesCoverProjection> getDistinctSeries(Long userId) {
+    // Series as the web UI shows them (same-name series by different authors apart), sorted by
+    // name. Each carries its first book so the OPDS series navigation entry can show a cover image.
+    public List<OpdsSeries> getDistinctSeries(Long userId) {
         if (userId == null) {
             return List.of();
         }
@@ -271,15 +280,57 @@ public class OpdsBookService {
                 .orElseThrow(() -> ApiError.USER_NOT_FOUND.createException(userId));
         BookLoreUser user = bookLoreUserTransformer.toDTO(entity);
 
+        List<SeriesGrouping.Group> groups = seriesService.getSeries(user);
+        List<Long> firstBooks = groups.stream().map(g -> g.bookIds().getFirst()).toList();
+        Map<Long, java.time.Instant> covers = new HashMap<>();
+        if (!firstBooks.isEmpty()) {
+            for (var metadata : bookMetadataRepository.getMetadataForBookIds(firstBooks)) {
+                if (metadata.getCoverUpdatedOn() != null) covers.put(metadata.getBookId(), metadata.getCoverUpdatedOn());
+            }
+        }
+        return groups.stream()
+                .map(g -> new OpdsSeries(g.key(), g.displayName(), g.bookIds().getFirst(), covers.get(g.bookIds().getFirst())))
+                .sorted(Comparator.comparing(OpdsSeries::displayName, String.CASE_INSENSITIVE_ORDER))
+                .toList();
+    }
+
+    /** One page of the series with this key, in series-number order. */
+    public Page<Book> getBooksBySeriesKey(Long userId, String seriesKey, int page, int size) {
+        if (userId == null) {
+            throw ApiError.FORBIDDEN.createException("Authentication required");
+        }
+
+        BookLoreUserEntity entity = userRepository.findById(userId)
+                .orElseThrow(() -> ApiError.USER_NOT_FOUND.createException(userId));
+        BookLoreUser user = bookLoreUserTransformer.toDTO(entity);
+
+        Pageable pageable = PageRequest.of(Math.max(page, 0), size);
+        SeriesGrouping.Group group = seriesService.findByKey(user, seriesKey);
+        if (group == null) {
+            return new PageImpl<>(List.of(), pageable, 0);
+        }
+        List<Long> ids = group.bookIds();
+        int from = (int) Math.min(pageable.getOffset(), ids.size());
+        int to = Math.min(from + size, ids.size());
+        Page<Long> idPage = new PageImpl<>(ids.subList(from, to), pageable, ids.size());
+        if (idPage.isEmpty()) {
+            return new PageImpl<>(List.of(), pageable, ids.size());
+        }
+
         if (user.getPermissions().isAdmin()) {
-            return bookOpdsRepository.findDistinctSeriesWithCover();
+            List<BookEntity> books = bookOpdsRepository.findAllWithFullMetadataByIds(idPage.getContent());
+            Page<Book> result = createPageFromEntities(books, idPage, pageable, null);
+            readingProgressService.enrichBooksWithProgress(result.getContent(), userId);
+            return result;
         }
 
         Set<Long> libraryIds = user.getAssignedLibraries().stream()
                 .map(Library::getId)
                 .collect(Collectors.toSet());
-
-        return bookOpdsRepository.findDistinctSeriesWithCoverByLibraryIds(libraryIds);
+        List<BookEntity> books = bookOpdsRepository.findAllWithFullMetadataByIdsAndLibraryIds(idPage.getContent(), libraryIds);
+        Page<Book> result = applyBookFilters(createPageFromEntities(books, idPage, pageable, userId), userId);
+        readingProgressService.enrichBooksWithProgress(result.getContent(), userId);
+        return result;
     }
 
     public Page<Book> getBooksBySeriesName(Long userId, String seriesName, int page, int size) {

@@ -89,6 +89,27 @@
   margin: 0;
 }
 
+.same-name-series {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.75rem;
+  font-size: 0.875rem;
+}
+
+.same-name-label {
+  color: var(--text-secondary-color);
+}
+
+.same-name-link {
+  cursor: pointer;
+  color: var(--primary-color);
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
 .author-link {
   cursor: pointer;
   color: var(--primary-text-color);

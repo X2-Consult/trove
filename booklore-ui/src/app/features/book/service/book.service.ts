@@ -5,6 +5,7 @@ import {catchError, concatMap, distinctUntilChanged, filter, finalize, map, redu
 import {Book, BookDeletionResponse, BookRecommendation, BookSetting, BookStatusUpdateResponse, BookType, CreatePhysicalBookRequest, PersonalRatingUpdateResponse, ReadStatus} from '../model/book.model';
 import {BookState} from '../model/state/book-state.model';
 import {API_CONFIG} from '../../../core/config/api-config';
+import {findSeriesOfBook} from '../../../shared/util/series-grouping';
 import {MessageService} from 'primeng/api';
 import {ResetProgressType} from '../../../shared/constants/reset-progress-type';
 import {AuthService} from '../../../shared/service/auth.service';
@@ -161,15 +162,8 @@ export class BookService {
       filter(state => state.loaded),
       first(),
       map(state => {
-        const allBooks = state.books || [];
-        const currentBook = allBooks.find(b => b.id === bookId);
-
-        if (!currentBook || !currentBook.metadata?.seriesName) {
-          return [];
-        }
-
-        const seriesName = currentBook.metadata.seriesName.toLowerCase();
-        return allBooks.filter(b => b.metadata?.seriesName?.toLowerCase() === seriesName);
+        // Only the book's own series when different authors share its name (series-grouping.ts).
+        return findSeriesOfBook(state.books || [], bookId)?.books ?? [];
       })
     );
   }

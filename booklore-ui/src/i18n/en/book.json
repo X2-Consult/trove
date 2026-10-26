@@ -857,7 +857,19 @@
       "deleteSelected": "Delete selected books"
     },
     "switchToPages": "Show in pages",
-    "switchToScroll": "Show as one scrolling list"
+    "switchToScroll": "Show as one scrolling list",
+    "grouping": {
+      "otherSeries": "Other series with this name:",
+      "mergeWith": "Merge with {{name}}",
+      "mergeTooltip": "These are one series: show them together from now on",
+      "undo": "Undo split / merge",
+      "undoTooltip": "Group these books by their series IDs and authors again",
+      "splitTooltip": "Split the selected books off into a separate series",
+      "splitDone": "Split {{count}} book(s) off into a separate series",
+      "mergeDone": "Merged into one series",
+      "undoDone": "Grouping by series IDs and authors again",
+      "failed": "Could not change the series"
+    }
   },
   "duplicateMerger": {
     "title": "Find Duplicates",

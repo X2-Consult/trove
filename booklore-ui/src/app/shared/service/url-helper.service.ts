@@ -5,6 +5,8 @@ import {BookService} from '../../features/book/service/book.service';
 import {CoverGeneratorComponent} from '../components/cover-generator/cover-generator.component';
 import {Router} from '@angular/router';
 import {Book,BookType} from '../../features/book/model/book.model';
+import {BookStateService} from '../../features/book/service/book-state.service';
+import {groupSeries} from '../util/series-grouping';
 
 @Injectable({
   providedIn: 'root'
@@ -15,6 +17,8 @@ export class UrlHelperService {
   private authService = inject(AuthService);
   private bookService = inject(BookService);
   private router = inject(Router);
+  private bookStateService = inject(BookStateService);
+  private seriesKeys: { books: Book[] | null; keys: Map<number, string> } = {books: null, keys: new Map()};
 
   private getToken(): string | null {
     return this.authService.getInternalAccessToken();
@@ -157,6 +161,27 @@ export class UrlHelperService {
     }
 
     return this.router.createUrlTree([`/${baseUrl}/book/${book.id}`], undefined);
+  }
+
+  /** The series key of a book, which tells same-name series apart (series-grouping.ts). */
+  seriesKeyOf(bookId: number | undefined): string | null {
+    const books = this.bookStateService.getCurrentBookState().books;
+    if (!books || bookId == null) return null;
+    if (this.seriesKeys.books !== books) {
+      const keys = new Map<number, string>();
+      for (const group of groupSeries(books)) {
+        group.books.forEach(b => keys.set(b.id, group.key));
+      }
+      this.seriesKeys = {books, keys};
+    }
+    return this.seriesKeys.keys.get(bookId) ?? null;
+  }
+
+  /** The page of the series a book is in. */
+  seriesUrl(book: Book) {
+    const key = this.seriesKeyOf(book.id);
+    return this.router.createUrlTree(['/series', encodeURIComponent(book.metadata?.seriesName ?? '')],
+      key ? {queryParams: {key}} : undefined);
   }
 
   filterBooksBy(filterKey: string, filterValue: string) {

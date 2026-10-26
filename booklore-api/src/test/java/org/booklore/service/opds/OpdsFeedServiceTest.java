@@ -732,13 +732,26 @@ class OpdsFeedServiceTest {
     }
 
     @Test
+    void generateSeriesNavigation_linksEachSeriesByItsKey() {
+        mockAuthenticatedUser();
+        when(opdsBookService.getDistinctSeries(TEST_USER_ID)).thenReturn(List.of(
+                new OpdsBookService.OpdsSeries("amzn:B0D3KDJCS2", "Harem University (Dirk Knight)", 8107L, null),
+                new OpdsBookService.OpdsSeries("amzn:B0D9DNS7D3", "Harem University (Rex Sterling)", 8233L, null)));
+        when(request.getRequestURI()).thenReturn("/api/v1/opds/series");
+
+        String xml = opdsFeedService.generateSeriesNavigation(request);
+
+        assertThat(xml).contains("<title>Harem University (Dirk Knight)</title>")
+                .contains("<id>urn:booklore:series:amzn:B0D9DNS7D3</id>")
+                .contains("seriesKey=amzn%3AB0D3KDJCS2");
+    }
+
+    @Test
     void generateSeriesNavigation_lastPageHasNoNextLink() {
         mockAuthenticatedUser();
-        List<BookOpdsRepository.SeriesCoverProjection> series = new java.util.ArrayList<>();
+        List<OpdsBookService.OpdsSeries> series = new java.util.ArrayList<>();
         for (int i = 1; i <= 60; i++) {
-            BookOpdsRepository.SeriesCoverProjection p = mock(BookOpdsRepository.SeriesCoverProjection.class);
-            when(p.getSeriesName()).thenReturn("Series " + i);
-            series.add(p);
+            series.add(new OpdsBookService.OpdsSeries("trove:" + i, "Series " + i, (long) i, null));
         }
         when(opdsBookService.getDistinctSeries(TEST_USER_ID)).thenReturn(series);
         when(request.getParameter("page")).thenReturn("2");

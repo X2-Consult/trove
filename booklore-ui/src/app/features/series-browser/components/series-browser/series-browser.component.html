@@ -84,7 +84,7 @@
           <div class="series-grid"
             #container
             [ngStyle]="{'grid-template-columns': 'repeat(auto-fill, minmax(' + gridColumnMinWidth + ', 1fr))'}">
-            @for (series of scroll.viewPortItems; track series.seriesName) {
+            @for (series of scroll.viewPortItems; track series.key) {
               <div class="virtual-scroller-item"
                 [ngStyle]="{width: cardWidth + 'px', height: cardHeight + 'px'}"
                 [style.--card-scale]="seriesScaleService.scaleFactor">

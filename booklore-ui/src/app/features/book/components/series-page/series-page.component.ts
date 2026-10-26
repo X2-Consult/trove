@@ -18,6 +18,8 @@ import {ProgressSpinner} from "primeng/progressspinner";
 import {ProgressBar} from "primeng/progressbar";
 import {DynamicDialogRef} from "primeng/dynamicdialog";
 import {ConfirmationService, MenuItem, MessageService} from "primeng/api";
+import {groupSeries, normalizeSeriesName, SeriesGroup} from "../../../../shared/util/series-grouping";
+import {SeriesGroupService} from "../../../series-browser/service/series-group.service";
 import {UserService} from "../../../settings/user-management/user.service";
 import {BookMenuService} from "../../service/book-menu.service";
 import {LoadingService} from "../../../../core/services/loading.service";
@@ -141,6 +143,8 @@ export class SeriesPageComponent implements OnDestroy, AfterViewChecked {
   selectedBooks = new Set<number>();
   lastSelectedIndex: number | null = null;
   currentBooks: Book[] = [];
+  currentSeries: SeriesGroup | null = null;
+  private seriesGroupService = inject(SeriesGroupService);
   private userSub: Subscription;
 
   // Menu items
@@ -157,20 +161,31 @@ export class SeriesPageComponent implements OnDestroy, AfterViewChecked {
     map((state) => state.books || [])
   );
 
-  filteredBooks$: Observable<Book[]> = combineLatest([
-    this.seriesParam$.pipe(map((n) => n.trim().toLowerCase())),
+  /** Every series with this page's name: usually one, more when different authors share it. */
+  sameNameSeries$: Observable<SeriesGroup[]> = combineLatest([
+    this.seriesParam$.pipe(map((n) => normalizeSeriesName(n))),
     this.booksInSeries$,
   ]).pipe(
-    map(([seriesName, books]) => {
-      const inSeries = books.filter(
-        (b) => b.metadata?.seriesName?.trim().toLowerCase() === seriesName
-      );
-      return inSeries.sort((a, b) => {
-        const aNum = a.metadata?.seriesNumber ?? Number.MAX_SAFE_INTEGER;
-        const bNum = b.metadata?.seriesNumber ?? Number.MAX_SAFE_INTEGER;
-        return aNum - bNum;
-      });
-    }),
+    map(([seriesName, books]) =>
+      groupSeries(books.filter((b) => normalizeSeriesName(b.metadata?.seriesName) === seriesName)))
+  );
+
+  /** The series shown: the one the link's key names, else the first with this name. */
+  currentSeries$: Observable<SeriesGroup | null> = combineLatest([
+    this.sameNameSeries$,
+    this.route.queryParamMap.pipe(map((params) => params.get('key'))),
+  ]).pipe(
+    map(([groups, key]) => groups.find((g) => g.key === key) ?? groups[0] ?? null),
+    tap(group => this.currentSeries = group)
+  );
+
+  /** The other series with this name, to switch to or merge with. */
+  otherSeries$: Observable<SeriesGroup[]> = combineLatest([this.sameNameSeries$, this.currentSeries$]).pipe(
+    map(([groups, current]) => groups.filter((g) => g.key !== current?.key))
+  );
+
+  filteredBooks$: Observable<Book[]> = this.currentSeries$.pipe(
+    map((group) => group?.books ?? []),
     tap(books => this.currentBooks = books)
   );
 
@@ -180,8 +195,8 @@ export class SeriesPageComponent implements OnDestroy, AfterViewChecked {
 
   seriesTitle$: Observable<string> = combineLatest([
     this.seriesParam$,
-    this.filteredBooks$,
-  ]).pipe(map(([param, books]) => books[0]?.metadata?.seriesName || param));
+    this.currentSeries$,
+  ]).pipe(map(([param, group]) => group?.displayName || param));
 
   yearsRange$: Observable<string | null> = this.filteredBooks$.pipe(
     map((books) => {
@@ -434,6 +449,56 @@ export class SeriesPageComponent implements OnDestroy, AfterViewChecked {
         );
         this.moreActionsMenuItems = this.bookMenuService.getMoreActionsMenu(this.selectedBooks, this.user());
       });
+  }
+
+  showSeries(group: SeriesGroup): void {
+    this.router.navigate(['/series', group.name], {queryParams: {key: group.key}});
+  }
+
+  /** The selected books become a series of their own, apart from the rest of this one. */
+  splitSelected(): void {
+    const bookIds = [...this.selectedBooks];
+    if (!bookIds.length || bookIds.length >= this.currentBooks.length) return;
+    this.seriesGroupService.groupTogether(bookIds).subscribe({
+      next: () => {
+        this.selectedBooks.clear();
+        this.messageService.add({severity: 'success', summary: this.t.translate('book.seriesPage.grouping.splitDone', {count: bookIds.length})});
+      },
+      error: (err) => this.groupingFailed(err)
+    });
+  }
+
+  /** This series and {@code other} become one. */
+  mergeWith(other: SeriesGroup): void {
+    const bookIds = [...this.currentBooks, ...other.books].map((b) => b.id);
+    this.seriesGroupService.groupTogether(bookIds).subscribe({
+      next: (key) => {
+        this.messageService.add({severity: 'success', summary: this.t.translate('book.seriesPage.grouping.mergeDone')});
+        this.router.navigate([], {relativeTo: this.route, queryParams: {key}, queryParamsHandling: 'merge', replaceUrl: true});
+      },
+      error: (err) => this.groupingFailed(err)
+    });
+  }
+
+  /** Puts a series made by hand back to being worked out from its IDs and authors. */
+  undoGrouping(): void {
+    if (!this.currentSeries?.manual) return;
+    const bookIds = this.currentSeries.books.map((b) => b.id);
+    this.seriesGroupService.ungroup(bookIds).subscribe({
+      next: () => {
+        this.messageService.add({severity: 'success', summary: this.t.translate('book.seriesPage.grouping.undoDone')});
+        this.router.navigate([], {relativeTo: this.route, queryParams: {key: null}, queryParamsHandling: 'merge', replaceUrl: true});
+      },
+      error: (err) => this.groupingFailed(err)
+    });
+  }
+
+  private groupingFailed(err: { error?: { message?: string } }): void {
+    this.messageService.add({
+      severity: 'error',
+      summary: this.t.translate('book.seriesPage.grouping.failed'),
+      detail: err?.error?.message
+    });
   }
 
   ngOnDestroy(): void {

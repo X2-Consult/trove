@@ -286,7 +286,7 @@ public class OpdsFeedService {
 
     public String generateSeriesNavigation(HttpServletRequest request) {
         Long userId = getUserId();
-        List<BookOpdsRepository.SeriesCoverProjection> seriesList = opdsBookService.getDistinctSeries(userId);
+        List<OpdsBookService.OpdsSeries> seriesList = opdsBookService.getDistinctSeries(userId);
         int page = Math.max(1, parseLongParam(request, "page", 1L).intValue());
         int size = Math.min(parseLongParam(request, "size", (long) DEFAULT_PAGE_SIZE).intValue(), MAX_PAGE_SIZE);
 
@@ -306,8 +306,8 @@ public class OpdsFeedService {
 
         appendPaginationLinks(feed, request, page, totalPages(seriesList.size(), size), size, "navigation");
 
-        for (BookOpdsRepository.SeriesCoverProjection series : pageOf(seriesList, page, size)) {
-            String seriesName = series.getSeriesName();
+        for (OpdsBookService.OpdsSeries series : pageOf(seriesList, page, size)) {
+            String seriesName = series.displayName();
             feed.append("""
                       <entry>
                         <title>%s</title>
@@ -317,13 +317,14 @@ public class OpdsFeedService {
                         <content type="text">Books in the %s series</content>
                     """.formatted(
                     escapeXml(seriesName),
-                    escapeXml(seriesName),
+                    escapeXml(series.key()),
                     now(),
-                    escapeXml("/api/v1/opds/catalog?series=" + java.net.URLEncoder.encode(seriesName, java.nio.charset.StandardCharsets.UTF_8)),
+                    escapeXml("/api/v1/opds/catalog?series=" + java.net.URLEncoder.encode(seriesName, java.nio.charset.StandardCharsets.UTF_8)
+                            + "&seriesKey=" + java.net.URLEncoder.encode(series.key(), java.nio.charset.StandardCharsets.UTF_8)),
                     escapeXml(seriesName)
             ));
-            if (series.getBookId() != null && series.getCoverUpdatedOn() != null) {
-                String coverUrl = "/api/v1/opds/" + series.getBookId() + "/cover?" + series.getCoverUpdatedOn();
+            if (series.bookId() != null && series.coverUpdatedOn() != null) {
+                String coverUrl = "/api/v1/opds/" + series.bookId() + "/cover?" + series.coverUpdatedOn();
                 feed.append("    <link rel=\"http://opds-spec.org/image\" href=\"")
                         .append(escapeXml(coverUrl)).append("\" type=\"image/jpeg\"/>\n");
                 feed.append("    <link rel=\"http://opds-spec.org/image/thumbnail\" href=\"")
@@ -354,6 +355,8 @@ public class OpdsFeedService {
             booksPage = magicShelfBookService.getBooksByMagicShelfId(userId, magicShelfId, page - 1, size);
         } else if (author != null && !author.isBlank()) {
             booksPage = opdsBookService.getBooksByAuthorName(userId, author, page - 1, size);
+        } else if (request.getParameter("seriesKey") != null && !request.getParameter("seriesKey").isBlank()) {
+            booksPage = opdsBookService.getBooksBySeriesKey(userId, request.getParameter("seriesKey"), page - 1, size);
         } else if (series != null && !series.isBlank()) {
             booksPage = opdsBookService.getBooksBySeriesName(userId, series, page - 1, size);
         } else {

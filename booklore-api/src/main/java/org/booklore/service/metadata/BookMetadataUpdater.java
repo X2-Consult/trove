@@ -273,11 +273,14 @@ public class BookMetadataUpdater {
         if (after.isEmpty()) {
             e.setSeriesGoodreadsId(null);
             e.setSeriesAsin(null);
+            e.setSeriesGroup(null);
             return;
         }
         if (!before.equalsIgnoreCase(after)) {
             e.setSeriesGoodreadsId(nullIfBlank(m.getSeriesGoodreadsId()));
             e.setSeriesAsin(nullIfBlank(m.getSeriesAsin()));
+            e.setSeriesGroup(null);
+            e.setSeriesIdsCheckedAt(null);
             return;
         }
         handleFieldUpdate(false, false, m.getSeriesGoodreadsId(), v -> e.setSeriesGoodreadsId(nullIfBlank(v)), e::getSeriesGoodreadsId, replaceMode);

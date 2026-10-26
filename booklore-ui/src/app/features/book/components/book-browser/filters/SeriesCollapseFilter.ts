@@ -6,6 +6,7 @@ import {Book} from '../../../model/book.model';
 import {inject, Injectable, OnDestroy} from '@angular/core';
 import {MessageService} from 'primeng/api';
 import {UserService} from '../../../../settings/user-management/user.service';
+import {groupSeries} from '../../../../../shared/util/series-grouping';
 
 @Injectable({providedIn: 'root'})
 export class SeriesCollapseFilter implements BookFilter, OnDestroy {
@@ -94,34 +95,14 @@ export class SeriesCollapseFilter implements BookFilter, OnDestroy {
         const shouldCollapse = forceExpandSeries ? false : isCollapsed;
         if (!shouldCollapse || !bookState.books) return bookState;
 
-        const books = [...bookState.books];
+        const collapsedBooks: Book[] = bookState.books.filter(book => !book.metadata?.seriesName?.trim());
 
-        const seriesMap = new Map<string, Book[]>();
-        const collapsedBooks: Book[] = [];
-
-        for (const book of books) {
-          const seriesName = book.metadata?.seriesName?.trim();
-          if (seriesName) {
-            if (!seriesMap.has(seriesName)) {
-              seriesMap.set(seriesName, []);
-            }
-            seriesMap.get(seriesName)!.push(book);
-          } else {
-            collapsedBooks.push(book);
-          }
-        }
-
-        for (const [seriesName, group] of seriesMap.entries()) {
-          const sortedGroup = group.slice().sort((a, b) => {
-            const aNum = a.metadata?.seriesNumber ?? Number.MAX_VALUE;
-            const bNum = b.metadata?.seriesNumber ?? Number.MAX_VALUE;
-            return aNum - bNum;
-          });
-          const firstBook = sortedGroup[0];
+        // Same-name series by different authors collapse separately (series-grouping.ts).
+        for (const group of groupSeries(bookState.books)) {
           collapsedBooks.push({
-            ...firstBook,
-            seriesBooks: group,
-            seriesCount: group.length
+            ...group.books[0],
+            seriesBooks: group.books,
+            seriesCount: group.books.length
           });
         }
 

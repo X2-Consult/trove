@@ -166,7 +166,7 @@ export class SeriesBrowserComponent implements OnInit {
   }
 
   navigateToSeries(series: SeriesSummary): void {
-    this.router.navigate(['/series', series.seriesName]);
+    this.router.navigate(['/series', series.name], {queryParams: {key: series.key}});
   }
 
   private applyStatusFilter(series: SeriesSummary[], filterValue: string): SeriesSummary[] {

@@ -462,7 +462,8 @@ export class TaskManagementComponent implements OnInit, OnDestroy {
       [TaskType.REMOVE_EBOOK_ADS]: 'pi-eraser',
       [TaskType.FETCH_MISSING_REVIEWS]: 'pi-comments',
       [TaskType.FIND_EPUB_COVER_PROBLEMS]: 'pi-image',
-      [TaskType.FIX_EPUB_COVERS]: 'pi-wrench'
+      [TaskType.FIX_EPUB_COVERS]: 'pi-wrench',
+      [TaskType.FETCH_SERIES_IDS]: 'pi-sitemap'
     };
     return icons[taskType] || 'pi-cog';
   }

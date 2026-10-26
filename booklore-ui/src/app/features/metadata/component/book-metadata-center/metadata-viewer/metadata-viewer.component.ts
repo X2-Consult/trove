@@ -831,9 +831,10 @@ export class MetadataViewerComponent implements OnInit, OnChanges, AfterViewChec
     this.handleMetadataClick('tag', tag);
   }
 
-  goToSeries(seriesName: string): void {
+  goToSeries(seriesName: string, bookId?: number): void {
     const encodedSeriesName = encodeURIComponent(seriesName);
-    this.router.navigate(['/series', encodedSeriesName]);
+    const key = this.urlHelper.seriesKeyOf(bookId);
+    this.router.navigate(['/series', encodedSeriesName], key ? {queryParams: {key}} : undefined);
   }
 
   goToPublisher(publisher: string): void {

@@ -114,6 +114,14 @@ public enum TaskType {
             false,
             "Fix Missing EPUB Covers",
             "Writes Trove's cover into the EPUBs whose own cover readers may not show, so downloaded copies have it. Each fixed file is read back to confirm the cover is there. EPUBs already found fine or fixed are skipped until their file changes."
+    ),
+    FETCH_SERIES_IDS(
+            false,
+            true,
+            true,
+            false,
+            "Fetch Series IDs",
+            "Looks up each series book's series on Goodreads and Amazon, using the Goodreads ID and ASIN it already has, so same-name series by different authors are told apart and guest-written books stay in their series. Only fills IDs that are missing, and only when the source names the same series. Books whose series has no ID there are asked again after 90 days. Each run stops after 3 hours, or when the sources start blocking requests, and the next run carries on."
     );
 
     @Getter

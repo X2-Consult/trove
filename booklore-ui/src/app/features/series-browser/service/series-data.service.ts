@@ -4,6 +4,7 @@ import {filter, map, shareReplay} from 'rxjs/operators';
 import {BookService} from '../../book/service/book.service';
 import {Book, ReadStatus} from '../../book/model/book.model';
 import {SeriesSummary} from '../model/series.model';
+import {groupSeries} from '../../../shared/util/series-grouping';
 
 @Injectable({
   providedIn: 'root'
@@ -19,29 +20,10 @@ export class SeriesDataService {
   );
 
   private buildSeriesSummaries(books: Book[]): SeriesSummary[] {
-    const seriesMap = new Map<string, Book[]>();
-
-    for (const book of books) {
-      const seriesName = book.metadata?.seriesName;
-      if (!seriesName) continue;
-
-      const key = seriesName.trim().toLowerCase();
-      if (!seriesMap.has(key)) {
-        seriesMap.set(key, []);
-      }
-      seriesMap.get(key)!.push(book);
-    }
-
     const summaries: SeriesSummary[] = [];
 
-    for (const seriesBooks of seriesMap.values()) {
-      const sorted = seriesBooks.sort((a, b) => {
-        const aNum = a.metadata?.seriesNumber ?? Number.MAX_SAFE_INTEGER;
-        const bNum = b.metadata?.seriesNumber ?? Number.MAX_SAFE_INTEGER;
-        return aNum - bNum;
-      });
-
-      const displayName = sorted[0].metadata?.seriesName?.trim() || '';
+    for (const group of groupSeries(books)) {
+      const sorted = group.books;
       const authorSet = new Set<string>();
       const categorySet = new Set<string>();
 
@@ -66,7 +48,9 @@ export class SeriesDataService {
       const nextUnread = sorted.find(b => b.readStatus !== ReadStatus.READ) || null;
 
       summaries.push({
-        seriesName: displayName,
+        key: group.key,
+        name: group.name,
+        seriesName: group.displayName,
         books: sorted,
         authors: Array.from(authorSet),
         categories: Array.from(categorySet),
