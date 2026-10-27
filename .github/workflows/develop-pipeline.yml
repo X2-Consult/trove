@@ -156,6 +156,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       image_tag: ${{ steps.set_image_tag.outputs.image_tag }}
+      stream_tag: ${{ steps.set_image_tag.outputs.stream_tag }}
 
     permissions:
       contents: read
@@ -177,12 +178,18 @@ jobs:
 
           if [ "${{ github.event_name }}" = "pull_request" ]; then
             image_tag="pr-${{ github.event.pull_request.number }}-${short_sha}"
+            stream_tag="pr-${{ github.event.pull_request.number }}"
           else
             image_tag="develop-${short_sha}"
+            stream_tag="develop"
           fi
 
           echo "image_tag=$image_tag" >> $GITHUB_ENV
           echo "image_tag=$image_tag" >> $GITHUB_OUTPUT
+          # A tag that moves with each build. Scans use it, so Vision One keeps one entry per branch
+          # (updated every run) instead of a new entry, never rescanned, for every commit.
+          echo "stream_tag=$stream_tag" >> $GITHUB_ENV
+          echo "stream_tag=$stream_tag" >> $GITHUB_OUTPUT
           echo "Image tag: $image_tag"
 
           # A version that counts up between releases: the next patch after the newest release tag,
@@ -289,6 +296,7 @@ jobs:
           tags: |
             ghcr.io/x2-consult/trove:${{ env.image_tag }}
             ghcr.io/x2-consult/trove:${{ env.dev_version }}
+            ghcr.io/x2-consult/trove:${{ env.stream_tag }}
           build-args: |
             APP_VERSION=${{ env.dev_version }}
             APP_REVISION=${{ github.sha }}
@@ -315,7 +323,7 @@ jobs:
         platform: [ linux/amd64, linux/arm64 ]
     uses: ./.github/workflows/tmas-scan.yml
     with:
-      image: ghcr.io/x2-consult/trove:${{ needs.build-and-push.outputs.image_tag }}
+      image: ghcr.io/x2-consult/trove:${{ needs.build-and-push.outputs.stream_tag }}
       platform: ${{ matrix.platform }}
     secrets:
       TMAS_API_KEY: ${{ secrets.TMAS_API_KEY }}
